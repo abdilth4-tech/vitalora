@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — Formula Jamu</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    .app-header { background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%); box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
+    .app-header .neu-icon-btn { background: rgba(255,255,255,0.12); box-shadow: none; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    .app-header > div[style*="font-weight:700"] { color: #fff; }
+    .section-header .section-title { border-left: 3px solid #27AE60; padding-left: 10px; }
+
+    .formula-hero {
+      background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%);
+      border-radius: 20px;
+      padding: 24px;
+      color: #fff;
+    }
+    .formula-hero .formula-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
+    .formula-hero .formula-chip {
+      display: inline-block;
+      background: rgba(111,207,151,0.25);
+      border: 1px solid rgba(111,207,151,0.5);
+      color: #6FCF97;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .indikasi-card { }
+    .indikasi-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .indikasi-tag {
+      background: rgba(39,174,96,0.1);
+      border: 1px solid rgba(39,174,96,0.25);
+      color: #27AE60;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .ingredients-table { display: flex; flex-direction: column; gap: 0; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-out); }
+    .ing-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-bottom: 1px solid rgba(200,208,231,0.5);
+    }
+    .ing-row:last-child { border-bottom: none; }
+    .ing-row .ing-num { width: 24px; height: 24px; border-radius: 8px; background: rgba(39,174,96,0.12); color: #27AE60; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ing-row .ing-name { flex: 1; margin-left: 12px; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+    .ing-row .ing-dose { font-size: 0.82rem; color: var(--primary-dark); font-weight: 700; }
+
+    .prep-steps { display: flex; flex-direction: column; gap: 0; position: relative; }
+    .prep-steps::before {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 24px;
+      bottom: 24px;
+      width: 2px;
+      background: linear-gradient(180deg, #27AE60, rgba(39,174,96,0.2));
+    }
+    .prep-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 0 0 20px 0;
+    }
+    .prep-step:last-child { padding-bottom: 0; }
+    .prep-num {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1A5C38, #27AE60);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(39,174,96,0.4);
+      position: relative;
+      z-index: 1;
+    }
+    .prep-content { padding-top: 6px; flex: 1; }
+    .prep-content .prep-title { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+    .prep-content .prep-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 3px; line-height: 1.5; }
+
+    .duration-card {
+      background: linear-gradient(135deg, rgba(39,174,96,0.08), rgba(111,207,151,0.05));
+      border: 1.5px solid rgba(39,174,96,0.3);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .duration-card ion-icon { font-size: 1.6rem; color: #27AE60; }
+    .duration-text .dur-label { font-size: 0.68rem; color: var(--text-tertiary); }
+    .duration-text .dur-value { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+
+    .warning-card {
+      border: 2px solid var(--warning);
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(242,153,74,0.05);
+    }
+    .warning-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .warning-header ion-icon { font-size: 1.2rem; color: var(--warning); }
+    .warning-title { font-size: 0.88rem; font-weight: 700; color: var(--warning); }
+    .warning-card p { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+  </style>
+</head>
+<body>
+<div class="mobile-frame page-enter">
+
+  <header class="app-header">
+    <button class="neu-icon-btn" onclick="nav('herbal.html')">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <div style="font-size:1.05rem;font-weight:700;">Formula Jamu</div>
+    <button class="neu-icon-btn">
+      <ion-icon name="share-social-outline"></ion-icon>
+    </button>
+  </header>
+
+  <div class="section" style="padding-bottom: 100px;">
+
+    <!-- Formula Hero -->
+    <div class="formula-hero" data-animate="up">
+      <div style="font-size:2.5rem;margin-bottom:12px;">🌶️</div>
+      <div class="formula-title">Formula Cabe Puyang</div>
+      <span class="formula-chip">Anti-Pegal &amp; Sirkulasi</span>
+      <p style="font-size:0.75rem;color:rgba(255,255,255,0.7);margin-top:12px;margin-bottom:0;line-height:1.6;">Formula tradisional Jawa yang telah digunakan turun-temurun untuk mengatasi pegal linu dan meningkatkan sirkulasi darah.</p>
+    </div>
+
+    <!-- Indikasi -->
+    <div class="section-header mt-24" data-animate="up" data-delay="100">
+      <div class="section-title">Indikasi</div>
+    </div>
+    <div class="neu-card indikasi-card" data-animate="up" data-delay="150">
+      <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.6;">Formula ini direkomendasikan untuk kondisi:</div>
+      <div class="indikasi-list">
+        <span class="indikasi-tag"><ion-icon name="checkmark-outline" style="vertical-align:middle;"></ion-icon> Rematik</span>
+        <span class="indikasi-tag"><ion-icon name="checkmark-outline" style="vertical-align:middle;"></ion-icon> Pegal Linu</span>
+        <span class="indikasi-tag"><ion-icon name="checkmark-outline" style="vertical-align:middle;"></ion-icon> Sirkulasi Darah</span>
+        <span class="indikasi-tag"><ion-icon name="checkmark-outline" style="vertical-align:middle;"></ion-icon> Nyeri Sendi</span>
+      </div>
+    </div>
+
+    <!-- Bahan-bahan -->
+    <div class="section-header mt-24" data-animate="up" data-delay="200">
+      <div class="section-title">Bahan-bahan</div>
+    </div>
+    <div class="ingredients-table" data-animate="up" data-delay="250">
+      <div class="ing-row">
+        <div class="ing-num">1</div>
+        <div class="ing-name">Cabe Jawa <span style="font-size:0.68rem;color:var(--text-tertiary);font-weight:400;">(Piper retrofractum)</span></div>
+        <div class="ing-dose">5g</div>
+      </div>
+      <div class="ing-row">
+        <div class="ing-num">2</div>
+        <div class="ing-name">Lempuyang <span style="font-size:0.68rem;color:var(--text-tertiary);font-weight:400;">(Zingiber aromaticum)</span></div>
+        <div class="ing-dose">10g</div>
+      </div>
+      <div class="ing-row">
+        <div class="ing-num">3</div>
+        <div class="ing-name">Kunyit <span style="font-size:0.68rem;color:var(--text-tertiary);font-weight:400;">(Curcuma longa)</span></div>
+        <div class="ing-dose">15g</div>
+      </div>
+      <div class="ing-row">
+        <div class="ing-num">4</div>
+        <div class="ing-name">Jahe <span style="font-size:0.68rem;color:var(--text-tertiary);font-weight:400;">(Zingiber officinale)</span></div>
+        <div class="ing-dose">10g</div>
+      </div>
+      <div class="ing-row">
+        <div class="ing-num">5</div>
+        <div class="ing-name">Asam Jawa <span style="font-size:0.68rem;color:var(--text-tertiary);font-weight:400;">(Tamarindus indica)</span></div>
+        <div class="ing-dose">5g</div>
+      </div>
+      <div class="ing-row">
+        <div class="ing-num">6</div>
+        <div class="ing-name">Gula Aren <span style="font-size:0.68rem;color:var(--text-tertiary);font-weight:400;">(Arenga pinnata)</span></div>
+        <div class="ing-dose">20g</div>
+      </div>
+    </div>
+
+    <!-- Preparasi -->
+    <div class="section-header mt-24" data-animate="up" data-delay="300">
+      <div class="section-title">Cara Preparasi</div>
+    </div>
+    <div class="neu-card" data-animate="up" data-delay="350">
+      <div class="prep-steps">
+        <div class="prep-step">
+          <div class="prep-num">1</div>
+          <div class="prep-content">
+            <div class="prep-title">Cuci semua bahan</div>
+            <div class="prep-desc">Cuci bersih semua rempah di bawah air mengalir, kupas kulit bila perlu, lalu iris tipis-tipis.</div>
+          </div>
+        </div>
+        <div class="prep-step">
+          <div class="prep-num">2</div>
+          <div class="prep-content">
+            <div class="prep-title">Rebus bahan utama</div>
+            <div class="prep-desc">Rebus semua bahan kecuali asam jawa dan gula aren dalam 600ml air selama 20 menit dengan api sedang.</div>
+          </div>
+        </div>
+        <div class="prep-step">
+          <div class="prep-num">3</div>
+          <div class="prep-content">
+            <div class="prep-title">Saring ramuan</div>
+            <div class="prep-desc">Angkat dan saring rebusan menggunakan saringan halus atau kain bersih ke dalam wadah.</div>
+          </div>
+        </div>
+        <div class="prep-step">
+          <div class="prep-num">4</div>
+          <div class="prep-content">
+            <div class="prep-title">Tambahkan asam &amp; gula</div>
+            <div class="prep-desc">Tambahkan asam jawa dan gula aren ke dalam ramuan yang masih hangat, aduk hingga larut merata.</div>
+          </div>
+        </div>
+        <div class="prep-step">
+          <div class="prep-num">5</div>
+          <div class="prep-content">
+            <div class="prep-title">Sajikan &amp; minum</div>
+            <div class="prep-desc">Minum selagi hangat atau dinginkan terlebih dahulu. Konsumsi pagi dan sore hari setelah makan.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Duration -->
+    <div class="duration-card mt-20" data-animate="up" data-delay="400">
+      <ion-icon name="time-outline"></ion-icon>
+      <div class="duration-text">
+        <div class="dur-label">Aturan Minum</div>
+        <div class="dur-value">Minum 2× sehari selama 7 hari</div>
+      </div>
+    </div>
+
+    <!-- Efek Samping Warning -->
+    <div class="section-header mt-24" data-animate="up" data-delay="450">
+      <div class="section-title">Efek Samping</div>
+    </div>
+    <div class="warning-card" data-animate="up" data-delay="500">
+      <div class="warning-header">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <div class="warning-title">Perhatikan Reaksi Tubuh</div>
+      </div>
+      <p>Beberapa orang mungkin mengalami efek samping berupa rasa panas di perut atau mual ringan, terutama saat mengonsumsi pada perut kosong. Hentikan penggunaan bila reaksi berlanjut lebih dari 2 hari.</p>
+    </div>
+
+    <!-- Beli Bahan Button -->
+    <button class="neu-btn neu-btn-block mt-24" data-animate="up" data-delay="550" onclick="showToast('Membuka toko herbal...','info')" style="display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600;color:var(--primary-dark);">
+      <ion-icon name="cart-outline"></ion-icon>
+      Beli Bahan
+      <ion-icon name="open-outline" style="font-size:0.8rem;"></ion-icon>
+    </button>
+
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+(async () => {
+  const { user, profile } = await VAuth.guard('patient', 1);
+  const nameEl = document.getElementById('userName') || document.querySelector('[data-user-name]');
+  if (nameEl) nameEl.textContent = profile.name;
+})();
+</script>
+</body>
+</html>

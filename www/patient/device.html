@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — Perangkat</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    .app-header { background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%); box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
+    .app-header .logo { color: #fff; }
+    .app-header .logo span { color: #6FCF97; }
+    .app-header .neu-icon-btn { background: rgba(255,255,255,0.12); box-shadow: none; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    .app-header .neu-icon-btn:active { background: rgba(255,255,255,0.2); }
+    .app-header > div[style*="font-weight:700"] { color: #fff; }
+    .section-header .section-title { border-left: 3px solid var(--primary-dark); padding-left: 10px; }
+    .nav-item.active { color: var(--primary-dark); font-weight: 700; position: relative; }
+    .nav-item.active::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--primary-dark); }
+    .nav-item.active ion-icon { color: var(--primary-dark); filter: drop-shadow(0 0 4px rgba(39,174,96,0.5)); }
+  </style>
+</head>
+<body>
+
+<div class="mobile-frame page-enter">
+  <header class="app-header">
+    <button class="neu-icon-btn" onclick="nav('home.html')"><ion-icon name="arrow-back-outline"></ion-icon></button>
+    <div style="font-size:1.05rem;font-weight:700;">Perangkat Saya</div>
+    <button class="neu-icon-btn" onclick="showToast('Scanning BLE...')"><ion-icon name="add-outline"></ion-icon></button>
+  </header>
+
+  <div class="section">
+    <!-- Connected Device -->
+    <div class="section-header" data-animate="up"><span class="section-title">Terhubung</span></div>
+    <div class="neu-card" data-animate="up" data-delay="100" style="border-left:4px solid var(--primary-dark);">
+      <div style="display:flex;gap:14px;align-items:center;">
+        <div style="width:52px;height:52px;border-radius:16px;box-shadow:var(--shadow-in);display:flex;align-items:center;justify-content:center;font-size:1.6rem;">⌚</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.9rem;">Vitalora Band Pro</div>
+          <div style="font-size:0.7rem;color:var(--text-tertiary);">MAC: 4A:3B:FC:1E:88:D2</div>
+          <div style="display:flex;gap:8px;margin-top:6px;">
+            <span class="neu-chip-primary" style="font-size:0.6rem;">● Connected</span>
+            <span class="neu-chip" style="font-size:0.6rem;">🔋 78%</span>
+            <span class="neu-chip" style="font-size:0.6rem;">v2.1.0</span>
+          </div>
+        </div>
+        <ion-icon name="settings-outline" style="color:var(--text-muted);font-size:1.2rem;"></ion-icon>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:6px;flex-wrap:wrap;">
+        <span style="background:var(--danger-bg);color:var(--danger);padding:2px 8px;border-radius:20px;font-size:0.6rem;font-weight:600;">❤️ HR</span>
+        <span style="background:var(--info-bg);color:var(--info);padding:2px 8px;border-radius:20px;font-size:0.6rem;font-weight:600;">🩸 SpO2</span>
+        <span style="background:var(--warning-bg);color:var(--warning);padding:2px 8px;border-radius:20px;font-size:0.6rem;font-weight:600;">🌡️ Temp</span>
+        <span style="background:var(--accent-bg);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:0.6rem;font-weight:600;">🚶 IMU</span>
+        <span style="background:rgba(0,0,0,0.05);color:var(--text-tertiary);padding:2px 8px;border-radius:20px;font-size:0.6rem;font-weight:600;">😰 GSR</span>
+      </div>
+    </div>
+
+    <!-- Sensor Config -->
+    <div class="section-header mt-24"><span class="section-title">⚙️ Konfigurasi Sensor</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px;" data-animate="up" data-delay="200">
+      <div class="neu-card-sm" style="display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-weight:600;font-size:0.82rem;">MAX30102 (HR/PPG)</div><div style="font-size:0.65rem;color:var(--text-muted);">Sampling rate: 100Hz</div></div>
+        <div class="neu-switch"><input type="checkbox" id="s1" checked><label for="s1"></label></div>
+      </div>
+      <div class="neu-card-sm" style="display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-weight:600;font-size:0.82rem;">MPU6050 (IMU)</div><div style="font-size:0.65rem;color:var(--text-muted);">Sampling rate: 50Hz</div></div>
+        <div class="neu-switch"><input type="checkbox" id="s2" checked><label for="s2"></label></div>
+      </div>
+      <div class="neu-card-sm" style="display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-weight:600;font-size:0.82rem;">MLX90614 (Suhu)</div><div style="font-size:0.65rem;color:var(--text-muted);">Sampling rate: 1Hz</div></div>
+        <div class="neu-switch"><input type="checkbox" id="s3" checked><label for="s3"></label></div>
+      </div>
+      <div class="neu-card-sm" style="display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-weight:600;font-size:0.82rem;">GSR Sensor</div><div style="font-size:0.65rem;color:var(--text-muted);">Add-on · Sampling rate: 10Hz</div></div>
+        <div class="neu-switch"><input type="checkbox" id="s4"><label for="s4"></label></div>
+      </div>
+    </div>
+
+    <!-- Firmware -->
+    <div class="neu-card mt-24" data-animate="up" data-delay="300" style="text-align:center;">
+      <ion-icon name="cloud-download-outline" style="font-size:2rem;color:var(--info);"></ion-icon>
+      <div style="font-weight:700;margin-top:8px;">Firmware Update</div>
+      <div style="font-size:0.72rem;color:var(--text-tertiary);margin-top:4px;">Versi terbaru: v2.2.0</div>
+      <button class="neu-btn-primary neu-btn-sm" style="margin-top:12px;">Update Firmware</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item" href="home.html">
+      <ion-icon name="home"></ion-icon><span>Beranda</span>
+    </a>
+    <a class="nav-item" href="monitoring.html">
+      <ion-icon name="pulse-outline"></ion-icon><span>Vitalis</span>
+    </a>
+    <a class="nav-item" href="consultation.html">
+      <ion-icon name="chatbubbles-outline"></ion-icon><span>Konsultasi</span>
+    </a>
+    <a class="nav-item" href="herbal.html">
+      <ion-icon name="leaf-outline"></ion-icon><span>Jamu</span>
+    </a>
+    <a class="nav-item" href="profile.html">
+      <ion-icon name="person-outline"></ion-icon><span>Profil</span>
+    </a>
+  </nav>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+(async () => {
+  const { user, profile } = await VAuth.guard('patient', 1);
+  const nameEl = document.getElementById('userName') || document.querySelector('[data-user-name]');
+  if (nameEl) nameEl.textContent = profile.name;
+})();
+</script>
+
+</body>
+</html>

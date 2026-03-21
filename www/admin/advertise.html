@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — Admin Iklan</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    .admin-sidebar { background: linear-gradient(180deg, #040E07 0%, #0D2B1A 100%); border-right: 1px solid rgba(111,207,151,0.1); }
+    .sidebar-logo { color: #fff !important; }
+    .sidebar-logo span { color: #6FCF97 !important; }
+    .sidebar-item { color: rgba(255,255,255,0.6); }
+    .sidebar-item:hover { color: #6FCF97; background: rgba(111,207,151,0.08); }
+    .sidebar-item.active { color: #6FCF97 !important; background: rgba(111,207,151,0.15); border-left: 3px solid #6FCF97; }
+    .admin-topbar h1 { border-left: 4px solid var(--primary-dark); padding-left: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">Vital<span>ora</span></div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="home.html"><ion-icon name="grid-outline"></ion-icon>Dashboard</a>
+      <a class="sidebar-item" href="users.html"><ion-icon name="people-outline"></ion-icon>Users</a>
+      <a class="sidebar-item" href="notifications.html"><ion-icon name="notifications-outline"></ion-icon>Notifikasi</a>
+      <a class="sidebar-item" href="news.html"><ion-icon name="newspaper-outline"></ion-icon>News</a>
+      <a class="sidebar-item active" href="advertise.html"><ion-icon name="megaphone-outline"></ion-icon>Iklan</a>
+    </nav>
+    <a class="sidebar-item" href="../index.html" style="margin-top:auto;"><ion-icon name="log-out-outline"></ion-icon>Logout</a>
+  </aside>
+  <main class="admin-main">
+    <div class="admin-topbar" data-animate="up"><h1>Manajemen Iklan</h1><div class="header-actions"><button class="neu-btn-primary" onclick="nav('create-campaign.html')"><ion-icon name="add-outline"></ion-icon> Buat Kampanye</button></div></div>
+
+    <div class="stat-grid" data-animate="up" data-delay="100">
+      <div class="stat-card"><div class="sc-icon" style="background:var(--primary-bg);color:var(--primary-dark)">📢</div><div class="sc-value">5</div><div class="sc-label">Kampanye Aktif</div></div>
+      <div class="stat-card"><div class="sc-icon" style="background:var(--info-bg);color:var(--info)">👁️</div><div class="sc-value">48.2K</div><div class="sc-label">Total Impressions</div></div>
+      <div class="stat-card"><div class="sc-icon" style="background:var(--warning-bg);color:var(--warning)">👆</div><div class="sc-value">3.8%</div><div class="sc-label">Avg CTR</div></div>
+      <div class="stat-card"><div class="sc-icon" style="background:var(--accent-bg);color:var(--accent)">💰</div><div class="sc-value">Rp 4.2M</div><div class="sc-label">Revenue Iklan</div></div>
+    </div>
+
+    <div class="neu-table-wrap mt-24" data-animate="up" data-delay="200">
+      <div style="padding:20px;"><span style="font-weight:700;">Kampanye Iklan</span></div>
+      <table class="neu-table">
+        <thead><tr><th>Nama Kampanye</th><th>Pengiklan</th><th>Impresi</th><th>CTR</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Jamu Sehat Harian</td><td>Sido Muncul</td><td>12,340</td><td>4.2%</td><td><span class="neu-chip-primary" style="font-size:0.65rem;">Active</span></td></tr>
+          <tr><td>Smartwatch Promo</td><td>Vitalora HW</td><td>8,920</td><td>3.5%</td><td><span class="neu-chip-primary" style="font-size:0.65rem;">Active</span></td></tr>
+          <tr><td>Konsultasi Gratis</td><td>Internal</td><td>18,450</td><td>5.1%</td><td><span class="neu-chip-primary" style="font-size:0.65rem;">Active</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+</main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+(async () => {
+  try {
+    await VAuth.guard('admin', 1);
+  } catch (err) {
+    console.error(err);
+    showToast('Terjadi kesalahan autentikasi.', 'error');
+  }
+})();
+</script>
+
+</body>
+</html>

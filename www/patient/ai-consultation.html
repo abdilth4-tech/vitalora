@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — AI Health Assistant</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    .app-header { background: linear-gradient(135deg, #1E1350 0%, #4A43CC 100%); box-shadow: 0 2px 20px rgba(74,67,204,0.4); }
+    .app-header .neu-icon-btn { background: rgba(255,255,255,0.12); box-shadow: none; color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+    .app-header > div[style*="font-weight:700"] { color: #fff; }
+
+    .ai-badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .intro-card {
+      background: linear-gradient(135deg, rgba(74,67,204,0.08), rgba(108,99,255,0.05));
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .ai-avatar-sm {
+      width: 36px; height: 36px; border-radius: 12px;
+      background: linear-gradient(135deg, #4A43CC, #6C63FF);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; box-shadow: 0 3px 10px rgba(108,99,255,0.4);
+    }
+    .intro-text { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; }
+
+    .vitals-mini {
+      display: flex; gap: 8px; margin-bottom: 16px;
+    }
+    .vital-mini-card {
+      flex: 1; background: var(--bg); border-radius: 12px;
+      box-shadow: var(--shadow-out-sm); padding: 10px 8px; text-align: center;
+    }
+    .vital-mini-val { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+    .vital-mini-label { font-size: 0.58rem; color: var(--text-muted); margin-top: 2px; }
+    .vital-mini-icon { font-size: 0.85rem; margin-bottom: 3px; }
+
+    .chat-area {
+      display: flex; flex-direction: column; gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .chat-bubble-ai {
+      display: flex; gap: 8px; align-items: flex-start;
+    }
+    .bubble-ai {
+      background: var(--bg);
+      box-shadow: var(--shadow-out-sm);
+      border-radius: 0 14px 14px 14px;
+      padding: 11px 14px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 82%;
+    }
+    .bubble-user {
+      background: linear-gradient(135deg, #4A43CC, #6C63FF);
+      border-radius: 14px 14px 0 14px;
+      padding: 11px 14px;
+      font-size: 0.8rem;
+      color: #fff;
+      line-height: 1.6;
+      max-width: 82%;
+      align-self: flex-end;
+      box-shadow: 0 3px 12px rgba(108,99,255,0.3);
+    }
+    .chat-timestamp {
+      font-size: 0.58rem;
+      color: var(--text-muted);
+      align-self: flex-end;
+    }
+
+    .ai-assessment-card {
+      border: 2px solid rgba(108,99,255,0.3);
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(74,67,204,0.05), rgba(108,99,255,0.03));
+      padding: 16px;
+    }
+    .assessment-title { font-size: 0.82rem; font-weight: 700; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .assessment-row { margin-bottom: 8px; }
+    .assessment-diagnosis { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px; }
+    .confidence-bar-track { height: 6px; background: var(--bg); box-shadow: var(--shadow-in); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+    .confidence-bar-fill { height: 100%; border-radius: 3px; }
+    .assessment-rec { font-size: 0.75rem; color: var(--text-tertiary); line-height: 1.6; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(108,99,255,0.15); }
+
+    .chat-input-bar {
+      position: sticky; bottom: 0; left: 0; right: 0;
+      background: var(--bg);
+      padding: 10px 16px 14px;
+      border-top: 1px solid rgba(200,208,231,0.4);
+      display: flex; gap: 8px; align-items: center;
+    }
+    .chat-input-wrap {
+      flex: 1;
+      background: var(--bg);
+      box-shadow: var(--shadow-in);
+      border-radius: 24px;
+      display: flex; align-items: center;
+      padding: 6px 14px; gap: 6px;
+    }
+    .chat-input-wrap input {
+      flex: 1; border: none; background: transparent;
+      font-family: 'Poppins', sans-serif; font-size: 0.82rem;
+      color: var(--text-primary);
+    }
+    .chat-input-wrap input:focus { outline: none; }
+    .chat-input-wrap input::placeholder { color: var(--text-muted); }
+    .send-btn {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, #4A43CC, #6C63FF);
+      border: none; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+      box-shadow: 0 3px 10px rgba(108,99,255,0.4);
+    }
+    .send-btn ion-icon { color: #fff; font-size: 1rem; }
+    .send-btn:active { transform: scale(0.94); }
+
+    .section-scroll { padding-bottom: 70px; }
+  </style>
+</head>
+<body>
+<div class="mobile-frame page-enter">
+
+  <header class="app-header">
+    <button class="neu-icon-btn" onclick="nav('consultation.html')">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="font-size:1.05rem;font-weight:700;">AI Health Assistant</div>
+      <span class="ai-badge">AI</span>
+    </div>
+    <button class="neu-icon-btn" onclick="showToast('Riwayat chat AI', 'info')">
+      <ion-icon name="time-outline"></ion-icon>
+    </button>
+  </header>
+
+  <div class="section section-scroll">
+
+    <!-- Intro Card -->
+    <div class="intro-card" data-animate="up">
+      <div class="ai-avatar-sm">
+        <ion-icon name="hardware-chip-outline" style="color:#fff;font-size:1rem;"></ion-icon>
+      </div>
+      <div class="intro-text">
+        Saya adalah asisten kesehatan AI Vitalora. Saya akan membantu Anda menganalisis gejala berdasarkan <strong>data sensor real-time</strong> Anda.
+      </div>
+    </div>
+
+    <!-- Current Vitals Mini -->
+    <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:8px;font-weight:500;" data-animate="up" data-delay="60">
+      <ion-icon name="pulse-outline" style="vertical-align:-2px;color:var(--accent);"></ion-icon> Data sensor Anda
+    </div>
+    <div class="vitals-mini" data-animate="up" data-delay="80">
+      <div class="vital-mini-card">
+        <div class="vital-mini-icon" style="color:var(--danger);">❤️</div>
+        <div class="vital-mini-val" id="hrVal">88</div>
+        <div class="vital-mini-label">HR bpm</div>
+      </div>
+      <div class="vital-mini-card">
+        <div class="vital-mini-icon" style="color:var(--info);">💧</div>
+        <div class="vital-mini-val">97%</div>
+        <div class="vital-mini-label">SpO2</div>
+      </div>
+      <div class="vital-mini-card">
+        <div class="vital-mini-icon" style="color:var(--warning);">🌡️</div>
+        <div class="vital-mini-val">36.8°</div>
+        <div class="vital-mini-label">Suhu C</div>
+      </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area" data-animate="up" data-delay="100">
+
+      <!-- AI Message 1 -->
+      <div class="chat-bubble-ai">
+        <div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;">
+          <ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon>
+        </div>
+        <div>
+          <div class="bubble-ai">Halo <span id="userName">Ahmad</span>! Saya mendeteksi beberapa anomali ringan pada HRV Anda. Apa keluhan utama Anda hari ini?</div>
+          <div class="chat-timestamp" style="margin-left:4px;">10:32</div>
+        </div>
+      </div>
+
+      <!-- User Message 1 -->
+      <div style="display:flex;flex-direction:column;align-items:flex-end;">
+        <div class="bubble-user">Saya sering pusing dan lelah belakangan ini</div>
+        <div class="chat-timestamp">10:33</div>
+      </div>
+
+      <!-- AI Message 2 -->
+      <div class="chat-bubble-ai">
+        <div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;">
+          <ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon>
+        </div>
+        <div>
+          <div class="bubble-ai">Berdasarkan data HRV dan pola tidur Anda 7 hari terakhir, saya mengidentifikasi potensi kelelahan kronis. Sudah berapa lama Anda merasakan gejala ini?</div>
+          <div class="chat-timestamp" style="margin-left:4px;">10:33</div>
+        </div>
+      </div>
+
+      <!-- User Message 2 -->
+      <div style="display:flex;flex-direction:column;align-items:flex-end;">
+        <div class="bubble-user">Sekitar 2 minggu</div>
+        <div class="chat-timestamp">10:34</div>
+      </div>
+
+      <!-- AI Assessment Card -->
+      <div class="chat-bubble-ai">
+        <div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;flex-shrink:0;">
+          <ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon>
+        </div>
+        <div style="flex:1;">
+          <div class="ai-assessment-card">
+            <div class="assessment-title">
+              <ion-icon name="analytics-outline"></ion-icon> Analisis AI
+            </div>
+            <div class="assessment-row">
+              <div class="assessment-diagnosis">
+                <span style="font-weight:700;color:var(--text-primary);">Tension-Type Headache</span>
+                <span style="font-size:0.72rem;color:var(--accent);font-weight:600;"> 68%</span>
+              </div>
+              <div class="confidence-bar-track">
+                <div class="confidence-bar-fill" style="width:68%;background:linear-gradient(90deg,#4A43CC,#6C63FF);"></div>
+              </div>
+            </div>
+            <div class="assessment-row">
+              <div class="assessment-diagnosis">
+                <span style="font-weight:700;color:var(--text-primary);">Kelelahan Kronis</span>
+                <span style="font-size:0.72rem;color:var(--warning);font-weight:600;"> 24%</span>
+              </div>
+              <div class="confidence-bar-track">
+                <div class="confidence-bar-fill" style="width:24%;background:linear-gradient(90deg,#F2994A,#F2C94C);"></div>
+              </div>
+            </div>
+            <div class="assessment-rec">
+              <ion-icon name="information-circle-outline" style="vertical-align:-2px;color:var(--info);"></ion-icon>
+              <strong>Rekomendasi:</strong> Konsultasi dengan dokter spesialis untuk konfirmasi diagnosis dan rencana pengobatan yang tepat.
+            </div>
+          </div>
+          <div class="chat-timestamp" style="margin-top:4px;">10:34</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Refer Button -->
+    <button class="neu-btn neu-btn-accent neu-btn-block" data-animate="up" data-delay="180" onclick="nav('consultation.html')" style="background:linear-gradient(135deg,#1E1350,#4A43CC);">
+      <ion-icon name="person-outline"></ion-icon> Rujuk ke Dokter Manusia
+    </button>
+
+  </div>
+
+  <!-- Chat Input -->
+  <div class="chat-input-bar">
+    <button class="neu-icon-btn" style="box-shadow:var(--shadow-out-sm);" onclick="showToast('Pilih gejala dari daftar', 'info')">
+      <ion-icon name="list-outline" style="color:var(--accent);"></ion-icon>
+    </button>
+    <div class="chat-input-wrap">
+      <ion-icon name="mic-outline" style="color:var(--text-muted);font-size:1.1rem;cursor:pointer;" onclick="showToast('Fitur suara aktif', 'info')"></ion-icon>
+      <input type="text" id="chatInput" placeholder="Ketik gejala atau pertanyaan..." onkeydown="if(event.key==='Enter')sendChat()">
+    </div>
+    <button class="send-btn" onclick="sendChat()">
+      <ion-icon name="send"></ion-icon>
+    </button>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+(async () => {
+  const { user, profile } = await VAuth.guard('patient', 1);
+  const nameEl = document.getElementById('userName') || document.querySelector('[data-user-name]');
+  if (nameEl) nameEl.textContent = profile.name;
+})();
+
+  simulateVital('hrVal', 88, 4, 0, 4000);
+
+  function sendChat() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    const area = document.querySelector('.chat-area');
+
+    const userDiv = document.createElement('div');
+    userDiv.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;';
+    userDiv.innerHTML = `<div class="bubble-user">${msg}</div><div class="chat-timestamp">Sekarang</div>`;
+    area.appendChild(userDiv);
+    input.value = '';
+
+    setTimeout(() => {
+      const aiDiv = document.createElement('div');
+      aiDiv.className = 'chat-bubble-ai';
+      aiDiv.innerHTML = `<div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;"><ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon></div>
+        <div><div class="bubble-ai">Terima kasih atas informasinya. Apakah Anda mengalami gejala lain seperti mual atau gangguan penglihatan?</div><div class="chat-timestamp" style="margin-left:4px;">Sekarang</div></div>`;
+      area.appendChild(aiDiv);
+      area.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 900);
+  }
+</script>
+</body>
+</html>

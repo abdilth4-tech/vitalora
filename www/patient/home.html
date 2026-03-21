@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — Beranda</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    /* === HEADER: dark green gradient === */
+    .app-header {
+      background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+    }
+    .app-header .logo { color: #fff; }
+    .app-header .logo span { color: #6FCF97; }
+    .app-header .neu-icon-btn {
+      background: rgba(255,255,255,0.12);
+      box-shadow: none;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .app-header .neu-icon-btn:active { background: rgba(255,255,255,0.2); }
+
+    /* === GREETING: subtle left accent === */
+    .section:has(h2) { position: relative; }
+
+    /* === SECTION TITLE: green left accent === */
+    .section-header .section-title {
+      border-left: 3px solid var(--primary-dark);
+      padding-left: 10px;
+    }
+
+    /* === QUICK ACTIONS: colored icon bg pills === */
+    .qi-icon {
+      border-radius: 14px;
+      padding: 10px;
+      margin-bottom: 2px;
+    }
+
+    /* === VITAL CARDS: accent top border per type === */
+    .vital-grid .vital-card:nth-child(1) { border-top: 3px solid #EB5757; }
+    .vital-grid .vital-card:nth-child(2) { border-top: 3px solid #2F80ED; }
+    .vital-grid .vital-card:nth-child(3) { border-top: 3px solid #F2994A; }
+    .vital-grid .vital-card:nth-child(4) { border-top: 3px solid #27AE60; }
+
+    /* === BOTTOM NAV: bolder active === */
+    .nav-item.active {
+      color: var(--primary-dark);
+      font-weight: 700;
+      position: relative;
+    }
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--primary-dark);
+    }
+    .nav-item.active ion-icon {
+      color: var(--primary-dark);
+      filter: drop-shadow(0 0 4px rgba(39,174,96,0.5));
+    }
+
+    /* === AI INSIGHT: green accent === */
+    .section .neu-card[style*="border-left"] {
+      border-left-color: var(--primary-dark) !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="mobile-frame page-enter">
+  <header class="app-header">
+    <div class="logo">Vital<span>ora</span></div>
+    <div class="header-actions">
+      <button class="neu-icon-btn" onclick="nav('notification.html')"><ion-icon name="notifications-outline"></ion-icon><span class="badge"></span></button>
+      <button class="neu-icon-btn" onclick="nav('device.html')"><ion-icon name="bluetooth-outline"></ion-icon></button>
+    </div>
+  </header>
+
+  <div class="section" style="padding-bottom:0">
+    <p class="text-sm" style="color:var(--text-tertiary)" data-animate="up">Selamat Pagi 👋</p>
+    <h2 style="font-size:1.3rem;font-weight:700;margin-top:2px" data-animate="up" data-delay="50">Ahmad Fauzi</h2>
+  </div>
+
+  <!-- CAROUSEL -->
+  <div class="section" style="padding-bottom:0">
+    <div class="neu-carousel" data-animate="up" data-delay="100">
+      <div class="carousel-track">
+        <div class="carousel-slide" style="background:linear-gradient(135deg,#27AE60,#6FCF97);color:#fff">
+          <div class="slide-content"><h3>🌿 Jamu Sehat Harian</h3><p>Temukan ramuan herbal terpersonalisasi</p></div>
+        </div>
+        <div class="carousel-slide" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);color:#fff">
+          <div class="slide-content"><h3>🤖 AI Health Assistant</h3><p>Konsultasi cerdas 24/7 dengan AI</p></div>
+        </div>
+        <div class="carousel-slide" style="background:linear-gradient(135deg,#6C63FF,#8B83FF);color:#fff">
+          <div class="slide-content"><h3>⌚ Smartwatch Sync</h3><p>Monitoring vital sign real-time</p></div>
+        </div>
+      </div>
+      <div class="carousel-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+    </div>
+  </div>
+
+  <!-- HEALTH SCORE -->
+  <div class="section" style="padding-bottom:0">
+    <div class="neu-card-primary" data-animate="up" data-delay="150" style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <p style="font-size:0.75rem;opacity:0.85;">Health Score Hari Ini</p>
+        <p style="font-size:2.4rem;font-weight:800;margin:4px 0;">87<small style="font-size:1rem">/100</small></p>
+        <span style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:600;">↑ 3 dari kemarin</span>
+      </div>
+      <div style="width:80px;height:80px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <ion-icon name="heart" style="font-size:2rem;animation:heartbeat 1.5s ease-in-out infinite;"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="section">
+    <div class="section-header" data-animate="up" data-delay="200"><span class="section-title">Menu Cepat</span></div>
+    <div class="quick-grid" data-animate="up" data-delay="250">
+      <div class="quick-item" onclick="nav('monitoring.html')"><div class="qi-icon" style="color:#EB5757;background:rgba(235,87,87,0.1)"><ion-icon name="pulse-outline"></ion-icon></div><span class="qi-label">Monitoring</span></div>
+      <div class="quick-item" onclick="nav('consultation.html')"><div class="qi-icon" style="color:#2F80ED;background:rgba(47,128,237,0.1)"><ion-icon name="chatbubbles-outline"></ion-icon></div><span class="qi-label">Konsultasi</span></div>
+      <div class="quick-item" onclick="nav('herbal.html')"><div class="qi-icon" style="color:#27AE60;background:rgba(39,174,96,0.12)"><ion-icon name="leaf-outline"></ion-icon></div><span class="qi-label">Jamu</span></div>
+      <div class="quick-item" onclick="nav('disease-risk.html')"><div class="qi-icon" style="color:#F2994A;background:rgba(242,153,74,0.12)"><ion-icon name="shield-checkmark-outline"></ion-icon></div><span class="qi-label">Risk Score</span></div>
+      <div class="quick-item" onclick="nav('lifestyle.html')"><div class="qi-icon" style="color:#F2C94C;background:rgba(242,201,76,0.12)"><ion-icon name="fitness-outline"></ion-icon></div><span class="qi-label">Lifestyle</span></div>
+      <div class="quick-item" onclick="nav('news.html')"><div class="qi-icon" style="color:#6C63FF;background:rgba(108,99,255,0.1)"><ion-icon name="newspaper-outline"></ion-icon></div><span class="qi-label">News</span></div>
+      <div class="quick-item" onclick="nav('device.html')"><div class="qi-icon" style="color:#56CCF2;background:rgba(86,204,242,0.1)"><ion-icon name="watch-outline"></ion-icon></div><span class="qi-label">Perangkat</span></div>
+      <div class="quick-item" onclick="showToast('SOS Emergency','error')"><div class="qi-icon" style="color:#fff;background:linear-gradient(135deg,#EB5757,#FF6B6B)"><ion-icon name="alert-circle-outline"></ion-icon></div><span class="qi-label">SOS</span></div>
+    </div>
+  </div>
+
+  <!-- VITAL MINI -->
+  <div class="section" style="padding-top:0">
+    <div class="section-header" data-animate="up" data-delay="300"><span class="section-title">Tanda Vital Terkini</span><a class="section-link" href="monitoring.html">Detail →</a></div>
+    <div class="vital-grid" data-animate="up" data-delay="350">
+      <div class="vital-card"><div class="v-icon">❤️</div><div class="v-label">Detak Jantung</div><div class="v-value"><span id="hr-v">78</span> <span class="v-unit">bpm</span></div><div class="v-status normal">● Normal</div><div class="v-sparkline" id="hr-sp"></div></div>
+      <div class="vital-card"><div class="v-icon">🩸</div><div class="v-label">SpO2</div><div class="v-value"><span id="spo2-v">98</span> <span class="v-unit">%</span></div><div class="v-status normal">● Normal</div><div class="v-sparkline" id="spo2-sp"></div></div>
+      <div class="vital-card"><div class="v-icon">🌡️</div><div class="v-label">Suhu Tubuh</div><div class="v-value"><span id="temp-v">36.5</span> <span class="v-unit">°C</span></div><div class="v-status normal">● Normal</div></div>
+      <div class="vital-card"><div class="v-icon">🚶</div><div class="v-label">Langkah</div><div class="v-value">6,842</div><div class="v-status warning">⬤ 68%</div></div>
+    </div>
+  </div>
+
+  <!-- APPOINTMENT -->
+  <div class="section" style="padding-top:0">
+    <div class="section-header" data-animate="up" data-delay="400"><span class="section-title">Jadwal Konsultasi</span></div>
+    <div class="neu-card" data-animate="up" data-delay="450" style="display:flex;gap:16px;align-items:center;cursor:pointer" onclick="nav('consultation.html')">
+      <div class="neu-avatar" style="background:linear-gradient(135deg,#2F80ED,#56CCF2)"><ion-icon name="person" style="font-size:1.2rem"></ion-icon></div>
+      <div style="flex:1"><div style="font-weight:600;font-size:0.88rem;">dr. Sarah Wijaya, Sp.PD</div><div style="font-size:0.72rem;color:var(--text-tertiary);margin-top:2px;">Spesialis Penyakit Dalam</div><div style="display:flex;gap:6px;margin-top:6px;"><span style="background:var(--info-bg);color:var(--info);padding:2px 8px;border-radius:20px;font-size:0.65rem;font-weight:600;">📅 Besok, 09:00</span><span class="neu-chip" style="font-size:0.65rem;">Video Call</span></div></div>
+      <ion-icon name="chevron-forward-outline" style="color:var(--text-muted)"></ion-icon>
+    </div>
+  </div>
+
+  <!-- AI INSIGHT -->
+  <div class="section" style="padding-top:0">
+    <div class="section-header" data-animate="up" data-delay="500"><span class="section-title">💡 AI Insight</span></div>
+    <div class="neu-card" data-animate="up" data-delay="550" style="border-left:4px solid var(--accent);padding-left:20px;">
+      <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;"><strong style="color:var(--accent);">HRV Anda turun 12%</strong> minggu ini. Pertimbangkan teknik relaksasi dan tidur yang cukup.</p>
+      <button class="neu-btn neu-btn-sm" style="margin-top:12px;" onclick="nav('monitoring.html')"><ion-icon name="analytics-outline"></ion-icon> Lihat Detail</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item active" href="home.html">
+      <ion-icon name="home"></ion-icon><span>Beranda</span>
+    </a>
+    <a class="nav-item" href="monitoring.html">
+      <ion-icon name="pulse-outline"></ion-icon><span>Vitalis</span>
+    </a>
+    <a class="nav-item" href="consultation.html">
+      <ion-icon name="chatbubbles-outline"></ion-icon><span>Konsultasi</span>
+    </a>
+    <a class="nav-item" href="herbal.html">
+      <ion-icon name="leaf-outline"></ion-icon><span>Jamu</span>
+    </a>
+    <a class="nav-item" href="profile.html">
+      <ion-icon name="person-outline"></ion-icon><span>Profil</span>
+    </a>
+  </nav>
+</div>
+<script src="../shared/app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script>
+(async () => {
+  // Auth guard + load user profile
+  const { user, profile } = await VAuth.guard('patient', 1);
+
+  // Update greeting with real name
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Selamat Pagi' : hour < 17 ? 'Selamat Siang' : 'Selamat Malam';
+  document.querySelector('.section p.text-sm').textContent = greeting + ' 👋';
+  document.querySelector('.section h2').textContent = profile.name || user.displayName || 'Pengguna';
+
+  // Load unread notification count
+  const unread = await VDB.getUnreadCount(user.uid).catch(() => 0);
+  if (unread > 0) {
+    const badge = document.querySelector('.app-header .badge');
+    if (badge) { badge.textContent = unread > 9 ? '9+' : unread; badge.style.display = 'flex'; }
+  }
+
+  // Sparklines static seeds (will update with real values on VitalsManager)
+  setTimeout(() => {
+    sparkline(document.getElementById('hr-sp'), [72,75,78,74,80,77,78,82,79,78], '#EB5757');
+    sparkline(document.getElementById('spo2-sp'), [97,98,98,97,99,98,98,97,98,98], '#2F80ED');
+  }, 300);
+
+  // Start VitalsManager — real-time buffer display + 1-min Firestore upload
+  VitalsManager.start(user.uid);
+  VitalsManager.subscribe(v => {
+    const hrEl   = document.getElementById('hr-v');
+    const spo2El = document.getElementById('spo2-v');
+    const tempEl = document.getElementById('temp-v');
+    if (hrEl)   hrEl.textContent   = v.hr;
+    if (spo2El) spo2El.textContent = v.spo2;
+    if (tempEl) tempEl.textContent = v.temperature;
+  });
+
+  // Upload vitals before page unload
+  window.addEventListener('beforeunload', () => VitalsManager.forceUpload());
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — Monitoring</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    .app-header { background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%); box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
+    .app-header .logo { color: #fff; }
+    .app-header .logo span { color: #6FCF97; }
+    .app-header .neu-icon-btn { background: rgba(255,255,255,0.12); box-shadow: none; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    .app-header .neu-icon-btn:active { background: rgba(255,255,255,0.2); }
+    .app-header > div[style*="font-weight:700"] { color: #fff; }
+    .section-header .section-title { border-left: 3px solid var(--primary-dark); padding-left: 10px; }
+    .nav-item.active { color: var(--primary-dark); font-weight: 700; position: relative; }
+    .nav-item.active::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--primary-dark); }
+    .nav-item.active ion-icon { color: var(--primary-dark); filter: drop-shadow(0 0 4px rgba(39,174,96,0.5)); }
+    .vital-grid .vital-card:nth-child(1) { border-top: 3px solid #EB5757; }
+    .vital-grid .vital-card:nth-child(2) { border-top: 3px solid #2F80ED; }
+    .vital-grid .vital-card:nth-child(3) { border-top: 3px solid #F2994A; }
+    .vital-grid .vital-card:nth-child(4) { border-top: 3px solid #27AE60; }
+  </style>
+</head>
+<body>
+
+<div class="mobile-frame page-enter">
+  <header class="app-header">
+    <button class="neu-icon-btn" onclick="nav('home.html')"><ion-icon name="arrow-back-outline"></ion-icon></button>
+    <div style="font-size:1.05rem;font-weight:700;">Monitoring Vital</div>
+    <button class="neu-icon-btn" onclick="showToast('Export data berhasil')"><ion-icon name="download-outline"></ion-icon></button>
+  </header>
+
+  <!-- Tabs -->
+  <div class="section" style="padding-bottom:0">
+    <div class="neu-tabs">
+      <div class="neu-tab active" data-tab="realtime">Real-time</div>
+      <div class="neu-tab" data-tab="history">Riwayat</div>
+      <div class="neu-tab" data-tab="hrv">HRV</div>
+      <div class="neu-tab" data-tab="sleep">Tidur</div>
+    </div>
+  </div>
+
+  <!-- Real-time Panel -->
+  <div id="realtime" class="tab-panel">
+    <div class="section">
+      <div class="vital-grid" data-animate="up">
+        <div class="vital-card" style="grid-column:1/-1;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div class="v-label">❤️ DETAK JANTUNG</div>
+              <div style="font-size:3rem;font-weight:800;color:var(--danger);margin:4px 0;"><span id="hr-live">78</span><span style="font-size:1rem;color:var(--text-tertiary);"> bpm</span></div>
+            </div>
+            <div class="gauge-container" id="hr-gauge" data-animate="scale" data-delay="200"></div>
+          </div>
+          <div id="hr-chart" style="height:60px;margin-top:12px;" data-animate="up" data-delay="300"></div>
+        </div>
+        <div class="vital-card" data-animate="up" data-delay="100">
+          <div class="v-icon">🩸</div><div class="v-label">SpO2</div>
+          <div class="v-value" style="color:var(--info)"><span id="spo2-live">98</span> <span class="v-unit">%</span></div>
+          <div class="v-status normal">● Normal</div>
+        </div>
+        <div class="vital-card" data-animate="up" data-delay="150">
+          <div class="v-icon">🌡️</div><div class="v-label">Suhu</div>
+          <div class="v-value"><span id="temp-live">36.5</span> <span class="v-unit">°C</span></div>
+          <div class="v-status normal">● Normal</div>
+        </div>
+        <div class="vital-card" data-animate="up" data-delay="200">
+          <div class="v-icon">🫁</div><div class="v-label">Resp. Rate</div>
+          <div class="v-value"><span id="rr-live">16</span> <span class="v-unit">/min</span></div>
+          <div class="v-status normal">● Normal</div>
+        </div>
+        <div class="vital-card" data-animate="up" data-delay="250">
+          <div class="v-icon">😰</div><div class="v-label">Stress Level</div>
+          <div class="v-value" style="color:var(--warning)">42 <span class="v-unit">/100</span></div>
+          <div class="v-status warning">⬤ Sedang</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity -->
+    <div class="section" style="padding-top:0">
+      <div class="section-header"><span class="section-title">🚶 Aktivitas Harian</span></div>
+      <div class="neu-card" data-animate="up" data-delay="300">
+        <div style="display:flex;justify-content:space-around;text-align:center;">
+          <div><div style="font-size:1.5rem;font-weight:800;color:var(--primary-dark);">6,842</div><div style="font-size:0.68rem;color:var(--text-muted);">Langkah</div></div>
+          <div style="width:1px;background:var(--shadow-dark);"></div>
+          <div><div style="font-size:1.5rem;font-weight:800;color:var(--warning);">312</div><div style="font-size:0.68rem;color:var(--text-muted);">kkal</div></div>
+          <div style="width:1px;background:var(--shadow-dark);"></div>
+          <div><div style="font-size:1.5rem;font-weight:800;color:var(--info);">3.2</div><div style="font-size:0.68rem;color:var(--text-muted);">km</div></div>
+        </div>
+        <div style="margin-top:16px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-muted);margin-bottom:4px;"><span>Target: 10,000 langkah</span><span>68%</span></div>
+          <div class="neu-progress"><div class="neu-progress-fill" style="width:68%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Recommendation -->
+    <div class="section" style="padding-top:0">
+      <div class="section-header"><span class="section-title">🤖 Rekomendasi AI</span></div>
+      <div class="neu-card" data-animate="up" data-delay="350" style="background:var(--accent-bg);border-left:4px solid var(--accent);">
+        <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;"><strong style="color:var(--accent);">Pola tidur Anda tidak optimal.</strong> SpO2 turun ke 94% pukul 02:00-03:00. Pertimbangkan untuk konsultasi Sleep Apnea.</p>
+        <button class="neu-btn-sm neu-btn-accent" style="margin-top:12px;font-size:0.72rem;padding:6px 16px;border-radius:20px;color:#fff;background:linear-gradient(135deg,#6C63FF,#8B83FF);box-shadow:none;">Konsultasi Sekarang →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Panel -->
+  <div id="history" class="tab-panel" style="display:none;">
+    <div class="section">
+      <div class="neu-tabs" style="margin:0;box-shadow:var(--shadow-in-sm);">
+        <div class="neu-tab active" style="font-size:0.7rem;">24 Jam</div>
+        <div class="neu-tab" style="font-size:0.7rem;">7 Hari</div>
+        <div class="neu-tab" style="font-size:0.7rem;">30 Hari</div>
+        <div class="neu-tab" style="font-size:0.7rem;">1 Tahun</div>
+      </div>
+      <div class="neu-card mt-16">
+        <div class="section-title" style="font-size:0.85rem;">Detak Jantung (7 Hari)</div>
+        <div id="hist-chart" style="height:100px;margin-top:12px;"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:12px;">
+          <div style="text-align:center"><span style="font-size:0.65rem;color:var(--text-muted);">Min</span><br><strong style="color:var(--info);">62</strong></div>
+          <div style="text-align:center"><span style="font-size:0.65rem;color:var(--text-muted);">Rata-rata</span><br><strong>76</strong></div>
+          <div style="text-align:center"><span style="font-size:0.65rem;color:var(--text-muted);">Max</span><br><strong style="color:var(--danger);">98</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HRV Panel -->
+  <div id="hrv" class="tab-panel" style="display:none;">
+    <div class="section">
+      <div class="neu-card">
+        <div class="section-title" style="font-size:0.85rem;">Heart Rate Variability</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+          <div class="neu-inset" style="text-align:center;"><span style="font-size:0.65rem;color:var(--text-muted);">SDNN</span><br><strong style="font-size:1.2rem;">42</strong><span style="font-size:0.7rem;color:var(--text-muted);"> ms</span></div>
+          <div class="neu-inset" style="text-align:center;"><span style="font-size:0.65rem;color:var(--text-muted);">RMSSD</span><br><strong style="font-size:1.2rem;">38</strong><span style="font-size:0.7rem;color:var(--text-muted);"> ms</span></div>
+          <div class="neu-inset" style="text-align:center;"><span style="font-size:0.65rem;color:var(--text-muted);">pNN50</span><br><strong style="font-size:1.2rem;">18</strong><span style="font-size:0.7rem;color:var(--text-muted);"> %</span></div>
+          <div class="neu-inset" style="text-align:center;"><span style="font-size:0.65rem;color:var(--text-muted);">LF/HF</span><br><strong style="font-size:1.2rem;">1.8</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sleep Panel -->
+  <div id="sleep" class="tab-panel" style="display:none;">
+    <div class="section">
+      <div class="neu-card">
+        <div style="text-align:center;margin-bottom:16px;">
+          <p style="font-size:0.75rem;color:var(--text-muted);">Kualitas Tidur Semalam</p>
+          <p style="font-size:2.5rem;font-weight:800;color:var(--primary-dark);">7h 23m</p>
+          <span style="background:var(--success-bg);color:var(--success);padding:3px 12px;border-radius:20px;font-size:0.7rem;font-weight:600;">Baik</span>
+        </div>
+        <div style="display:flex;gap:4px;height:24px;border-radius:12px;overflow:hidden;">
+          <div style="flex:1;background:#6C63FF;" title="Deep Sleep 25%"></div>
+          <div style="flex:2;background:#8B83FF;" title="Light Sleep 50%"></div>
+          <div style="flex:0.8;background:#FFD54F;" title="REM 20%"></div>
+          <div style="flex:0.2;background:#EB5757;" title="Awake 5%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-around;margin-top:12px;font-size:0.65rem;">
+          <span style="color:#6C63FF;">● Deep 25%</span>
+          <span style="color:#8B83FF;">● Light 50%</span>
+          <span style="color:#FFD54F;">● REM 20%</span>
+          <span style="color:#EB5757;">● Awake 5%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="nav-item" href="home.html">
+      <ion-icon name="home"></ion-icon><span>Beranda</span>
+    </a>
+    <a class="nav-item active" href="monitoring.html">
+      <ion-icon name="pulse-outline"></ion-icon><span>Vitalis</span>
+    </a>
+    <a class="nav-item" href="consultation.html">
+      <ion-icon name="chatbubbles-outline"></ion-icon><span>Konsultasi</span>
+    </a>
+    <a class="nav-item" href="herbal.html">
+      <ion-icon name="leaf-outline"></ion-icon><span>Jamu</span>
+    </a>
+    <a class="nav-item" href="profile.html">
+      <ion-icon name="person-outline"></ion-icon><span>Profil</span>
+    </a>
+  </nav>
+</div>
+<script src="../shared/app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script>
+(async () => {
+  const { user } = await VAuth.guard('patient', 1);
+
+  // Start VitalsManager (shared across pages — check if already started)
+  VitalsManager.start(user.uid);
+
+  // Subscribe for real-time display (1-second updates)
+  VitalsManager.subscribe(v => {
+    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+    set('hr-live',   v.hr);
+    set('spo2-live', v.spo2);
+    set('temp-live', v.temperature);
+    set('rr-live',   v.respirationRate);
+    // Update gauge dynamically
+    const g = document.getElementById('hr-gauge');
+    if (g && g.children.length === 0) createGauge(g, v.hr, 120, '#EB5757');
+  });
+
+  // Static sparklines on first render
+  setTimeout(() => {
+    createGauge(document.getElementById('hr-gauge'), 78, 120, '#EB5757');
+    sparkline(document.getElementById('hr-chart'), [72,75,78,74,80,77,78,82,79,78,76,80,78,75,77,82,80,78], '#EB5757', 50);
+    sparkline(document.getElementById('hist-chart'), [68,72,76,80,74,78,82,76,73,79,81,77,75,78], '#27AE60', 80);
+  }, 200);
+
+  // Tab: Riwayat — load historical vitals from Firestore when active
+  document.querySelectorAll('.neu-tab[data-tab="history"]').forEach(tab => {
+    tab.addEventListener('click', async () => {
+      const histChart = document.getElementById('hist-chart');
+      if (!histChart) return;
+      try {
+        const readings = await VitalsManager.getHistory(user.uid, 7);
+        if (readings.length > 0) {
+          const hrData = readings.map(r => r.hr || 78);
+          sparkline(histChart, hrData.slice(-14), '#27AE60', 80);
+        }
+      } catch (e) { /* use static fallback */ }
+    });
+  });
+
+  window.addEventListener('beforeunload', () => VitalsManager.forceUpload());
+})();
+</script>
+</body>
+</html>

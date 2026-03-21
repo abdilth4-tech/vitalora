@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — Detail Tanaman</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    .app-header { background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%); box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
+    .app-header .neu-icon-btn { background: rgba(255,255,255,0.12); box-shadow: none; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    .app-header > div[style*="font-weight:700"] { color: #fff; }
+    .section-header .section-title { border-left: 3px solid #27AE60; padding-left: 10px; }
+
+    .hero-card {
+      text-align: center;
+      padding: 32px 24px 24px;
+    }
+    .hero-emoji {
+      font-size: 4.5rem;
+      line-height: 1;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 4px 12px rgba(39,174,96,0.25));
+    }
+    .plant-name {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .plant-latin {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+      font-style: italic;
+      margin-top: 4px;
+    }
+    .origin-chip {
+      display: inline-block;
+      margin-top: 12px;
+      background: rgba(39,174,96,0.12);
+      color: #27AE60;
+      border: 1px solid rgba(39,174,96,0.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .evidence-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(39,174,96,0.15), rgba(111,207,151,0.1));
+      border: 1.5px solid rgba(39,174,96,0.35);
+      border-radius: 14px;
+      padding: 14px 18px;
+    }
+    .evidence-badge ion-icon { font-size: 1.4rem; color: #27AE60; }
+    .evidence-text { flex: 1; }
+    .evidence-text .ev-label { font-size: 0.7rem; color: var(--text-tertiary); }
+    .evidence-text .ev-value { font-size: 0.92rem; font-weight: 700; color: #27AE60; }
+
+    .khasiat-list { display: flex; flex-direction: column; gap: 8px; }
+    .khasiat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg);
+      box-shadow: var(--shadow-out-sm);
+      border-radius: 12px;
+      padding: 12px 16px;
+    }
+    .khasiat-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #27AE60;
+      flex-shrink: 0;
+    }
+    .khasiat-item span { font-size: 0.85rem; font-weight: 500; color: var(--text-primary); }
+
+    .step-cards { display: flex; flex-direction: column; gap: 10px; }
+    .step-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg);
+      box-shadow: var(--shadow-out-sm);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+    .step-num {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #1A5C38, #27AE60);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-info .step-title { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+    .step-info .step-desc { font-size: 0.72rem; color: var(--text-tertiary); margin-top: 2px; }
+
+    .dosis-cards { display: flex; flex-direction: column; gap: 8px; }
+    .dosis-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      box-shadow: var(--shadow-out-sm);
+      border-radius: 12px;
+      padding: 12px 16px;
+    }
+    .dosis-label { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+    .dosis-value { font-size: 0.82rem; color: var(--primary-dark); font-weight: 700; background: rgba(39,174,96,0.1); padding: 4px 10px; border-radius: 8px; }
+
+    .danger-card {
+      border: 2px solid #EB5757;
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(235,87,87,0.05);
+    }
+    .danger-card .danger-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .danger-card .danger-header ion-icon { font-size: 1.2rem; color: #EB5757; }
+    .danger-card .danger-title { font-size: 0.88rem; font-weight: 700; color: #EB5757; }
+    .danger-card p { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+    .warning-card {
+      border: 2px solid var(--warning);
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(242,153,74,0.05);
+    }
+    .warning-card .warning-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .warning-card .warning-header ion-icon { font-size: 1.2rem; color: var(--warning); }
+    .warning-card .warning-title { font-size: 0.88rem; font-weight: 700; color: var(--warning); }
+    .warning-card p { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+  </style>
+</head>
+<body>
+<div class="mobile-frame page-enter">
+
+  <header class="app-header">
+    <button class="neu-icon-btn" onclick="nav('herbal.html')">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <div style="font-size:1.05rem;font-weight:700;">Detail Tanaman</div>
+    <button class="neu-icon-btn">
+      <ion-icon name="bookmark-outline"></ion-icon>
+    </button>
+  </header>
+
+  <div class="section" style="padding-bottom: 100px;">
+
+    <!-- Hero Card -->
+    <div class="neu-card hero-card" data-animate="up">
+      <div class="hero-emoji">🌿</div>
+      <div class="plant-name">Temulawak</div>
+      <div class="plant-latin">Curcuma xanthorrhiza Roxb.</div>
+      <span class="origin-chip"><ion-icon name="location-outline" style="vertical-align:middle;font-size:0.8rem;"></ion-icon> Jawa, Indonesia</span>
+    </div>
+
+    <!-- Evidence Level Badge -->
+    <div class="evidence-badge mt-16" data-animate="up" data-delay="100">
+      <ion-icon name="ribbon-outline"></ion-icon>
+      <div class="evidence-text">
+        <div class="ev-label">Level Bukti Ilmiah</div>
+        <div class="ev-value">Tinggi — 12 Studi Klinis</div>
+      </div>
+      <span class="neu-chip-primary" style="font-size:0.65rem;">Level A</span>
+    </div>
+
+    <!-- Khasiat -->
+    <div class="section-header mt-24" data-animate="up" data-delay="150">
+      <div class="section-title">Khasiat</div>
+    </div>
+    <div class="khasiat-list" data-animate="up" data-delay="200">
+      <div class="khasiat-item">
+        <div class="khasiat-dot"></div>
+        <span>Anti-inflamasi (mengurangi peradangan)</span>
+      </div>
+      <div class="khasiat-item">
+        <div class="khasiat-dot"></div>
+        <span>Hepatoprotektor (melindungi hati)</span>
+      </div>
+      <div class="khasiat-item">
+        <div class="khasiat-dot"></div>
+        <span>Imunomodulator (meningkatkan imun)</span>
+      </div>
+      <div class="khasiat-item">
+        <div class="khasiat-dot"></div>
+        <span>Antioksidan (menangkal radikal bebas)</span>
+      </div>
+    </div>
+
+    <!-- Cara Penggunaan -->
+    <div class="section-header mt-24" data-animate="up" data-delay="250">
+      <div class="section-title">Cara Penggunaan</div>
+    </div>
+    <div class="step-cards" data-animate="up" data-delay="300">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-info">
+          <div class="step-title">Rebus</div>
+          <div class="step-desc">Rebus 10g rimpang segar dalam 400ml air selama 15 menit hingga tersisa 200ml</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-info">
+          <div class="step-title">Seduh</div>
+          <div class="step-desc">Seduh 1-2 sachet serbuk temulawak dalam 200ml air panas, diamkan 5 menit</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-info">
+          <div class="step-title">Kapsul</div>
+          <div class="step-desc">Minum kapsul ekstrak sesuai dosis anjuran dokter atau label produk</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dosis per Kondisi -->
+    <div class="section-header mt-24" data-animate="up" data-delay="350">
+      <div class="section-title">Dosis per Kondisi</div>
+    </div>
+    <div class="dosis-cards" data-animate="up" data-delay="400">
+      <div class="dosis-row">
+        <div>
+          <div class="dosis-label">Umum / Preventif</div>
+          <div style="font-size:0.7rem;color:var(--text-tertiary);">Dewasa sehat</div>
+        </div>
+        <div class="dosis-value">2 × 500mg</div>
+      </div>
+      <div class="dosis-row">
+        <div>
+          <div class="dosis-label">Hepatitis / Gangguan Hati</div>
+          <div style="font-size:0.7rem;color:var(--text-tertiary);">Konsultasikan dokter</div>
+        </div>
+        <div class="dosis-value">3 × 500mg</div>
+      </div>
+      <div class="dosis-row">
+        <div>
+          <div class="dosis-label">Gangguan Pencernaan</div>
+          <div style="font-size:0.7rem;color:var(--text-tertiary);">Setelah makan</div>
+        </div>
+        <div class="dosis-value">2 × 300mg</div>
+      </div>
+    </div>
+
+    <!-- Kontraindikasi -->
+    <div class="section-header mt-24" data-animate="up" data-delay="450">
+      <div class="section-title">Kontraindikasi</div>
+    </div>
+    <div class="danger-card" data-animate="up" data-delay="500">
+      <div class="danger-header">
+        <ion-icon name="warning-outline"></ion-icon>
+        <div class="danger-title">Perhatian Penting</div>
+      </div>
+      <p>Hindari penggunaan jika sedang hamil atau menyusui. Tidak dianjurkan bagi yang memiliki alergi terhadap kunyit atau tanaman famili Zingiberaceae. Hentikan penggunaan jika muncul reaksi alergi.</p>
+    </div>
+
+    <!-- Interaksi Obat -->
+    <div class="section-header mt-24" data-animate="up" data-delay="550">
+      <div class="section-title">Interaksi Obat</div>
+    </div>
+    <div class="warning-card" data-animate="up" data-delay="600">
+      <div class="warning-header">
+        <ion-icon name="flask-outline"></ion-icon>
+        <div class="warning-title">Interaksi Potensial</div>
+      </div>
+      <p>Dapat berinteraksi dengan obat antikoagulan (pengencer darah seperti Warfarin) dan meningkatkan risiko perdarahan. Konsultasikan dengan dokter sebelum mengonsumsi bersamaan dengan antidiabetes atau antihipertensi.</p>
+    </div>
+
+    <!-- CTA Button -->
+    <button class="neu-btn-primary neu-btn-block mt-24" data-animate="up" data-delay="650" onclick="showToast('Temulawak ditambahkan ke tracker','success')">
+      <ion-icon name="add-circle-outline"></ion-icon>
+      Tambah ke Tracker
+    </button>
+
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+(async () => {
+  const { user, profile } = await VAuth.guard('patient', 1);
+  const nameEl = document.getElementById('userName') || document.querySelector('[data-user-name]');
+  if (nameEl) nameEl.textContent = profile.name;
+})();
+</script>
+</body>
+</html>
