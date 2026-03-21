@@ -431,28 +431,56 @@
       showToast('Belum terautentikasi', 'error');
       return;
     }
+
+    // Disable button to prevent double submission
+    const btn = document.querySelector('.sticky-bottom-bar button');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<ion-icon name="reload-outline" style="animation:spin 0.8s linear infinite"></ion-icon> Memproses...';
+    }
+
     try {
       const selectedTypeEl = document.getElementById('selected-type');
       const typeText = selectedTypeEl ? selectedTypeEl.textContent : 'Chat';
-      const typeToKey = {'Chat':'online','Video Call':'video','Pemeriksaan Integratif':'integrative'};
-      const consultType = typeToKey[typeText] || 'online';
+      const typeToKey = {'Chat':'chat','Video Call':'video','Pemeriksaan Integratif':'integrative'};
+      const consultType = typeToKey[typeText] || 'chat';
 
       const keluhanEl = document.querySelector('textarea.neu-input');
       const complaint = keluhanEl ? keluhanEl.value.trim() : '';
 
-      await VDB.createConsultation({
+      // Create consultation and get the ID
+      const consultId = await VDB.createConsultation({
         patientId: _bookingUser.uid,
         doctorId: _bookingDoctorId || null,
         type: consultType,
-        status: 'pending',
+        status: 'active', // Set as active immediately for demo
         complaint
       });
 
-      showToast('Booking berhasil! Menunggu konfirmasi dokter...', 'success');
-      setTimeout(() => nav('consultation.html'), 1800);
+      // Send initial message if complaint is provided
+      if (complaint && consultId) {
+        await VDB.sendMessage(consultId, {
+          senderId: _bookingUser.uid,
+          senderName: 'Pasien',
+          senderRole: 'patient',
+          text: 'Keluhan: ' + complaint,
+          type: 'text'
+        });
+      }
+
+      showToast('Booking berhasil! Membuka chat...', 'success');
+
+      // Redirect to chat room with the consultation ID
+      setTimeout(() => nav('chat-room.html?consultId=' + consultId), 1200);
     } catch (e) {
       console.error('[booking] confirm error:', e);
       showToast('Gagal membuat booking: ' + (e.message || e), 'error');
+
+      // Re-enable button
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<ion-icon name="shield-checkmark-outline"></ion-icon> Konfirmasi & Bayar';
+      }
     }
   }
 </script>

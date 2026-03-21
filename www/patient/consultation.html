@@ -123,7 +123,133 @@
   const { user, profile } = await VAuth.guard('patient', 1);
   const nameEl = document.getElementById('userName') || document.querySelector('[data-user-name]');
   if (nameEl) nameEl.textContent = profile.name;
+
+  // Load active consultations
+  await loadActiveConsultations(user.uid);
+
+  // Load doctors from Firestore
+  await loadDoctors();
 })();
+
+async function loadActiveConsultations(patientId) {
+  try {
+    const consultations = await VDB.getPatientConsultations(patientId);
+    const activeConsults = consultations.filter(c => c.status === 'active' || c.status === 'pending');
+
+    if (activeConsults.length === 0) return;
+
+    // Create active consultations section
+    const container = document.querySelector('.section');
+    const activeSection = document.createElement('div');
+    activeSection.className = 'active-consults-section';
+    activeSection.style.cssText = 'margin-bottom:20px;';
+    activeSection.innerHTML = `
+      <div class="section-header" style="margin-bottom:12px;">
+        <span class="section-title" style="border-left:3px solid var(--primary-dark);padding-left:10px;">Konsultasi Aktif</span>
+      </div>
+      <div id="activeConsultsList"></div>
+    `;
+    container.insertBefore(activeSection, container.firstChild);
+
+    const listEl = document.getElementById('activeConsultsList');
+
+    for (const consult of activeConsults) {
+      const doctor = consult.doctorId ? await VDB.getUser(consult.doctorId) : null;
+      const doctorName = doctor ? doctor.name : 'Menunggu dokter...';
+      const initials = doctor ? doctor.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2) : '??';
+      const statusBadge = consult.status === 'active'
+        ? '<span style="background:var(--success-bg);color:var(--primary-dark);padding:2px 8px;border-radius:10px;font-size:0.65rem;font-weight:600;">Aktif</span>'
+        : '<span style="background:var(--warning-bg);color:var(--warning);padding:2px 8px;border-radius:10px;font-size:0.65rem;font-weight:600;">Menunggu</span>';
+
+      const card = document.createElement('div');
+      card.className = 'neu-card';
+      card.style.cssText = 'cursor:pointer;margin-bottom:12px;border-left:3px solid var(--primary-dark);';
+      card.innerHTML = `
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div class="neu-avatar" style="background:linear-gradient(135deg,#27AE60,#6FCF97);width:44px;height:44px;font-size:0.85rem;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:50%;">${initials}</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:0.88rem;">${doctorName}</div>
+            <div style="font-size:0.72rem;color:var(--text-tertiary);">${consult.type === 'video' ? 'Video Call' : consult.type === 'integrative' ? 'Pemeriksaan Integratif' : 'Chat'}</div>
+          </div>
+          ${statusBadge}
+          <ion-icon name="chevron-forward-outline" style="color:var(--text-muted);font-size:1.2rem;"></ion-icon>
+        </div>
+      `;
+      card.onclick = () => nav('chat-room.html?consultId=' + consult.id);
+      listEl.appendChild(card);
+    }
+  } catch (e) {
+    console.error('[consultation] load active error:', e);
+  }
+}
+
+async function loadDoctors() {
+  try {
+    const doctors = await VDB.getAllUsers('doctor');
+    const container = document.querySelector('[style*="flex-direction:column"][style*="gap:16px"]');
+
+    if (!container || doctors.length === 0) return;
+
+    container.innerHTML = ''; // Clear static content
+
+    doctors.forEach((doctor, idx) => {
+      const initials = (doctor.name || 'DR').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+      const rating = doctor.rating || 4.5;
+      const reviewCount = doctor.reviewCount || 0;
+      const specialty = doctor.specialty || 'Dokter Umum';
+      const isOnline = doctor.isOnline;
+      const price = doctor.pricing?.chat || 50000;
+      const priceFormatted = 'Rp ' + (price / 1000) + 'K';
+
+      // Consultation type badges
+      const types = doctor.consultTypes || ['chat'];
+      let typeBadges = '';
+      if (types.includes('chat')) typeBadges += '<span class="neu-chip-primary" style="font-size:0.6rem;">Chat</span>';
+      if (types.includes('video')) typeBadges += '<span class="neu-chip-info" style="font-size:0.6rem;background:var(--info-bg);color:var(--info);">Video</span>';
+      if (types.includes('integrative')) typeBadges += '<span class="neu-chip" style="font-size:0.6rem;background:var(--accent-bg);color:var(--accent);">Integratif</span>';
+
+      // Avatar gradient colors
+      const gradients = [
+        'linear-gradient(135deg,#2F80ED,#56CCF2)',
+        'linear-gradient(135deg,#EB5757,#FF7B7B)',
+        'linear-gradient(135deg,#6C63FF,#8B83FF)',
+        'linear-gradient(135deg,#27AE60,#6FCF97)',
+        'linear-gradient(135deg,#F2994A,#F2C94C)'
+      ];
+      const gradient = gradients[idx % gradients.length];
+
+      const card = document.createElement('div');
+      card.className = 'neu-card';
+      card.setAttribute('data-animate', 'up');
+      card.setAttribute('data-delay', String(150 + idx * 50));
+      card.style.cursor = 'pointer';
+      card.innerHTML = `
+        <div style="display:flex;gap:14px;">
+          <div class="neu-avatar-lg" style="background:${gradient}">${initials}</div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:0.9rem;">${doctor.name}</div>
+            <div style="font-size:0.72rem;color:var(--text-tertiary);">${specialty}</div>
+            <div style="display:flex;align-items:center;gap:4px;margin-top:4px;">
+              <ion-icon name="star" style="color:#FFD54F;font-size:0.8rem;"></ion-icon>
+              <span style="font-size:0.72rem;font-weight:600;">${rating}</span>
+              <span style="font-size:0.65rem;color:var(--text-muted);">(${reviewCount} ulasan)</span>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px;">${typeBadges}</div>
+          </div>
+          <div style="text-align:right;">
+            ${isOnline ? '<span class="v-status normal" style="font-size:0.6rem;">Online</span>' : ''}
+            <div style="font-size:0.85rem;font-weight:700;color:var(--primary-dark);margin-top:8px;">${priceFormatted}</div>
+          </div>
+        </div>
+      `;
+      card.onclick = () => nav('doctor-detail.html?id=' + doctor.uid);
+      container.appendChild(card);
+    });
+
+  } catch (e) {
+    console.error('[consultation] load doctors error:', e);
+  }
+}
 </script>
 
 </body>

@@ -54,19 +54,15 @@ window.VAuth = {
         weight: null, height: null, allergies: [], familyHistory: [], assignedDoctors: []
       });
     }
-    await cred.user.sendEmailVerification({
-      url: window.location.origin + '/auth/login.html'
-    });
+    // Email verification DISABLED - tidak perlu kirim email verifikasi
+    // await cred.user.sendEmailVerification({ url: window.location.origin + '/auth/login.html' });
     return cred.user;
   },
 
   /** Login dengan email + password */
   async login(email, password) {
     const cred = await _auth.signInWithEmailAndPassword(email, password);
-    if (!cred.user.emailVerified) {
-      await _auth.signOut();
-      throw { code: 'auth/email-not-verified' };
-    }
+    // Email verification disabled - langsung login
     const profile = await VAuth.getProfile(cred.user.uid);
     return { user: cred.user, role: profile?.role || 'patient' };
   },
@@ -76,25 +72,24 @@ window.VAuth = {
     const provider = new firebase.auth.GoogleAuthProvider();
     const cred = await _auth.signInWithPopup(provider);
     const exists = await _db.collection('users').doc(cred.user.uid).get();
+
     if (!exists.exists) {
-      await _db.collection('users').doc(cred.user.uid).set({
-        uid: cred.user.uid,
-        name: cred.user.displayName,
-        email: cred.user.email,
-        role: defaultRole,
-        photoURL: cred.user.photoURL,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        isActive: true
-      });
-      if (defaultRole === 'patient') {
-        await _db.collection('patients').doc(cred.user.uid).set({
-          uid: cred.user.uid, dob: null, gender: null, bloodType: null,
-          weight: null, height: null, allergies: [], familyHistory: [], assignedDoctors: []
-        });
-      }
+      // New user - redirect to role selection page
+      return { user: cred.user, role: null, isNewUser: true };
     }
-    const profile = await VAuth.getProfile(cred.user.uid);
-    return { user: cred.user, role: profile?.role || defaultRole };
+
+    const profile = exists.data();
+
+    // Check role approval status
+    if (profile.roleStatus === 'pending') {
+      return { user: cred.user, role: profile.role, roleStatus: 'pending' };
+    }
+
+    if (profile.roleStatus === 'rejected') {
+      return { user: cred.user, role: profile.role, roleStatus: 'rejected' };
+    }
+
+    return { user: cred.user, role: profile.role, roleStatus: 'approved' };
   },
 
   /** Logout */
@@ -169,14 +164,24 @@ window.VAuth = {
           window.location.href = '../'.repeat(depth) + 'auth/login.html';
           return;
         }
-        // Cek email verified (skip untuk Google)
-        const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
-        if (!user.emailVerified && !isGoogle) {
-          window.location.href = '../'.repeat(depth) + 'auth/verify-email.html';
+        // Email verification DISABLED - semua user bisa langsung akses
+        const profile = await VAuth.getProfile(user.uid);
+        if (!profile) {
+          // New user without profile - redirect to role selection
+          window.location.href = '../'.repeat(depth) + 'auth/select-role.html';
           return;
         }
-        const profile = await VAuth.getProfile(user.uid);
-        if (!profile) { await _auth.signOut(); window.location.href = '../'.repeat(depth) + 'auth/login.html'; return; }
+
+        // Check role approval status
+        if (profile.roleStatus === 'pending') {
+          window.location.href = '../'.repeat(depth) + 'auth/pending-approval.html';
+          return;
+        }
+        if (profile.roleStatus === 'rejected') {
+          window.location.href = '../'.repeat(depth) + 'auth/role-rejected.html';
+          return;
+        }
+
         if (expectedRole && profile.role !== expectedRole) {
           VAuth.redirectByRole(profile.role, depth);
           return;

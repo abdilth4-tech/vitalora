@@ -3,11 +3,11 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ═══════════════════════════════════════════════════════════════════════
-    //  DEV RULES — semua authenticated user bisa baca/tulis semua koleksi
+    //  DEV RULES — OPEN untuk development, GANTI sebelum production!
     //  TODO: Ganti dengan production rules sebelum deploy ke publik
     // ═══════════════════════════════════════════════════════════════════════
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if true;
     }
   }
 }

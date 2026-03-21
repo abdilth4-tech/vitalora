@@ -260,6 +260,13 @@
           <span>Admin Panel</span>
         </button>
       </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px dashed rgba(245,158,11,0.3);">
+        <button class="btn-bypass" style="width:100%;background:#EB5757;color:#fff;" onclick="resetMyAccount()">
+          <ion-icon name="trash-outline"></ion-icon>
+          Reset Akun Saya
+          <span>Hapus data untuk test ulang role selection</span>
+        </button>
+      </div>
     </div>
 
   </div>
@@ -377,12 +384,39 @@
     loginBtn.disabled  = true;
     googleBtn.innerHTML = '<ion-icon name="reload-outline" style="animation:spin 0.8s linear infinite"></ion-icon> Memuat...';
 
-    // Google login: akun BARU selalu 'patient' (role doctor/admin diassign oleh admin)
-    // Akun LAMA: gunakan role yang sudah tersimpan di Firestore
     try {
-      const { user, role } = await VAuth.loginGoogle('patient');
+      const result = await VAuth.loginGoogle('patient');
+
+      // New user - redirect to role selection
+      if (result.isNewUser) {
+        showToastMsg('Akun baru! Pilih role Anda...', 'info');
+        setTimeout(() => {
+          window.location.href = 'select-role.html';
+        }, 1000);
+        return;
+      }
+
+      // Check role status
+      if (result.roleStatus === 'pending') {
+        showToastMsg('Menunggu persetujuan admin...', 'warning');
+        setTimeout(() => {
+          window.location.href = 'pending-approval.html';
+        }, 1000);
+        return;
+      }
+
+      if (result.roleStatus === 'rejected') {
+        showToastMsg('Permintaan role ditolak.', 'error');
+        setTimeout(() => {
+          window.location.href = 'role-rejected.html';
+        }, 1000);
+        return;
+      }
+
+      // Approved - redirect to appropriate portal
       showToastMsg('Login Google berhasil!', 'success');
-      VAuth.redirectByRole(role, 1);
+      VAuth.redirectByRole(result.role, 1);
+
     } catch (err) {
       googleBtn.innerHTML = '<span style="font-size:1.1rem;font-weight:900;color:#EA4335;">G</span> Google';
       googleBtn.disabled = false;
@@ -400,6 +434,40 @@
   function bypassAs(role, url) {
     localStorage.setItem('vitalora_debug_role', role);
     window.location.href = url;
+  }
+
+  // Reset current user account for testing role selection
+  async function resetMyAccount() {
+    if (!confirm('Ini akan login dengan Google, hapus data akun dari Firestore, lalu redirect ke halaman pilih role. Lanjutkan?')) {
+      return;
+    }
+
+    try {
+      // Login with Google first to get the user
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const cred = await VFirebase.auth.signInWithPopup(provider);
+      const user = cred.user;
+
+      showToastMsg('Menghapus data akun...', 'info');
+
+      // Delete user document from Firestore
+      await VFirebase.db.collection('users').doc(user.uid).delete();
+      // Also delete patient profile if exists
+      await VFirebase.db.collection('patients').doc(user.uid).delete().catch(() => {});
+
+      showToastMsg('Akun direset! Redirecting...', 'success');
+
+      // Redirect to select-role page
+      setTimeout(() => {
+        window.location.href = 'select-role.html';
+      }, 1000);
+
+    } catch (err) {
+      if (err.code !== 'auth/popup-closed-by-user') {
+        console.error(err);
+        showToastMsg('Gagal reset: ' + err.message, 'error');
+      }
+    }
   }
 </script>
 </body>

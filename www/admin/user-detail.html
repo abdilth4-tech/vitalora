@@ -49,6 +49,7 @@
     <nav class="sidebar-nav">
       <a class="sidebar-item" href="home.html"><ion-icon name="grid-outline"></ion-icon>Dashboard</a>
       <a class="sidebar-item active" href="users.html"><ion-icon name="people-outline"></ion-icon>Users</a>
+      <a class="sidebar-item" href="doctor-verification.html"><ion-icon name="checkmark-circle-outline"></ion-icon>Verifikasi Role</a>
       <a class="sidebar-item" href="notifications.html"><ion-icon name="notifications-outline"></ion-icon>Notifikasi</a>
       <a class="sidebar-item" href="news.html"><ion-icon name="newspaper-outline"></ion-icon>News</a>
       <a class="sidebar-item" href="advertise.html"><ion-icon name="megaphone-outline"></ion-icon>Iklan</a>
@@ -88,8 +89,11 @@
         <div class="profile-avatar" id="profile-avatar">--</div>
         <div class="profile-info">
           <div class="profile-name" id="profile-name">Memuat...</div>
-          <div style="display:flex;gap:8px;margin-top:6px;">
+          <div style="display:flex;gap:8px;margin-top:6px;align-items:center;">
             <span class="neu-chip" id="role-chip" style="background:var(--info-bg);color:var(--info);font-size:0.72rem;padding:3px 10px;">-</span>
+            <button class="neu-btn-sm" style="font-size:0.7rem;padding:4px 10px;" onclick="openRoleModal()">
+              <ion-icon name="pencil-outline"></ion-icon> Ubah Role
+            </button>
             <span class="neu-chip" id="status-chip" style="background:#E8F8F0;color:#27AE60;font-size:0.72rem;padding:3px 10px;">-</span>
           </div>
           <div class="profile-meta">
@@ -189,13 +193,64 @@
   </div>
 </div>
 
+<!-- Change Role Modal -->
+<div class="modal-overlay" id="roleModal">
+  <div class="modal-box">
+    <div class="modal-title">Ubah Role Pengguna</div>
+    <div class="modal-desc">
+      Pilih role baru untuk <strong id="modal-role-name">pengguna ini</strong>:
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+      <label class="role-option" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);box-shadow:var(--shadow-out-sm);border-radius:12px;cursor:pointer;border:2px solid transparent;" onclick="selectRoleOption(this, 'patient')">
+        <input type="radio" name="newRole" value="patient" style="display:none;">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#27AE60,#6FCF97);display:flex;align-items:center;justify-content:center;">
+          <ion-icon name="person-outline" style="color:#fff;font-size:1.2rem;"></ion-icon>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.9rem;">Pasien</div>
+          <div style="font-size:0.72rem;color:var(--text-tertiary);">Akses portal pasien, monitoring, konsultasi</div>
+        </div>
+        <ion-icon name="checkmark-circle" class="check-icon" style="color:var(--primary-dark);font-size:1.4rem;display:none;"></ion-icon>
+      </label>
+      <label class="role-option" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);box-shadow:var(--shadow-out-sm);border-radius:12px;cursor:pointer;border:2px solid transparent;" onclick="selectRoleOption(this, 'doctor')">
+        <input type="radio" name="newRole" value="doctor" style="display:none;">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#1D5DB5,#56CCF2);display:flex;align-items:center;justify-content:center;">
+          <ion-icon name="medkit-outline" style="color:#fff;font-size:1.2rem;"></ion-icon>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.9rem;">Dokter</div>
+          <div style="font-size:0.72rem;color:var(--text-tertiary);">Akses portal dokter, terima konsultasi, resep</div>
+        </div>
+        <ion-icon name="checkmark-circle" class="check-icon" style="color:var(--primary-dark);font-size:1.4rem;display:none;"></ion-icon>
+      </label>
+      <label class="role-option" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);box-shadow:var(--shadow-out-sm);border-radius:12px;cursor:pointer;border:2px solid transparent;" onclick="selectRoleOption(this, 'admin')">
+        <input type="radio" name="newRole" value="admin" style="display:none;">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#4A43CC,#9B59B6);display:flex;align-items:center;justify-content:center;">
+          <ion-icon name="settings-outline" style="color:#fff;font-size:1.2rem;"></ion-icon>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.9rem;">Admin</div>
+          <div style="font-size:0.72rem;color:var(--text-tertiary);">Akses penuh, kelola users, konten, sistem</div>
+        </div>
+        <ion-icon name="checkmark-circle" class="check-icon" style="color:var(--primary-dark);font-size:1.4rem;display:none;"></ion-icon>
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="neu-btn neu-btn-sm" onclick="closeRoleModal()">Batal</button>
+      <button class="neu-btn-primary neu-btn-sm" id="btn-save-role" onclick="saveNewRole()">
+        <ion-icon name="save-outline"></ion-icon> Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="../shared/firebase.js"></script>
 <script src="../shared/app.js"></script>
 <script>
-const uid = new URLSearchParams(location.search).get('id');
+const uid = new URLSearchParams(location.search).get('id') || new URLSearchParams(location.search).get('uid');
 let _currentUser = null;
 
 (async () => {
@@ -291,6 +346,97 @@ async function activateUser() {
     document.getElementById('btn-deactivate').style.display = '';
   } catch (err) {
     showToast('Gagal mengaktifkan akun: ' + (err.message || err), 'error');
+  }
+}
+
+// === ROLE CHANGE FUNCTIONS ===
+let _selectedNewRole = null;
+
+function openRoleModal() {
+  if (!_currentUser) return;
+  document.getElementById('modal-role-name').textContent = _currentUser.name || 'pengguna ini';
+
+  // Reset selection
+  _selectedNewRole = null;
+  document.querySelectorAll('.role-option').forEach(opt => {
+    opt.style.borderColor = 'transparent';
+    opt.querySelector('.check-icon').style.display = 'none';
+    opt.querySelector('input').checked = false;
+  });
+
+  // Pre-select current role
+  const currentRole = _currentUser.role || 'patient';
+  document.querySelectorAll('.role-option').forEach(opt => {
+    const radio = opt.querySelector('input');
+    if (radio.value === currentRole) {
+      selectRoleOption(opt, currentRole);
+    }
+  });
+
+  document.getElementById('roleModal').classList.add('open');
+}
+
+function closeRoleModal() {
+  document.getElementById('roleModal').classList.remove('open');
+}
+
+function selectRoleOption(el, role) {
+  _selectedNewRole = role;
+
+  // Reset all options
+  document.querySelectorAll('.role-option').forEach(opt => {
+    opt.style.borderColor = 'transparent';
+    opt.querySelector('.check-icon').style.display = 'none';
+    opt.querySelector('input').checked = false;
+  });
+
+  // Highlight selected
+  el.style.borderColor = 'var(--primary-dark)';
+  el.querySelector('.check-icon').style.display = 'block';
+  el.querySelector('input').checked = true;
+}
+
+async function saveNewRole() {
+  if (!_selectedNewRole) {
+    showToast('Pilih role terlebih dahulu.', 'warning');
+    return;
+  }
+
+  if (_selectedNewRole === _currentUser.role) {
+    showToast('Role tidak berubah.', 'info');
+    closeRoleModal();
+    return;
+  }
+
+  const btn = document.getElementById('btn-save-role');
+  btn.disabled = true;
+  btn.innerHTML = '<ion-icon name="reload-outline" style="animation:spin 0.8s linear infinite"></ion-icon> Menyimpan...';
+
+  try {
+    await VDB.updateUser(uid, { role: _selectedNewRole });
+
+    // Update UI
+    const roleMap = { patient: 'Pasien', doctor: 'Dokter', admin: 'Admin' };
+    const roleColors = {
+      patient: { bg: '#E8F8F0', color: '#27AE60' },
+      doctor: { bg: 'var(--info-bg)', color: 'var(--info)' },
+      admin: { bg: 'var(--accent-bg)', color: 'var(--accent)' }
+    };
+
+    const roleChip = document.getElementById('role-chip');
+    roleChip.textContent = roleMap[_selectedNewRole] || _selectedNewRole;
+    roleChip.style.background = roleColors[_selectedNewRole]?.bg || 'var(--info-bg)';
+    roleChip.style.color = roleColors[_selectedNewRole]?.color || 'var(--info)';
+
+    _currentUser.role = _selectedNewRole;
+
+    showToast('Role berhasil diubah menjadi ' + roleMap[_selectedNewRole] + '!', 'success');
+    closeRoleModal();
+  } catch (err) {
+    showToast('Gagal mengubah role: ' + (err.message || err), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<ion-icon name="save-outline"></ion-icon> Simpan';
   }
 }
 </script>

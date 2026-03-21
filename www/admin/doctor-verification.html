@@ -60,7 +60,7 @@
 
     <div class="admin-topbar" data-animate="up">
       <div style="display:flex;align-items:center;gap:16px;">
-        <h1>Verifikasi Dokter</h1>
+        <h1>Verifikasi Role</h1>
         <span class="neu-chip" id="pending-count-chip" style="background:var(--warning-bg);color:var(--warning);font-weight:600;font-size:0.8rem;">
           <ion-icon name="time-outline" style="font-size:0.9rem;vertical-align:middle;margin-right:4px;"></ion-icon><span id="pending-count">0</span> Menunggu Verifikasi
         </span>
@@ -96,56 +96,70 @@ function getInitials(name) {
   return (name || 'DR').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
-function renderDoctorCard(doctor, index) {
-  const gradient = AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length];
-  const initials = getInitials(doctor.name);
-  const specialty = doctor.specialty || 'Spesialis Umum';
-  const registeredDate = doctor.createdAt && doctor.createdAt.toDate
-    ? doctor.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+const ROLE_NAMES = { patient: 'Pasien', doctor: 'Dokter', admin: 'Admin' };
+const ROLE_COLORS = {
+  patient: 'linear-gradient(135deg,#27AE60,#6FCF97)',
+  doctor: 'linear-gradient(135deg,#1D5DB5,#56CCF2)',
+  admin: 'linear-gradient(135deg,#4A43CC,#9B59B6)'
+};
+
+function renderUserCard(user, index) {
+  const gradient = ROLE_COLORS[user.requestedRole] || AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length];
+  const initials = getInitials(user.name);
+  const requestedRole = ROLE_NAMES[user.requestedRole] || user.requestedRole || '-';
+  const registeredDate = user.createdAt && user.createdAt.toDate
+    ? user.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
     : '-';
 
   const card = document.createElement('div');
   card.className = 'neu-card doc-card';
   card.setAttribute('data-animate', 'up');
   card.setAttribute('data-delay', String(100 + index * 100));
-  card.dataset.uid = doctor.uid;
+  card.dataset.uid = user.uid;
 
   card.innerHTML = `
     <div class="doc-card-header">
       <div class="doc-avatar" style="background:${gradient};">${initials}</div>
-      <div>
-        <div class="doc-name">${doctor.name || 'Tanpa Nama'}</div>
-        <div class="doc-specialty">${specialty}</div>
+      <div style="flex:1;">
+        <div class="doc-name">${user.name || 'Tanpa Nama'}</div>
+        <div style="margin-top:4px;font-size:0.78rem;color:var(--text-tertiary);">${user.email || ''}</div>
         <div class="doc-date"><ion-icon name="calendar-outline"></ion-icon> Mendaftar ${registeredDate}</div>
-        <div style="margin-top:4px;font-size:0.78rem;color:var(--text-tertiary);">${doctor.email || ''}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:4px;">Role yang diminta:</div>
+        <span class="neu-chip" style="background:${gradient};color:#fff;font-weight:700;font-size:0.8rem;padding:6px 14px;">
+          ${requestedRole}
+        </span>
       </div>
     </div>
+    ${user.requestedRole === 'doctor' ? `
     <div class="doc-documents">
       <div class="doc-preview" style="background:linear-gradient(135deg,#6FCF97,#27AE60);">
         <div class="doc-preview-icon"><ion-icon name="document-text-outline"></ion-icon></div>
         <div class="doc-preview-label">STR</div>
-        <span class="doc-preview-link" onclick="showToast('Membuka dokumen STR...','info')">Lihat</span>
+        <span class="doc-preview-link" onclick="showToast('Dokumen belum diupload','warning')">Lihat</span>
       </div>
       <div class="doc-preview" style="background:linear-gradient(135deg,#6C63FF,#8B85FF);">
         <div class="doc-preview-icon"><ion-icon name="shield-checkmark-outline"></ion-icon></div>
         <div class="doc-preview-label">SIP</div>
-        <span class="doc-preview-link" onclick="showToast('Membuka dokumen SIP...','info')">Lihat</span>
+        <span class="doc-preview-link" onclick="showToast('Dokumen belum diupload','warning')">Lihat</span>
       </div>
       <div class="doc-preview" style="background:linear-gradient(135deg,#F2994A,#F2C94C);">
         <div class="doc-preview-icon"><ion-icon name="school-outline"></ion-icon></div>
         <div class="doc-preview-label">Ijazah</div>
-        <span class="doc-preview-link" onclick="showToast('Membuka Ijazah...','info')">Lihat</span>
+        <span class="doc-preview-link" onclick="showToast('Dokumen belum diupload','warning')">Lihat</span>
       </div>
     </div>
+    ` : ''}
     <div class="doc-notes">
-      <label>Catatan Reviewer</label>
-      <textarea id="note-${doctor.uid}" placeholder="Tambahkan catatan untuk dokter ini..."></textarea>
+      <label>Catatan Admin</label>
+      <textarea id="note-${user.uid}" placeholder="Tambahkan catatan..."></textarea>
     </div>
     <div class="doc-actions">
-      <button class="neu-btn-primary neu-btn-sm" onclick="verifyDoctor('${doctor.uid}', this)">
-        <ion-icon name="checkmark-circle-outline"></ion-icon> Verifikasi
+      <button class="neu-btn-primary neu-btn-sm" onclick="approveUser('${user.uid}', '${user.requestedRole}', this)">
+        <ion-icon name="checkmark-circle-outline"></ion-icon> Setujui
       </button>
-      <button class="neu-btn-danger neu-btn-sm" onclick="rejectDoctor('${doctor.uid}', this)">
+      <button class="neu-btn-danger neu-btn-sm" onclick="rejectUser('${user.uid}', this)">
         <ion-icon name="close-circle-outline"></ion-icon> Tolak
       </button>
     </div>
@@ -159,16 +173,17 @@ function renderEmptyState() {
   grid.innerHTML = `
     <div class="neu-card empty-state">
       <ion-icon name="checkmark-done-circle-outline"></ion-icon>
-      <h3>Tidak Ada Dokter Pending</h3>
-      <p>Semua dokter sudah terverifikasi atau belum ada yang mendaftar.</p>
+      <h3>Tidak Ada Permintaan Pending</h3>
+      <p>Semua permintaan role sudah diproses atau belum ada yang mendaftar.</p>
     </div>
   `;
 }
 
-async function loadDoctors() {
+async function loadPendingUsers() {
   try {
-    const allDoctors = await VDB.getAllUsers('doctor');
-    const pending = allDoctors.filter(d => d.isVerified !== true);
+    // Get ALL users and filter by roleStatus === 'pending'
+    const allUsers = await VDB.getAllUsers();
+    const pending = allUsers.filter(u => u.roleStatus === 'pending');
 
     document.getElementById('pending-count').textContent = pending.length;
 
@@ -180,43 +195,58 @@ async function loadDoctors() {
       return;
     }
 
-    pending.forEach((doctor, index) => {
-      grid.appendChild(renderDoctorCard(doctor, index));
+    pending.forEach((user, index) => {
+      grid.appendChild(renderUserCard(user, index));
     });
   } catch (err) {
     console.error(err);
-    showToast('Gagal memuat daftar dokter: ' + (err.message || err), 'error');
+    showToast('Gagal memuat daftar: ' + (err.message || err), 'error');
   }
 }
 
-async function verifyDoctor(doctorId, btn) {
+async function approveUser(userId, role, btn) {
   try {
     btn.disabled = true;
-    await VDB.updateUser(doctorId, { isVerified: true });
-    showToast('Dokter terverifikasi', 'success');
-    await loadDoctors();
+    const note = document.getElementById('note-' + userId)?.value || '';
+
+    await VDB.updateUser(userId, {
+      role: role,
+      roleStatus: 'approved',
+      approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      adminNote: note
+    });
+
+    showToast('User disetujui sebagai ' + (ROLE_NAMES[role] || role), 'success');
+    await loadPendingUsers();
   } catch (err) {
     btn.disabled = false;
-    showToast('Gagal verifikasi dokter: ' + (err.message || err), 'error');
+    showToast('Gagal menyetujui: ' + (err.message || err), 'error');
   }
 }
 
-async function rejectDoctor(doctorId, btn) {
+async function rejectUser(userId, btn) {
   try {
     btn.disabled = true;
-    await VDB.updateUser(doctorId, { isVerified: false, rejectionNote: 'Dokumen tidak lengkap' });
-    showToast('Dokter ditolak', 'warning');
-    await loadDoctors();
+    const note = document.getElementById('note-' + userId)?.value || 'Permintaan ditolak';
+
+    await VDB.updateUser(userId, {
+      roleStatus: 'rejected',
+      rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      rejectionNote: note
+    });
+
+    showToast('Permintaan role ditolak', 'warning');
+    await loadPendingUsers();
   } catch (err) {
     btn.disabled = false;
-    showToast('Gagal menolak dokter: ' + (err.message || err), 'error');
+    showToast('Gagal menolak: ' + (err.message || err), 'error');
   }
 }
 
 (async () => {
   try {
     await VAuth.guard('admin', 1);
-    await loadDoctors();
+    await loadPendingUsers();
   } catch (err) {
     console.error(err);
     showToast('Terjadi kesalahan: ' + (err.message || err), 'error');

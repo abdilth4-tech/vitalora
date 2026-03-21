@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — Seed Demo Data</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <style>
+    body { background: var(--bg); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .seed-card { background: var(--bg); box-shadow: var(--shadow-out); border-radius: 24px; padding: 32px; max-width: 500px; width: 100%; }
+    .seed-title { font-size: 1.3rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
+    .seed-desc { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
+    .seed-btn { width: 100%; padding: 14px; border-radius: 14px; border: none; font-family: var(--font); font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+    .seed-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .seed-btn.primary { background: linear-gradient(135deg, #27AE60, #6FCF97); color: #fff; box-shadow: 0 4px 16px rgba(39,174,96,0.35); }
+    .seed-btn.secondary { background: var(--bg); box-shadow: var(--shadow-out-sm); color: var(--text-secondary); }
+    .seed-btn:hover:not(:disabled) { transform: translateY(-2px); }
+    .log-area { background: #1a1a2e; border-radius: 12px; padding: 16px; margin-top: 20px; max-height: 300px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 0.75rem; line-height: 1.6; }
+    .log-area .log-line { margin-bottom: 4px; }
+    .log-area .success { color: #6FCF97; }
+    .log-area .error { color: #EB5757; }
+    .log-area .info { color: #56CCF2; }
+    .log-area .warn { color: #F2C94C; }
+  </style>
+</head>
+<body>
+
+<div class="seed-card">
+  <div class="seed-title">Seed Demo Data</div>
+  <div class="seed-desc">
+    Halaman ini untuk memasukkan data demo ke Firestore. Gunakan untuk testing dan demo ke klien.
+  </div>
+
+  <button class="seed-btn primary" id="seedDoctorsBtn" onclick="seedDoctors()">
+    Seed Data Dokter (Firestore only)
+  </button>
+
+  <button class="seed-btn primary" id="seedDoctorsAuthBtn" onclick="seedDoctorsWithAuth()" style="background:linear-gradient(135deg,#1D5DB5,#56CCF2);">
+    Seed Dokter + Auth (bisa login)
+  </button>
+
+  <button class="seed-btn secondary" id="seedConsultBtn" onclick="seedSampleConsultation()">
+    Buat Sample Konsultasi
+  </button>
+
+  <button class="seed-btn secondary" onclick="clearLog()">
+    Clear Log
+  </button>
+
+  <div class="log-area" id="logArea">
+    <div class="log-line info">Siap untuk seed data...</div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script>
+  const logArea = document.getElementById('logArea');
+
+  function log(msg, type = 'info') {
+    const line = document.createElement('div');
+    line.className = 'log-line ' + type;
+    line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+    logArea.appendChild(line);
+    logArea.scrollTop = logArea.scrollHeight;
+  }
+
+  function clearLog() {
+    logArea.innerHTML = '<div class="log-line info">Log cleared.</div>';
+  }
+
+  // Demo doctors data
+  const demoDoctors = [
+    {
+      uid: 'doctor-sarah-wijaya',
+      name: 'dr. Sarah Wijaya, Sp.PD',
+      email: 'sarah.wijaya@vitalora.id',
+      role: 'doctor',
+      specialty: 'Spesialis Penyakit Dalam',
+      hospital: 'RS Medicore Jakarta',
+      rating: 4.9,
+      reviewCount: 238,
+      experience: 8,
+      patientCount: 238,
+      bio: 'Spesialis penyakit dalam berpengalaman lebih dari 8 tahun. Keahlian khusus dalam penanganan penyakit metabolik, hipertensi, dan diabetes mellitus.',
+      education: ['S1 Kedokteran — Universitas Indonesia (2010-2016)', 'Sp.PD — Universitas Gadjah Mada (2017-2021)'],
+      strNumber: 'STR-4523/2022',
+      isActive: true,
+      isOnline: true,
+      consultTypes: ['chat', 'video', 'integrative'],
+      pricing: { chat: 75000, video: 120000, integrative: 150000 },
+      photoURL: null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    },
+    {
+      uid: 'doctor-andi-rahmanto',
+      name: 'dr. Andi Rahmanto, Sp.JP',
+      email: 'andi.rahmanto@vitalora.id',
+      role: 'doctor',
+      specialty: 'Spesialis Jantung',
+      hospital: 'RS Jantung Harapan Kita',
+      rating: 4.8,
+      reviewCount: 156,
+      experience: 12,
+      patientCount: 420,
+      bio: 'Kardiolog senior dengan pengalaman lebih dari 12 tahun menangani berbagai penyakit jantung dan pembuluh darah.',
+      education: ['S1 Kedokteran — Universitas Airlangga (2006-2012)', 'Sp.JP — Universitas Indonesia (2013-2018)'],
+      strNumber: 'STR-3128/2020',
+      isActive: true,
+      isOnline: false,
+      consultTypes: ['chat', 'video'],
+      pricing: { chat: 100000, video: 150000 },
+      photoURL: null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    },
+    {
+      uid: 'doctor-nadia-putri',
+      name: 'dr. Nadia Putri, M.Ked',
+      email: 'nadia.putri@vitalora.id',
+      role: 'doctor',
+      specialty: 'Dokter Umum',
+      hospital: 'Klinik Sehat Sentosa',
+      rating: 4.7,
+      reviewCount: 312,
+      experience: 5,
+      patientCount: 580,
+      bio: 'Dokter umum yang ramah dan teliti. Fokus pada kesehatan keluarga dan pencegahan penyakit.',
+      education: ['S1 Kedokteran — Universitas Padjadjaran (2014-2020)', 'M.Ked — Universitas Padjadjaran (2021-2023)'],
+      strNumber: 'STR-6721/2023',
+      isActive: true,
+      isOnline: true,
+      consultTypes: ['chat'],
+      pricing: { chat: 35000 },
+      photoURL: null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }
+  ];
+
+  async function seedDoctors() {
+    const btn = document.getElementById('seedDoctorsBtn');
+    btn.disabled = true;
+    btn.textContent = 'Seeding...';
+
+    try {
+      // Ensure user is authenticated first
+      if (!VFirebase.auth.currentUser) {
+        log('Login anonymous untuk akses Firestore...', 'info');
+        try {
+          await VFirebase.auth.signInAnonymously();
+          log('Login berhasil!', 'success');
+        } catch (authErr) {
+          log('Gagal login anonymous: ' + authErr.message, 'error');
+          log('Pastikan Anonymous auth diaktifkan di Firebase Console:', 'warn');
+          log('Firebase Console → Authentication → Sign-in method → Anonymous → Enable', 'warn');
+          throw authErr;
+        }
+      }
+
+      log('Memulai seed data dokter...', 'info');
+
+      for (const doctor of demoDoctors) {
+        log('Menyimpan: ' + doctor.name, 'info');
+        await VFirebase.db.collection('users').doc(doctor.uid).set(doctor, { merge: true });
+        log('Berhasil: ' + doctor.name, 'success');
+      }
+
+      log('Semua dokter berhasil disimpan!', 'success');
+    } catch (e) {
+      log('Error: ' + e.message, 'error');
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Seed Data Dokter (3 dokter)';
+    }
+  }
+
+  // Seed doctors WITH Firebase Auth (so they can login)
+  async function seedDoctorsWithAuth() {
+    const btn = document.getElementById('seedDoctorsAuthBtn');
+    btn.disabled = true;
+    btn.textContent = 'Seeding...';
+
+    const defaultPassword = 'dokter123';
+
+    // Doctors with email that can be used for auth
+    const doctorsAuth = [
+      {
+        email: 'sarah.wijaya@vitalora.id',
+        name: 'dr. Sarah Wijaya, Sp.PD',
+        specialty: 'Spesialis Penyakit Dalam',
+        hospital: 'RS Medicore Jakarta',
+        rating: 4.9,
+        reviewCount: 238,
+        experience: 8,
+        consultTypes: ['chat', 'video', 'integrative'],
+        pricing: { chat: 75000, video: 120000, integrative: 150000 }
+      },
+      {
+        email: 'andi.rahmanto@vitalora.id',
+        name: 'dr. Andi Rahmanto, Sp.JP',
+        specialty: 'Spesialis Jantung',
+        hospital: 'RS Jantung Harapan Kita',
+        rating: 4.8,
+        reviewCount: 156,
+        experience: 12,
+        consultTypes: ['chat', 'video'],
+        pricing: { chat: 100000, video: 150000 }
+      },
+      {
+        email: 'nadia.putri@vitalora.id',
+        name: 'dr. Nadia Putri, M.Ked',
+        specialty: 'Dokter Umum',
+        hospital: 'Klinik Sehat Sentosa',
+        rating: 4.7,
+        reviewCount: 312,
+        experience: 5,
+        consultTypes: ['chat'],
+        pricing: { chat: 35000 }
+      }
+    ];
+
+    try {
+      log('Memulai seed dokter dengan Auth...', 'info');
+      log('Password default: ' + defaultPassword, 'warn');
+
+      for (const doc of doctorsAuth) {
+        log('Membuat akun: ' + doc.email, 'info');
+
+        try {
+          // Create Firebase Auth account
+          const cred = await VFirebase.auth.createUserWithEmailAndPassword(doc.email, defaultPassword);
+          await cred.user.updateProfile({ displayName: doc.name });
+
+          // Create Firestore user document
+          await VFirebase.db.collection('users').doc(cred.user.uid).set({
+            uid: cred.user.uid,
+            name: doc.name,
+            email: doc.email,
+            role: 'doctor',
+            specialty: doc.specialty,
+            hospital: doc.hospital,
+            rating: doc.rating,
+            reviewCount: doc.reviewCount,
+            experience: doc.experience,
+            consultTypes: doc.consultTypes,
+            pricing: doc.pricing,
+            isActive: true,
+            isOnline: true,
+            photoURL: null,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          log('Berhasil: ' + doc.name, 'success');
+
+          // Sign out so we can create next account
+          await VFirebase.auth.signOut();
+
+        } catch (authErr) {
+          if (authErr.code === 'auth/email-already-in-use') {
+            log('Akun sudah ada: ' + doc.email + ' (skip)', 'warn');
+          } else {
+            log('Gagal buat ' + doc.email + ': ' + authErr.message, 'error');
+          }
+        }
+      }
+
+      log('', 'info');
+      log('=== SELESAI ===', 'success');
+      log('Login dengan email dokter + password: ' + defaultPassword, 'info');
+      log('Contoh: sarah.wijaya@vitalora.id / dokter123', 'info');
+
+    } catch (e) {
+      log('Error: ' + e.message, 'error');
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Seed Dokter + Auth (bisa login)';
+    }
+  }
+
+  async function seedSampleConsultation() {
+    const btn = document.getElementById('seedConsultBtn');
+    btn.disabled = true;
+
+    try {
+      // Check if user is logged in
+      const user = VFirebase.auth.currentUser;
+      if (!user) {
+        log('Anda harus login dulu untuk membuat sample konsultasi', 'warn');
+        log('Membuat konsultasi dengan anonymous auth...', 'info');
+        await VFirebase.auth.signInAnonymously();
+      }
+
+      const currentUser = VFirebase.auth.currentUser;
+      const consultId = 'sample-consult-' + Date.now();
+
+      log('Membuat sample konsultasi...', 'info');
+
+      await VFirebase.db.collection('consultations').doc(consultId).set({
+        patientId: currentUser.uid,
+        doctorId: 'doctor-sarah-wijaya',
+        type: 'chat',
+        status: 'active',
+        complaint: 'Keluhan sample untuk testing',
+        startTime: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      log('Konsultasi dibuat dengan ID: ' + consultId, 'success');
+
+      // Add sample messages
+      log('Menambah sample chat messages...', 'info');
+
+      const messagesRef = VFirebase.db.collection('messages').doc(consultId).collection('items');
+
+      await messagesRef.add({
+        senderId: currentUser.uid,
+        senderName: 'Pasien',
+        senderRole: 'patient',
+        text: 'Halo dok, saya ingin berkonsultasi tentang keluhan saya.',
+        type: 'text',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      await messagesRef.add({
+        senderId: 'doctor-sarah-wijaya',
+        senderName: 'dr. Sarah Wijaya, Sp.PD',
+        senderRole: 'doctor',
+        text: 'Halo, selamat datang di Vitalora. Silakan ceritakan keluhan Anda secara detail.',
+        type: 'text',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      log('Sample messages berhasil ditambahkan!', 'success');
+      log('Anda bisa test chat di: chat-room.html?consultId=' + consultId, 'info');
+
+    } catch (e) {
+      log('Error: ' + e.message, 'error');
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>

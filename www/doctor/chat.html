@@ -34,21 +34,9 @@
   </div>
 
   <div class="section">
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div class="neu-card" data-animate="up" data-delay="50" style="display:flex;gap:14px;align-items:center;cursor:pointer;border-left:4px solid var(--danger);">
-        <div class="neu-avatar" style="background:linear-gradient(135deg,#EB5757,#FF7B7B)">AF</div>
-        <div style="flex:1"><div style="font-weight:600;font-size:0.85rem;">Ahmad Fauzi</div><div style="font-size:0.7rem;color:var(--text-tertiary);">Pusing berulang, minta periksa...</div></div>
-        <div style="text-align:right;"><span class="neu-chip-danger" style="font-size:0.6rem;">Urgent</span><div style="font-size:0.6rem;color:var(--text-muted);margin-top:4px;">2m lalu</div></div>
-      </div>
-      <div class="neu-card" data-animate="up" data-delay="100" style="display:flex;gap:14px;align-items:center;cursor:pointer;">
-        <div class="neu-avatar" style="background:linear-gradient(135deg,#6C63FF,#8B83FF)">DS</div>
-        <div style="flex:1"><div style="font-weight:600;font-size:0.85rem;">Dewi Sartika</div><div style="font-size:0.7rem;color:var(--text-tertiary);">Terima kasih dok, obatnya sudah...</div></div>
-        <div style="text-align:right;"><div style="font-size:0.6rem;color:var(--text-muted);">15m lalu</div></div>
-      </div>
-      <div class="neu-card" data-animate="up" data-delay="150" style="display:flex;gap:14px;align-items:center;cursor:pointer;">
-        <div class="neu-avatar" style="background:linear-gradient(135deg,#27AE60,#6FCF97)">BS</div>
-        <div style="flex:1"><div style="font-weight:600;font-size:0.85rem;">Budi Santoso</div><div style="font-size:0.7rem;color:var(--text-tertiary);">Dok, hasil lab saya sudah keluar...</div></div>
-        <div style="text-align:right;"><span class="neu-chip-info" style="font-size:0.6rem;background:var(--info-bg);color:var(--info);">New</span><div style="font-size:0.6rem;color:var(--text-muted);margin-top:4px;">1j lalu</div></div>
+    <div id="chatList" style="display:flex;flex-direction:column;gap:12px;">
+      <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:0.8rem;">
+        Memuat konsultasi...
       </div>
     </div>
   </div>
@@ -69,6 +57,144 @@
   </nav>
 </div>
 <script src="../shared/app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script>
+(async () => {
+  const { user, profile } = await VAuth.guard('doctor', 1);
+  await loadConsultations(user.uid);
+})();
 
+async function loadConsultations(doctorId) {
+  const chatList = document.getElementById('chatList');
+
+  try {
+    // Get consultations for this doctor
+    const consultations = await VDB.getDoctorConsultations(doctorId);
+
+    // Also get consultations where doctorId is null (available for any doctor)
+    const db = VFirebase.db;
+    const availableSnap = await db.collection('consultations')
+      .where('doctorId', '==', null)
+      .where('status', 'in', ['pending', 'active'])
+      .orderBy('startTime', 'desc')
+      .limit(20)
+      .get();
+
+    const availableConsults = availableSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    // Combine and sort
+    const allConsults = [...consultations, ...availableConsults]
+      .filter(c => c.status === 'pending' || c.status === 'active');
+
+    if (allConsults.length === 0) {
+      chatList.innerHTML = `
+        <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+          <ion-icon name="chatbubbles-outline" style="font-size:3rem;margin-bottom:12px;opacity:0.5;display:block;"></ion-icon>
+          <div style="font-size:0.85rem;">Belum ada konsultasi</div>
+          <div style="font-size:0.72rem;margin-top:4px;">Konsultasi baru akan muncul di sini</div>
+        </div>
+      `;
+      return;
+    }
+
+    chatList.innerHTML = '';
+
+    const gradients = [
+      'linear-gradient(135deg,#EB5757,#FF7B7B)',
+      'linear-gradient(135deg,#6C63FF,#8B83FF)',
+      'linear-gradient(135deg,#27AE60,#6FCF97)',
+      'linear-gradient(135deg,#2F80ED,#56CCF2)',
+      'linear-gradient(135deg,#F2994A,#F2C94C)'
+    ];
+
+    for (let i = 0; i < allConsults.length; i++) {
+      const consult = allConsults[i];
+      const patient = consult.patientId ? await VDB.getUser(consult.patientId) : null;
+      const patientName = patient?.name || 'Pasien';
+      const initials = patientName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+      const gradient = gradients[i % gradients.length];
+
+      // Status badge
+      let statusBadge = '';
+      let borderColor = '';
+      if (consult.status === 'pending') {
+        statusBadge = '<span class="neu-chip-warning" style="font-size:0.6rem;background:var(--warning-bg);color:var(--warning);">Menunggu</span>';
+        borderColor = 'border-left:4px solid var(--warning);';
+      } else if (consult.status === 'active') {
+        statusBadge = '<span class="neu-chip-primary" style="font-size:0.6rem;">Aktif</span>';
+        borderColor = 'border-left:4px solid var(--primary-dark);';
+      }
+
+      // Complaint preview
+      const complaint = consult.complaint || 'Tidak ada keluhan';
+      const complaintPreview = complaint.length > 40 ? complaint.slice(0, 40) + '...' : complaint;
+
+      // Time
+      const time = consult.startTime?.toDate ? consult.startTime.toDate() : new Date();
+      const timeStr = formatRelativeTime(time);
+
+      const card = document.createElement('div');
+      card.className = 'neu-card';
+      card.setAttribute('data-animate', 'up');
+      card.setAttribute('data-delay', String(50 + i * 50));
+      card.style.cssText = 'display:flex;gap:14px;align-items:center;cursor:pointer;' + borderColor;
+      card.innerHTML = `
+        <div class="neu-avatar" style="background:${gradient}">${initials}</div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:0.85rem;">${patientName}</div>
+          <div style="font-size:0.7rem;color:var(--text-tertiary);">${complaintPreview}</div>
+        </div>
+        <div style="text-align:right;">
+          ${statusBadge}
+          <div style="font-size:0.6rem;color:var(--text-muted);margin-top:4px;">${timeStr}</div>
+        </div>
+      `;
+      card.onclick = () => {
+        // If pending and no doctor assigned, claim it
+        if (consult.status === 'pending' && !consult.doctorId) {
+          claimConsultation(consult.id);
+        } else {
+          nav('chat-room.html?consultId=' + consult.id);
+        }
+      };
+      chatList.appendChild(card);
+    }
+
+  } catch (e) {
+    console.error('[doctor/chat] load error:', e);
+    chatList.innerHTML = `
+      <div style="text-align:center;padding:30px;color:var(--danger);font-size:0.8rem;">
+        Gagal memuat: ${e.message}
+      </div>
+    `;
+  }
+}
+
+async function claimConsultation(consultId) {
+  try {
+    const user = VFirebase.auth.currentUser;
+    await VDB.updateConsultation(consultId, {
+      doctorId: user.uid,
+      status: 'active'
+    });
+    showToast('Konsultasi diambil!', 'success');
+    nav('chat-room.html?consultId=' + consultId);
+  } catch (e) {
+    showToast('Gagal mengambil konsultasi', 'error');
+  }
+}
+
+function formatRelativeTime(date) {
+  const now = new Date();
+  const diff = Math.floor((now - date) / 1000);
+  if (diff < 60) return 'Baru saja';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm lalu';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'j lalu';
+  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+}
+</script>
 </body>
 </html>
