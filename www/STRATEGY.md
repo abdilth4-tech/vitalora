@@ -1,4 +1,5 @@
 # Vitalora — Technical Strategy
+<!-- Last updated: 2026-03-21 -->
 
 ## Stack 100% Gratis
 
