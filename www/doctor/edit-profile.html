@@ -118,15 +118,15 @@
     <div class="neu-card" data-animate="up" data-delay="80">
       <div class="form-group">
         <label class="form-label">Nama Dokter</label>
-        <input type="text" class="neu-input-field" value="dr. Sarah Wijaya, Sp.PD">
+        <input id="input-name" type="text" class="neu-input-field" placeholder="Nama lengkap + gelar">
       </div>
       <div class="form-group">
         <label class="form-label">Spesialisasi</label>
-        <input type="text" class="neu-input-field" value="Spesialis Penyakit Dalam">
+        <input id="input-specialty" type="text" class="neu-input-field" placeholder="Contoh: Spesialis Penyakit Dalam">
       </div>
       <div class="form-group" style="margin-bottom:0;">
         <label class="form-label">Bio / Deskripsi</label>
-        <textarea class="neu-textarea-field" rows="4">Dokter spesialis penyakit dalam dengan pengalaman lebih dari 10 tahun. Berfokus pada pendekatan holistik yang mengintegrasikan pengobatan konvensional dan herbal untuk hasil terbaik pasien.</textarea>
+        <textarea id="input-bio" class="neu-textarea-field" rows="4" placeholder="Ceritakan pengalaman dan pendekatan praktek Anda..."></textarea>
       </div>
     </div>
 
@@ -164,7 +164,7 @@
     <div class="neu-card" data-animate="up" data-delay="160">
       <div class="form-group" style="margin-bottom:0;">
         <label class="form-label">Tahun Pengalaman</label>
-        <input type="number" class="neu-input-field" value="11" min="0" max="60" style="max-width:120px;">
+        <input id="input-experience" type="number" class="neu-input-field" min="0" max="60" placeholder="0" style="max-width:120px;">
       </div>
     </div>
 
@@ -199,17 +199,17 @@
       <div class="tarif-row">
         <div class="tarif-label"><ion-icon name="chatbubble-outline" style="vertical-align:-2px;color:var(--info);"></ion-icon> Chat</div>
         <div class="tarif-prefix">Rp</div>
-        <input type="number" class="tarif-input" value="75000">
+        <input id="input-fee-chat" type="number" class="tarif-input" placeholder="0">
       </div>
       <div class="tarif-row">
         <div class="tarif-label"><ion-icon name="videocam-outline" style="vertical-align:-2px;color:var(--accent);"></ion-icon> Video</div>
         <div class="tarif-prefix">Rp</div>
-        <input type="number" class="tarif-input" value="150000">
+        <input id="input-fee-video" type="number" class="tarif-input" placeholder="0">
       </div>
       <div class="tarif-row" style="margin-bottom:0;">
         <div class="tarif-label"><ion-icon name="flask-outline" style="vertical-align:-2px;color:var(--primary-dark);"></ion-icon> Integratif</div>
         <div class="tarif-prefix">Rp</div>
-        <input type="number" class="tarif-input" value="200000">
+        <input id="input-fee-integratif" type="number" class="tarif-input" placeholder="0">
       </div>
     </div>
 
@@ -232,23 +232,19 @@
     try {
       const userData = await VDB.getUser(user.uid);
       if (userData) {
-        // Pre-fill name field
-        const nameInput = document.querySelector('input[value="dr. Sarah Wijaya, Sp.PD"]');
-        if (nameInput) nameInput.value = userData.name || '';
+        if (userData.name) document.getElementById('input-name').value = userData.name;
+        if (userData.specialty || userData.specialization)
+          document.getElementById('input-specialty').value = userData.specialty || userData.specialization;
+        if (userData.bio) document.getElementById('input-bio').value = userData.bio;
+        if (userData.yearsExperience) document.getElementById('input-experience').value = userData.yearsExperience;
 
-        // Pre-fill email (read-only placeholder)
-        const emailEl = document.querySelector('input[type="email"]');
-        if (emailEl) emailEl.value = userData.email || '';
+        // Fees
+        const fees = userData.consultationFee || {};
+        if (fees.chat)       document.getElementById('input-fee-chat').value = fees.chat;
+        if (fees.video)      document.getElementById('input-fee-video').value = fees.video;
+        if (fees.integratif) document.getElementById('input-fee-integratif').value = fees.integratif;
 
-        // Pre-fill specialty
-        const specInput = document.querySelector('input[value="Spesialis Penyakit Dalam"]');
-        if (specInput) specInput.value = userData.specialty || userData.specialization || '';
-
-        // Pre-fill bio
-        const bioInput = document.querySelector('textarea.neu-textarea-field');
-        if (bioInput && userData.bio) bioInput.value = userData.bio;
-
-        // Update avatar initials
+        // Avatar initials
         const avatarEl = document.querySelector('.neu-avatar-xl');
         if (avatarEl && userData.name) {
           const parts = userData.name.split(' ');
@@ -285,27 +281,38 @@
 
   async function saveProfile() {
     if (!_currentUser) { showToast('Sesi tidak valid', 'error'); return; }
-
-    const nameInput = document.querySelector('input[value="dr. Sarah Wijaya, Sp.PD"]') ||
-                      document.querySelectorAll('.neu-input-field')[0];
-    const specInput = document.querySelector('input[value="Spesialis Penyakit Dalam"]') ||
-                      document.querySelectorAll('.neu-input-field')[1];
-    const bioInput  = document.querySelector('textarea.neu-textarea-field');
-
-    const updateData = {
-      name: nameInput ? nameInput.value.trim() : undefined,
-      specialty: specInput ? specInput.value.trim() : undefined,
-      bio: bioInput ? bioInput.value.trim() : undefined
-    };
-
-    // Remove undefined keys
-    Object.keys(updateData).forEach(k => updateData[k] === undefined && delete updateData[k]);
-
     try {
+      const name       = document.getElementById('input-name')?.value.trim();
+      const specialty  = document.getElementById('input-specialty')?.value.trim();
+      const bio        = document.getElementById('input-bio')?.value.trim();
+      const experience = parseInt(document.getElementById('input-experience')?.value) || 0;
+      const feeChat    = parseInt(document.getElementById('input-fee-chat')?.value) || 0;
+      const feeVideo   = parseInt(document.getElementById('input-fee-video')?.value) || 0;
+      const feeInt     = parseInt(document.getElementById('input-fee-integratif')?.value) || 0;
+
+      // Collect education entries
+      const eduEntries = Array.from(document.querySelectorAll('.edu-entry')).map(entry => {
+        const inputs = entry.querySelectorAll('input');
+        const degree = inputs[0]?.value?.trim();
+        const school = inputs[1]?.value?.trim();
+        return degree ? { degree, school: school || '' } : null;
+      }).filter(Boolean);
+
+      const updateData = {};
+      if (name)       updateData.name = name;
+      if (specialty)  updateData.specialty = specialty;
+      if (bio)        updateData.bio = bio;
+      if (experience) updateData.yearsExperience = experience;
+      if (feeChat || feeVideo || feeInt) {
+        updateData.consultationFee = { chat: feeChat, video: feeVideo, integratif: feeInt };
+      }
+      if (eduEntries.length) updateData.education = eduEntries;
+
       await VDB.updateUser(_currentUser.uid, updateData);
-      showToast('Profil disimpan', 'success');
+      showToast('Profil berhasil disimpan', 'success');
+      setTimeout(() => nav('profile.html'), 1200);
     } catch (err) {
-      showToast('Gagal menyimpan profil', 'error');
+      showToast('Gagal menyimpan: ' + (err.message || err), 'error');
       console.error(err);
     }
   }

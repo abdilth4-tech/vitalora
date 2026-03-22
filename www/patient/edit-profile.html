@@ -309,6 +309,14 @@
       </div>
     </div>
 
+    <!-- Nomor Telepon -->
+    <div class="neu-card mt-16" data-animate="up" data-delay="380">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Nomor Telepon</label>
+        <input id="input-phone" class="neu-input-full" type="tel" placeholder="+62 81x xxxx xxxx">
+      </div>
+    </div>
+
     <!-- Save Button -->
     <button class="neu-btn-primary neu-btn-block mt-24" data-animate="up" data-delay="400" onclick="saveProfile()">
       <ion-icon name="checkmark-circle-outline"></ion-icon>
@@ -333,6 +341,10 @@
       // Pre-fill user data
       const nameInput = document.querySelector('input[placeholder="Nama lengkap Anda"]');
       if (nameInput && profile.name) nameInput.value = profile.name;
+
+      // Phone
+      const phoneInput = document.getElementById('input-phone');
+      if (phoneInput && profile.phone) phoneInput.value = profile.phone;
 
       // Update avatar initials
       const initials = (profile.name || 'P').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -416,7 +428,12 @@
         return cb && cb.checked;
       }).map(id => familyMap[id]);
 
-      await VDB.updateUser(_currentUser.uid, { name });
+      const phone = document.getElementById('input-phone')?.value.trim();
+
+      const userUpdate = { name };
+      if (phone) userUpdate.phone = phone;
+
+      await VDB.updateUser(_currentUser.uid, userUpdate);
       await VDB.updatePatient(_currentUser.uid, { dob, gender, weight, height, allergies, bloodType, familyHistory });
 
       // Update avatar
@@ -425,6 +442,7 @@
       if (avatarEl) avatarEl.textContent = initials;
 
       showToast('Profil berhasil disimpan', 'success');
+      setTimeout(() => nav('profile.html'), 1200);
     } catch (e) {
       console.error('[edit-profile] save error:', e);
       showToast('Gagal menyimpan profil: ' + (e.message || e), 'error');
