@@ -32,7 +32,7 @@ vitalora/
 │   ├── role-rejected.html        ✅
 │   └── select-role.html          ✅
 ├── patient/                      ← ✅ SEMUA 27 halaman ada + Firebase integrated
-│   ├── home.html                 ✅ guard, VitalsManager, notif badge
+│   ├── home.html                 ✅ guard, VitalsManager, notif badge, loadAds() carousel dari Firestore ads
 │   ├── monitoring.html           ✅ VitalsManager subscribe 1s, Firestore history
 │   ├── consultation.html         ✅ guard, getPatientConsultations, getAllUsers(doctor)
 │   ├── herbal.html               ✅ guard
@@ -79,7 +79,7 @@ vitalora/
     ├── users.html                ✅ VDB.getAllUsers, filter, search, modal tambah user
     ├── notifications.html        ✅ broadcastNotifications, delete
     ├── news.html                 ✅ VDB.getAllArticles, publish/delete
-    ├── advertise.html            ✅ guard
+    ├── advertise.html            ✅ guard, Firestore ads CRUD (add/toggle/delete banner images)
     ├── user-detail.html          ✅ guard, VDB.getUser, status management
     ├── doctor-verification.html  ✅ VDB.getAllUsers, approve/reject doctor
     ├── create-notification.html  ✅ VDB.sendNotificationToAll
