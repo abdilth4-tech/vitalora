@@ -31,6 +31,12 @@
     Halaman ini untuk memasukkan data demo ke Firestore. Gunakan untuk testing dan demo ke klien.
   </div>
 
+  <button class="seed-btn primary" id="seedAllBtn" onclick="seedAllAccounts()" style="background:linear-gradient(135deg,#27AE60,#6FCF97);font-size:1rem;">
+    🚀 SEED SEMUA AKUN DEMO (Admin + Dokter + Pasien)
+  </button>
+
+  <div style="height:1px;background:var(--shadow-dark);margin:8px 0;"></div>
+
   <button class="seed-btn primary" id="seedDoctorsBtn" onclick="seedDoctors()">
     Seed Data Dokter (Firestore only)
   </button>
@@ -46,6 +52,15 @@
   <button class="seed-btn secondary" onclick="clearLog()">
     Clear Log
   </button>
+
+  <div style="margin-top:16px;background:#1a1a2e;border-radius:12px;padding:14px;font-size:0.75rem;color:#56CCF2;font-family:monospace;line-height:1.8;">
+    <div style="color:#F2C94C;font-weight:700;margin-bottom:6px;">📋 Akun Demo Setelah Seed:</div>
+    <div>👤 Admin &nbsp;&nbsp;: admin@vitalora.id / <b>admin123</b></div>
+    <div>👨‍⚕️ Dokter 1: sarah.wijaya@vitalora.id / <b>dokter123</b></div>
+    <div>👨‍⚕️ Dokter 2: andi.rahmanto@vitalora.id / <b>dokter123</b></div>
+    <div>👨‍⚕️ Dokter 3: nadia.putri@vitalora.id / <b>dokter123</b></div>
+    <div>🧑 Pasien &nbsp;: budi.santoso@vitalora.id / <b>pasien123</b></div>
+  </div>
 
   <div class="log-area" id="logArea">
     <div class="log-line info">Siap untuk seed data...</div>
@@ -277,6 +292,130 @@
     } finally {
       btn.disabled = false;
       btn.textContent = 'Seed Dokter + Auth (bisa login)';
+    }
+  }
+
+  // ===== SEED ALL DEMO ACCOUNTS =====
+  async function seedAllAccounts() {
+    const btn = document.getElementById('seedAllBtn');
+    btn.disabled = true;
+    btn.textContent = 'Seeding semua akun...';
+
+    const accounts = [
+      {
+        email: 'admin@vitalora.id',
+        password: 'admin123',
+        name: 'Admin Vitalora',
+        role: 'admin',
+        roleStatus: 'approved',
+        isActive: true,
+        extra: {}
+      },
+      {
+        email: 'sarah.wijaya@vitalora.id',
+        password: 'dokter123',
+        name: 'dr. Sarah Wijaya, Sp.PD',
+        role: 'doctor',
+        roleStatus: 'approved',
+        isActive: true,
+        extra: {
+          specialty: 'Spesialis Penyakit Dalam',
+          hospital: 'RS Medicore Jakarta',
+          rating: 4.9, reviewCount: 238, experience: 8,
+          consultTypes: ['chat', 'video', 'integrative'],
+          pricing: { chat: 75000, video: 120000, integrative: 150000 },
+          isOnline: true
+        }
+      },
+      {
+        email: 'andi.rahmanto@vitalora.id',
+        password: 'dokter123',
+        name: 'dr. Andi Rahmanto, Sp.JP',
+        role: 'doctor',
+        roleStatus: 'approved',
+        isActive: true,
+        extra: {
+          specialty: 'Spesialis Jantung',
+          hospital: 'RS Jantung Harapan Kita',
+          rating: 4.8, reviewCount: 156, experience: 12,
+          consultTypes: ['chat', 'video'],
+          pricing: { chat: 100000, video: 150000 },
+          isOnline: false
+        }
+      },
+      {
+        email: 'nadia.putri@vitalora.id',
+        password: 'dokter123',
+        name: 'dr. Nadia Putri, M.Ked',
+        role: 'doctor',
+        roleStatus: 'approved',
+        isActive: true,
+        extra: {
+          specialty: 'Dokter Umum',
+          hospital: 'Klinik Sehat Sentosa',
+          rating: 4.7, reviewCount: 312, experience: 5,
+          consultTypes: ['chat'],
+          pricing: { chat: 35000 },
+          isOnline: true
+        }
+      },
+      {
+        email: 'budi.santoso@vitalora.id',
+        password: 'pasien123',
+        name: 'Budi Santoso',
+        role: 'patient',
+        roleStatus: 'approved',
+        isActive: true,
+        extra: {}
+      }
+    ];
+
+    try {
+      log('Memulai seed semua akun demo...', 'info');
+      log('', 'info');
+
+      for (const acc of accounts) {
+        log('Membuat: ' + acc.email + ' (' + acc.role + ')', 'info');
+        try {
+          const cred = await VFirebase.auth.createUserWithEmailAndPassword(acc.email, acc.password);
+          await cred.user.updateProfile({ displayName: acc.name });
+
+          await VFirebase.db.collection('users').doc(cred.user.uid).set({
+            uid: cred.user.uid,
+            name: acc.name,
+            email: acc.email,
+            role: acc.role,
+            roleStatus: acc.roleStatus,
+            isActive: acc.isActive,
+            photoURL: null,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            ...acc.extra
+          });
+
+          log('✓ Berhasil: ' + acc.name, 'success');
+          await VFirebase.auth.signOut();
+
+        } catch (e) {
+          if (e.code === 'auth/email-already-in-use') {
+            log('⚠ Sudah ada: ' + acc.email + ' (skip)', 'warn');
+          } else {
+            log('✗ Gagal ' + acc.email + ': ' + e.message, 'error');
+          }
+        }
+      }
+
+      log('', 'info');
+      log('=== SELESAI ===', 'success');
+      log('Akun demo siap digunakan untuk demo!', 'success');
+      log('Admin  : admin@vitalora.id / admin123', 'info');
+      log('Dokter : sarah.wijaya@vitalora.id / dokter123', 'info');
+      log('Pasien : budi.santoso@vitalora.id / pasien123', 'info');
+
+    } catch (e) {
+      log('Error: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🚀 SEED SEMUA AKUN DEMO (Admin + Dokter + Pasien)';
     }
   }
 

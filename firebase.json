@@ -8,6 +8,7 @@
     ]
   },
   "firestore": {
-    "rules": "www/firestore.rules"
+    "rules": "www/firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }
