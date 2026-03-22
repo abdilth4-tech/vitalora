@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — Profil Kesehatan</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    .app-header { background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%); box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
+    .app-header .logo { color: #fff; }
+    .app-header .logo span { color: #6FCF97; }
+    .app-header .neu-icon-btn { background: rgba(255,255,255,0.12); box-shadow: none; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+
+    /* Progress bar */
+    .progress-wrap { padding: 14px 20px 0; background: var(--bg); }
+    .progress-steps { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+    .progress-step { flex: 1; height: 4px; border-radius: 4px; background: var(--shadow-dark); transition: background 0.3s; }
+    .progress-step.done { background: var(--primary-dark); }
+    .progress-step.active { background: linear-gradient(90deg, var(--primary-dark), #6FCF97); }
+    .progress-label { font-size: 0.72rem; color: var(--text-secondary); text-align: center; }
+
+    /* Steps */
+    .step-pane { display: none; }
+    .step-pane.active { display: block; }
+
+    /* Form fields */
+    .field-group { margin-bottom: 20px; }
+    .field-label { font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; display: block; }
+    .field-hint { font-size: 0.72rem; color: var(--text-tertiary); margin-top: 3px; }
+
+    .slider-wrap { display: flex; align-items: center; gap: 12px; }
+    .slider-wrap input[type=range] { flex: 1; -webkit-appearance: none; height: 6px; border-radius: 6px; background: var(--shadow-dark); outline: none; }
+    .slider-wrap input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary-dark); cursor: pointer; box-shadow: 0 2px 6px rgba(39,174,96,0.4); }
+    .slider-value { min-width: 52px; text-align: right; font-weight: 700; font-size: 0.9rem; color: var(--primary-dark); }
+
+    .radio-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .radio-opt { padding: 8px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: var(--bg); box-shadow: var(--shadow-out-sm); color: var(--text-secondary); transition: all 0.15s; user-select: none; }
+    .radio-opt.selected { background: linear-gradient(135deg, var(--primary-dark), #6FCF97); color: #fff; box-shadow: 0 4px 12px rgba(39,174,96,0.3); }
+
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--bg); box-shadow: var(--shadow-out-sm); border-radius: 14px; margin-bottom: 10px; }
+    .toggle-info { flex: 1; }
+    .toggle-title { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+    .toggle-sub { font-size: 0.72rem; color: var(--text-tertiary); margin-top: 2px; }
+    .neu-toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .neu-toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--shadow-dark); border-radius: 24px; cursor: pointer; transition: 0.3s; }
+    .toggle-slider:before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+    .neu-toggle input:checked + .toggle-slider { background: var(--primary-dark); }
+    .neu-toggle input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+    .lab-field { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg); box-shadow: var(--shadow-in); border-radius: 12px; margin-bottom: 8px; }
+    .lab-field label { font-size: 0.8rem; color: var(--text-secondary); flex: 1; }
+    .lab-input { width: 80px; border: none; background: transparent; font-family: var(--font); font-size: 0.88rem; font-weight: 700; color: var(--primary-dark); text-align: right; outline: none; }
+    .lab-unit { font-size: 0.72rem; color: var(--text-tertiary); margin-left: 6px; width: 40px; }
+
+    /* BMI badge */
+    .bmi-badge { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 14px; font-weight: 700; font-size: 0.88rem; margin-top: 12px; }
+    .bmi-badge.normal { background: rgba(39,174,96,0.12); color: #27AE60; }
+    .bmi-badge.overweight { background: rgba(242,153,74,0.12); color: #F2994A; }
+    .bmi-badge.obese { background: rgba(235,87,87,0.12); color: #EB5757; }
+    .bmi-badge.thin { background: rgba(86,204,242,0.12); color: #2D9CDB; }
+
+    /* Action buttons */
+    .step-actions { display: flex; gap: 10px; margin-top: 24px; }
+    .btn-prev { flex: 1; padding: 13px; border: none; border-radius: 14px; font-family: var(--font); font-size: 0.88rem; font-weight: 700; background: var(--bg); box-shadow: var(--shadow-out-sm); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+    .btn-next { flex: 2; padding: 13px; border: none; border-radius: 14px; font-family: var(--font); font-size: 0.9rem; font-weight: 700; background: var(--primary-gradient); color: #fff; cursor: pointer; box-shadow: 0 4px 14px rgba(39,174,96,0.35); transition: all 0.15s; }
+    .btn-next:active { transform: scale(0.98); }
+    .btn-skip { flex: 1; padding: 13px; border: none; border-radius: 14px; font-family: var(--font); font-size: 0.82rem; font-weight: 600; background: var(--bg); box-shadow: var(--shadow-out-sm); color: var(--text-tertiary); cursor: pointer; }
+
+    .step-title { font-size: 1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px; }
+    .step-sub { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 20px; }
+
+    .save-indicator { display: none; font-size: 0.72rem; color: #27AE60; text-align: center; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<div class="mobile-frame page-enter">
+  <header class="app-header">
+    <button class="neu-icon-btn" onclick="nav('home.html')"><ion-icon name="arrow-back-outline"></ion-icon></button>
+    <div style="font-size:1rem;font-weight:700;color:#fff;">Profil Kesehatan</div>
+    <div style="width:40px;"></div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-wrap">
+    <div class="progress-steps">
+      <div class="progress-step active" id="ps-0"></div>
+      <div class="progress-step" id="ps-1"></div>
+      <div class="progress-step" id="ps-2"></div>
+      <div class="progress-step" id="ps-3"></div>
+      <div class="progress-step" id="ps-4"></div>
+    </div>
+    <div class="progress-label" id="stepLabel">Langkah 1 dari 5 — Profil Dasar</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- STEP A — Profil Dasar                                                 -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="section step-pane active" id="step-0">
+    <div class="step-title">Data Fisik</div>
+    <div class="step-sub">Digunakan untuk menghitung BMI dan usia risiko penyakit Anda</div>
+
+    <div class="field-group">
+      <label class="field-label">Tanggal Lahir</label>
+      <input type="date" id="dateOfBirth" class="neu-input" style="width:100%;box-sizing:border-box;" max="">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Jenis Kelamin</label>
+      <div class="radio-group">
+        <div class="radio-opt selected" data-group="gender" data-val="male" onclick="pickRadio(this)">👨 Pria</div>
+        <div class="radio-opt" data-group="gender" data-val="female" onclick="pickRadio(this)">👩 Wanita</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Tinggi Badan</label>
+      <div class="slider-wrap">
+        <input type="range" id="heightCm" min="140" max="210" value="165" oninput="updateSlider('heightCm','heightVal','cm');calcBMI()">
+        <span class="slider-value" id="heightVal">165 cm</span>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Berat Badan</label>
+      <div class="slider-wrap">
+        <input type="range" id="weightKg" min="35" max="150" value="65" oninput="updateSlider('weightKg','weightVal','kg');calcBMI()">
+        <span class="slider-value" id="weightVal">65 kg</span>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Lingkar Pinggang</label>
+      <div class="slider-wrap">
+        <input type="range" id="waistCircumferenceCm" min="55" max="140" value="80" oninput="updateSlider('waistCircumferenceCm','waistVal','cm')">
+        <span class="slider-value" id="waistVal">80 cm</span>
+      </div>
+    </div>
+
+    <!-- BMI Real-time -->
+    <div id="bmiDisplay" class="bmi-badge normal" style="width:100%;justify-content:center;">
+      <ion-icon name="body-outline"></ion-icon>
+      <span id="bmiText">BMI: 23.9 — Normal</span>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn-next" onclick="nextStep()">Lanjut <ion-icon name="arrow-forward-outline"></ion-icon></button>
+    </div>
+    <div class="save-indicator" id="save-0">✓ Tersimpan</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- STEP B — Gaya Hidup                                                   -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="section step-pane" id="step-1">
+    <div class="step-title">Gaya Hidup</div>
+    <div class="step-sub">Kebiasaan sehari-hari berpengaruh besar pada risiko penyakit</div>
+
+    <div class="field-group">
+      <label class="field-label">Status Merokok</label>
+      <div class="radio-group">
+        <div class="radio-opt selected" data-group="smokingStatus" data-val="never" onclick="pickRadio(this)">Tidak Pernah</div>
+        <div class="radio-opt" data-group="smokingStatus" data-val="former" onclick="pickRadio(this)">Pernah</div>
+        <div class="radio-opt" data-group="smokingStatus" data-val="active" onclick="pickRadio(this)">🚬 Aktif</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Konsumsi Alkohol</label>
+      <div class="radio-group">
+        <div class="radio-opt selected" data-group="alcoholUse" data-val="none" onclick="pickRadio(this)">Tidak</div>
+        <div class="radio-opt" data-group="alcoholUse" data-val="occasional" onclick="pickRadio(this)">Kadang</div>
+        <div class="radio-opt" data-group="alcoholUse" data-val="frequent" onclick="pickRadio(this)">Sering</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Frekuensi Olahraga (per minggu)</label>
+      <div class="slider-wrap">
+        <input type="range" id="exerciseFreqPerWeek" min="0" max="7" value="3" oninput="updateSlider('exerciseFreqPerWeek','exerciseVal','x/minggu')">
+        <span class="slider-value" id="exerciseVal">3 x/minggu</span>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Intensitas Olahraga</label>
+      <div class="radio-group">
+        <div class="radio-opt" data-group="exerciseIntensity" data-val="none" onclick="pickRadio(this)">Tidak ada</div>
+        <div class="radio-opt selected" data-group="exerciseIntensity" data-val="light" onclick="pickRadio(this)">Ringan</div>
+        <div class="radio-opt" data-group="exerciseIntensity" data-val="moderate" onclick="pickRadio(this)">Sedang</div>
+        <div class="radio-opt" data-group="exerciseIntensity" data-val="vigorous" onclick="pickRadio(this)">Berat</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Jam Tidur per Malam</label>
+      <div class="slider-wrap">
+        <input type="range" id="sleepHoursPerNight" min="4" max="12" value="7" step="0.5" oninput="updateSlider('sleepHoursPerNight','sleepVal','jam')">
+        <span class="slider-value" id="sleepVal">7 jam</span>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Kualitas Tidur</label>
+      <div class="slider-wrap">
+        <input type="range" id="sleepQuality" min="1" max="10" value="7" oninput="updateSliderRaw('sleepQuality','sleepQualVal')">
+        <span class="slider-value" id="sleepQualVal">7 / 10</span>
+      </div>
+      <div class="field-hint">1 = sangat buruk, 10 = sangat baik</div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Konsumsi Gula</label>
+      <div class="radio-group">
+        <div class="radio-opt selected" data-group="sugarIntake" data-val="low" onclick="pickRadio(this)">Rendah</div>
+        <div class="radio-opt" data-group="sugarIntake" data-val="moderate" onclick="pickRadio(this)">Sedang</div>
+        <div class="radio-opt" data-group="sugarIntake" data-val="high" onclick="pickRadio(this)">Tinggi</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Konsumsi Garam / Makanan Asin</label>
+      <div class="radio-group">
+        <div class="radio-opt selected" data-group="saltIntake" data-val="low" onclick="pickRadio(this)">Rendah</div>
+        <div class="radio-opt" data-group="saltIntake" data-val="moderate" onclick="pickRadio(this)">Sedang</div>
+        <div class="radio-opt" data-group="saltIntake" data-val="high" onclick="pickRadio(this)">Tinggi</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Jenis Pekerjaan</label>
+      <div class="radio-group">
+        <div class="radio-opt" data-group="jobType" data-val="sedentary" onclick="pickRadio(this)">Duduk (Desk)</div>
+        <div class="radio-opt selected" data-group="jobType" data-val="active" onclick="pickRadio(this)">Aktif bergerak</div>
+        <div class="radio-opt" data-group="jobType" data-val="heavy" onclick="pickRadio(this)">Kerja Keras Fisik</div>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn-prev" onclick="prevStep()"><ion-icon name="arrow-back-outline"></ion-icon></button>
+      <button class="btn-next" onclick="nextStep()">Lanjut <ion-icon name="arrow-forward-outline"></ion-icon></button>
+    </div>
+    <div class="save-indicator" id="save-1">✓ Tersimpan</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- STEP C — Riwayat Keluarga                                             -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="section step-pane" id="step-2">
+    <div class="step-title">Riwayat Keluarga</div>
+    <div class="step-sub">Apakah ada anggota keluarga dekat (orang tua / saudara kandung) yang menderita:</div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">❤️ Penyakit Jantung</div>
+        <div class="toggle-sub">Serangan jantung, gagal jantung, angina</div>
+      </div>
+      <label class="neu-toggle"><input type="checkbox" id="fhHeart"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">🩸 Diabetes</div>
+        <div class="toggle-sub">Diabetes tipe 1 atau tipe 2</div>
+      </div>
+      <label class="neu-toggle"><input type="checkbox" id="fhDiabetes"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">💊 Hipertensi</div>
+        <div class="toggle-sub">Tekanan darah tinggi yang perlu obat</div>
+      </div>
+      <label class="neu-toggle"><input type="checkbox" id="fhHypertension"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">🧠 Stroke</div>
+        <div class="toggle-sub">Riwayat stroke atau TIA (mini-stroke)</div>
+      </div>
+      <label class="neu-toggle"><input type="checkbox" id="fhStroke"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn-prev" onclick="prevStep()"><ion-icon name="arrow-back-outline"></ion-icon></button>
+      <button class="btn-next" onclick="nextStep()">Lanjut <ion-icon name="arrow-forward-outline"></ion-icon></button>
+    </div>
+    <div class="save-indicator" id="save-2">✓ Tersimpan</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- STEP D — Kondisi Diketahui                                            -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="section step-pane" id="step-3">
+    <div class="step-title">Kondisi Kesehatan Saat Ini</div>
+    <div class="step-sub">Apakah Anda sudah didiagnosis atau mengalami kondisi berikut?</div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">💊 Hipertensi (Didiagnosis)</div>
+        <div class="toggle-sub">Dokter menyatakan tekanan darah tinggi</div>
+      </div>
+      <label class="neu-toggle"><input type="checkbox" id="condHypertension"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">🩸 Diabetes (Didiagnosis)</div>
+        <div class="toggle-sub">DM tipe 1 atau tipe 2 sudah terdiagnosis</div>
+      </div>
+      <label class="neu-toggle"><input type="checkbox" id="condDiabetes"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">🧬 Kolesterol Tinggi</div>
+        <div class="toggle-sub">LDL > 160 atau total kolesterol > 240 mg/dL</div>
+      </div>
+      <label class="neu-toggle"><input type="checkbox" id="condHighChol"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">❤️‍🔥 Pernah Serangan Jantung</div>
+        <div class="toggle-sub">Riwayat infark miokard atau angina tidak stabil</div>
+      </div>
+      <label class="neu-toggle"><input type="checkbox" id="condHeartAttack"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">💉 Sedang Minum Obat Darah Tinggi</div>
+        <div class="toggle-sub">Antihipertensi aktif saat ini</div>
+      </div>
+      <label class="neu-toggle"><input type="checkbox" id="condOnBPMeds"><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn-prev" onclick="prevStep()"><ion-icon name="arrow-back-outline"></ion-icon></button>
+      <button class="btn-next" onclick="nextStepD()">Lihat Hasil Risiko <ion-icon name="analytics-outline"></ion-icon></button>
+    </div>
+    <div class="save-indicator" id="save-3">✓ Tersimpan</div>
+
+    <!-- CTA ke health-dashboard -->
+    <button class="btn-next" id="ctaDashboard" style="display:none;width:100%;margin-top:10px;background:linear-gradient(135deg,#1565C0,#42A5F5);"
+            onclick="nav('health-dashboard.html')">
+      <ion-icon name="analytics-outline"></ion-icon> Hitung Risiko Saya →
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- STEP E — Hasil Lab (Opsional)                                         -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="section step-pane" id="step-4">
+    <div class="step-title">Hasil Laboratorium <span style="font-size:0.7rem;color:var(--text-tertiary);font-weight:400;">(Opsional)</span></div>
+    <div class="step-sub">Data lab meningkatkan akurasi prediksi risiko secara signifikan. Kosongkan jika tidak punya.</div>
+
+    <div class="lab-field">
+      <label>Gula Darah Puasa</label>
+      <input class="lab-input" type="number" id="labFastingGlucose" placeholder="—" min="50" max="600">
+      <span class="lab-unit">mg/dL</span>
+    </div>
+    <div class="lab-field">
+      <label>HbA1c</label>
+      <input class="lab-input" type="number" id="labHbA1c" placeholder="—" min="3" max="15" step="0.1">
+      <span class="lab-unit">%</span>
+    </div>
+    <div class="lab-field">
+      <label>Kolesterol Total</label>
+      <input class="lab-input" type="number" id="labTotalChol" placeholder="—" min="80" max="500">
+      <span class="lab-unit">mg/dL</span>
+    </div>
+    <div class="lab-field">
+      <label>HDL (Kolesterol Baik)</label>
+      <input class="lab-input" type="number" id="labHDL" placeholder="—" min="20" max="150">
+      <span class="lab-unit">mg/dL</span>
+    </div>
+    <div class="lab-field">
+      <label>LDL (Kolesterol Jahat)</label>
+      <input class="lab-input" type="number" id="labLDL" placeholder="—" min="30" max="400">
+      <span class="lab-unit">mg/dL</span>
+    </div>
+    <div class="lab-field">
+      <label>Trigliserida</label>
+      <input class="lab-input" type="number" id="labTriglycerides" placeholder="—" min="30" max="1000">
+      <span class="lab-unit">mg/dL</span>
+    </div>
+    <div class="lab-field">
+      <label>TD Sistolik</label>
+      <input class="lab-input" type="number" id="labSBP" placeholder="—" min="70" max="250">
+      <span class="lab-unit">mmHg</span>
+    </div>
+    <div class="lab-field">
+      <label>TD Diastolik</label>
+      <input class="lab-input" type="number" id="labDBP" placeholder="—" min="40" max="150">
+      <span class="lab-unit">mmHg</span>
+    </div>
+    <div class="lab-field">
+      <label>Asam Urat</label>
+      <input class="lab-input" type="number" id="labUricAcid" placeholder="—" min="1" max="20" step="0.1">
+      <span class="lab-unit">mg/dL</span>
+    </div>
+    <div class="lab-field">
+      <label>Kreatinin</label>
+      <input class="lab-input" type="number" id="labCreatinine" placeholder="—" min="0.3" max="15" step="0.1">
+      <span class="lab-unit">mg/dL</span>
+    </div>
+    <div class="field-group" style="margin-top:14px;">
+      <label class="field-label">Tanggal Pemeriksaan Lab</label>
+      <input type="date" id="labDate" class="neu-input" style="width:100%;box-sizing:border-box;" max="">
+    </div>
+
+    <div class="step-actions">
+      <button class="btn-skip" onclick="skipLab()">Lewati</button>
+      <button class="btn-next" onclick="saveLab()">Simpan &amp; Selesai <ion-icon name="checkmark-circle-outline"></ion-icon></button>
+    </div>
+    <div class="save-indicator" id="save-4">✓ Tersimpan</div>
+  </div>
+
+</div><!-- end .mobile-frame -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script src="../shared/app.js"></script>
+<script>
+  const STEP_LABELS = ['Profil Dasar','Gaya Hidup','Riwayat Keluarga','Kondisi Diketahui','Hasil Lab'];
+  let currentStep = 0;
+  let userId = null;
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  VAuth.guard('patient').then(({ user, profile }) => {
+    userId = user.uid;
+    document.getElementById('dateOfBirth').max = new Date().toISOString().split('T')[0];
+    document.getElementById('labDate').max    = new Date().toISOString().split('T')[0];
+    loadProfile();
+  }).catch(() => {});
+
+  async function loadProfile() {
+    const p = await VDB.getHealthProfile(userId);
+    if (!p) return;
+
+    // Step A
+    if (p.dateOfBirth) document.getElementById('dateOfBirth').value = p.dateOfBirth;
+    if (p.gender)      pickRadioVal('gender', p.gender);
+    if (p.heightCm)    { document.getElementById('heightCm').value = p.heightCm; updateSlider('heightCm','heightVal','cm'); }
+    if (p.weightKg)    { document.getElementById('weightKg').value = p.weightKg; updateSlider('weightKg','weightVal','kg'); }
+    if (p.waistCircumferenceCm) { document.getElementById('waistCircumferenceCm').value = p.waistCircumferenceCm; updateSlider('waistCircumferenceCm','waistVal','cm'); }
+    calcBMI();
+
+    // Step B
+    if (p.smokingStatus)         pickRadioVal('smokingStatus', p.smokingStatus);
+    if (p.alcoholUse)            pickRadioVal('alcoholUse', p.alcoholUse);
+    if (p.exerciseFreqPerWeek != null) { document.getElementById('exerciseFreqPerWeek').value = p.exerciseFreqPerWeek; updateSlider('exerciseFreqPerWeek','exerciseVal','x/minggu'); }
+    if (p.exerciseIntensity)     pickRadioVal('exerciseIntensity', p.exerciseIntensity);
+    if (p.sleepHoursPerNight)    { document.getElementById('sleepHoursPerNight').value = p.sleepHoursPerNight; updateSlider('sleepHoursPerNight','sleepVal','jam'); }
+    if (p.sleepQuality)          { document.getElementById('sleepQuality').value = p.sleepQuality; updateSliderRaw('sleepQuality','sleepQualVal'); }
+    if (p.sugarIntake)           pickRadioVal('sugarIntake', p.sugarIntake);
+    if (p.saltIntake)            pickRadioVal('saltIntake', p.saltIntake);
+    if (p.jobType)               pickRadioVal('jobType', p.jobType);
+
+    // Step C
+    const fh = p.familyHistory || {};
+    if (fh.heart)        document.getElementById('fhHeart').checked = true;
+    if (fh.diabetes)     document.getElementById('fhDiabetes').checked = true;
+    if (fh.hypertension) document.getElementById('fhHypertension').checked = true;
+    if (fh.stroke)       document.getElementById('fhStroke').checked = true;
+
+    // Step D
+    const kc = p.knownConditions || {};
+    if (kc.hypertension) document.getElementById('condHypertension').checked = true;
+    if (kc.diabetes)     document.getElementById('condDiabetes').checked = true;
+    if (kc.highCholesterol) document.getElementById('condHighChol').checked = true;
+    if (kc.heartAttack)  document.getElementById('condHeartAttack').checked = true;
+    if (kc.onBPMeds)     document.getElementById('condOnBPMeds').checked = true;
+
+    // Step E
+    const lab = p.labResults || {};
+    if (lab.fastingGlucose)  document.getElementById('labFastingGlucose').value  = lab.fastingGlucose;
+    if (lab.hbA1c)           document.getElementById('labHbA1c').value           = lab.hbA1c;
+    if (lab.totalCholesterol) document.getElementById('labTotalChol').value      = lab.totalCholesterol;
+    if (lab.hdl)             document.getElementById('labHDL').value             = lab.hdl;
+    if (lab.ldl)             document.getElementById('labLDL').value             = lab.ldl;
+    if (lab.triglycerides)   document.getElementById('labTriglycerides').value   = lab.triglycerides;
+    if (lab.sbp)             document.getElementById('labSBP').value             = lab.sbp;
+    if (lab.dbp)             document.getElementById('labDBP').value             = lab.dbp;
+    if (lab.uricAcid)        document.getElementById('labUricAcid').value        = lab.uricAcid;
+    if (lab.creatinine)      document.getElementById('labCreatinine').value      = lab.creatinine;
+    if (lab.labDate)         document.getElementById('labDate').value            = lab.labDate;
+  }
+
+  // ── Step navigation ───────────────────────────────────────────────────────
+  async function nextStep() {
+    await saveCurrentStep();
+    if (currentStep < 4) goToStep(currentStep + 1);
+  }
+
+  async function nextStepD() {
+    await saveCurrentStep();
+    goToStep(4);
+    document.getElementById('ctaDashboard').style.display = '';
+  }
+
+  function prevStep() {
+    if (currentStep > 0) goToStep(currentStep - 1);
+  }
+
+  function goToStep(n) {
+    document.getElementById('step-' + currentStep).classList.remove('active');
+    currentStep = n;
+    document.getElementById('step-' + n).classList.add('active');
+    updateProgressBar();
+    window.scrollTo(0, 0);
+  }
+
+  function updateProgressBar() {
+    for (let i = 0; i < 5; i++) {
+      const el = document.getElementById('ps-' + i);
+      el.className = 'progress-step' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
+    }
+    document.getElementById('stepLabel').textContent =
+      'Langkah ' + (currentStep + 1) + ' dari 5 — ' + STEP_LABELS[currentStep];
+  }
+
+  // ── Save logic ────────────────────────────────────────────────────────────
+  async function saveCurrentStep() {
+    if (!userId) return;
+    const data = collectStepData(currentStep);
+    await VDB.updateHealthSection(userId, data);
+    flashSave(currentStep);
+  }
+
+  function collectStepData(step) {
+    if (step === 0) {
+      return {
+        dateOfBirth:          document.getElementById('dateOfBirth').value || null,
+        gender:               getRadioVal('gender'),
+        heightCm:             parseInt(document.getElementById('heightCm').value),
+        weightKg:             parseInt(document.getElementById('weightKg').value),
+        waistCircumferenceCm: parseInt(document.getElementById('waistCircumferenceCm').value),
+      };
+    }
+    if (step === 1) {
+      return {
+        smokingStatus:        getRadioVal('smokingStatus'),
+        alcoholUse:           getRadioVal('alcoholUse'),
+        exerciseFreqPerWeek:  parseInt(document.getElementById('exerciseFreqPerWeek').value),
+        exerciseIntensity:    getRadioVal('exerciseIntensity'),
+        sleepHoursPerNight:   parseFloat(document.getElementById('sleepHoursPerNight').value),
+        sleepQuality:         parseInt(document.getElementById('sleepQuality').value),
+        sugarIntake:          getRadioVal('sugarIntake'),
+        saltIntake:           getRadioVal('saltIntake'),
+        jobType:              getRadioVal('jobType'),
+      };
+    }
+    if (step === 2) {
+      return {
+        familyHistory: {
+          heart:        document.getElementById('fhHeart').checked,
+          diabetes:     document.getElementById('fhDiabetes').checked,
+          hypertension: document.getElementById('fhHypertension').checked,
+          stroke:       document.getElementById('fhStroke').checked,
+        }
+      };
+    }
+    if (step === 3) {
+      return {
+        knownConditions: {
+          hypertension:    document.getElementById('condHypertension').checked,
+          diabetes:        document.getElementById('condDiabetes').checked,
+          highCholesterol: document.getElementById('condHighChol').checked,
+          heartAttack:     document.getElementById('condHeartAttack').checked,
+          onBPMeds:        document.getElementById('condOnBPMeds').checked,
+        }
+      };
+    }
+    return {};
+  }
+
+  async function saveLab() {
+    if (!userId) return;
+    const num = id => { const v = parseFloat(document.getElementById(id).value); return isNaN(v) ? null : v; };
+    await VDB.saveLabResults(userId, {
+      fastingGlucose:   num('labFastingGlucose'),
+      hbA1c:            num('labHbA1c'),
+      totalCholesterol: num('labTotalChol'),
+      hdl:              num('labHDL'),
+      ldl:              num('labLDL'),
+      triglycerides:    num('labTriglycerides'),
+      sbp:              num('labSBP'),
+      dbp:              num('labDBP'),
+      uricAcid:         num('labUricAcid'),
+      creatinine:       num('labCreatinine'),
+      labDate:          document.getElementById('labDate').value || null,
+    });
+    flashSave(4);
+    setTimeout(() => nav('health-dashboard.html'), 800);
+  }
+
+  function skipLab() { nav('health-dashboard.html'); }
+
+  function flashSave(step) {
+    const el = document.getElementById('save-' + step);
+    if (!el) return;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 2000);
+  }
+
+  // ── UI helpers ────────────────────────────────────────────────────────────
+  function updateSlider(id, valId, unit) {
+    document.getElementById(valId).textContent = document.getElementById(id).value + ' ' + unit;
+  }
+  function updateSliderRaw(id, valId) {
+    document.getElementById(valId).textContent = document.getElementById(id).value + ' / 10';
+  }
+
+  function calcBMI() {
+    const h = parseInt(document.getElementById('heightCm').value) / 100;
+    const w = parseInt(document.getElementById('weightKg').value);
+    if (!h || !w) return;
+    const bmi = w / (h * h);
+    let cat, cls;
+    if      (bmi < 18.5) { cat = 'Kurus';          cls = 'thin'; }
+    else if (bmi < 25)   { cat = 'Normal';          cls = 'normal'; }
+    else if (bmi < 30)   { cat = 'Kelebihan Berat'; cls = 'overweight'; }
+    else                  { cat = 'Obesitas';        cls = 'obese'; }
+    const el = document.getElementById('bmiDisplay');
+    el.className = 'bmi-badge ' + cls;
+    document.getElementById('bmiText').textContent = 'BMI: ' + bmi.toFixed(1) + ' — ' + cat;
+  }
+
+  function pickRadio(el) {
+    const group = el.dataset.group;
+    document.querySelectorAll('[data-group="' + group + '"]').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+  function pickRadioVal(group, val) {
+    document.querySelectorAll('[data-group="' + group + '"]').forEach(e => {
+      e.classList.toggle('selected', e.dataset.val === val);
+    });
+  }
+  function getRadioVal(group) {
+    const sel = document.querySelector('[data-group="' + group + '"].selected');
+    return sel ? sel.dataset.val : null;
+  }
+</script>
+</body>
+</html>

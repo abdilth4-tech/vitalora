@@ -254,6 +254,7 @@ function formatCurrency(val) {
 (async () => {
   try {
     await VAuth.guard('admin', 1);
+  if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
 
     if (!id) {
       showToast('ID kampanye tidak ditemukan di URL.', 'error');

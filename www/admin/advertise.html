@@ -96,6 +96,7 @@
 <script>
 (async () => {
   await VAuth.guard('admin', 1);
+  if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
   loadBanners();
 })();
 

@@ -64,3 +64,14 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+# Training datasets (large CSV files)
+kaggle/
+
+# Large raw TCM data
+data/tcm_mkg/raw/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pkl

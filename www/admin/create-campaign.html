@@ -247,6 +247,7 @@ let _adminUser = null;
 (async () => {
   try {
     const { user } = await VAuth.guard('admin', 1);
+  if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
     _adminUser = user;
   } catch (err) {
     console.error(err);

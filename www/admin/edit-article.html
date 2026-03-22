@@ -69,6 +69,8 @@
       <a class="sidebar-item" href="notifications.html"><ion-icon name="notifications-outline"></ion-icon>Notifikasi</a>
       <a class="sidebar-item active" href="news.html"><ion-icon name="newspaper-outline"></ion-icon>News</a>
       <a class="sidebar-item" href="advertise.html"><ion-icon name="megaphone-outline"></ion-icon>Iklan</a>
+      <a class="sidebar-item" href="herbal-submit.html"><ion-icon name="leaf-outline"></ion-icon>Tambah Herbal</a>
+      <a class="sidebar-item" id="nav-verify-herbal" href="herbal-verify.html" style="display:none"><ion-icon name="shield-checkmark-outline"></ion-icon>Verifikasi Herbal</a>
     </nav>
     <a class="sidebar-item" id="logout-link" href="#" style="margin-top:auto;"><ion-icon name="log-out-outline"></ion-icon>Logout</a>
   </aside>
@@ -332,7 +334,8 @@ function prefillForm(article) {
 
 let currentArticleId = null;
 
-VAuth.guard('admin', 1).then(() => {
+VAuth.guard('admin', 1).then(({ profile }) => {
+  if (profile && profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
   // Logout link
   document.getElementById('logout-link').addEventListener('click', (e) => {
     e.preventDefault();

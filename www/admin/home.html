@@ -29,6 +29,9 @@
       <a class="sidebar-item" href="notifications.html"><ion-icon name="notifications-outline"></ion-icon>Notifikasi</a>
       <a class="sidebar-item" href="news.html"><ion-icon name="newspaper-outline"></ion-icon>News</a>
       <a class="sidebar-item" href="advertise.html"><ion-icon name="megaphone-outline"></ion-icon>Iklan</a>
+      <a class="sidebar-item" href="herbal-submit.html"><ion-icon name="leaf-outline"></ion-icon>Tambah Herbal</a>
+      <a class="sidebar-item" id="nav-verify-herbal" href="herbal-verify.html" style="display:none"><ion-icon name="shield-checkmark-outline"></ion-icon>Verifikasi Herbal</a>
+      <a class="sidebar-item" href="ml-models.html"><ion-icon name="analytics-outline"></ion-icon>Model Risiko</a>
     </nav>
     <a class="sidebar-item" href="../index.html" style="margin-top:auto;"><ion-icon name="log-out-outline"></ion-icon>Logout</a>
   </aside>
@@ -75,6 +78,7 @@
 (async () => {
   // 1. Auth guard
   const { user, profile } = await VAuth.guard('admin', 1);
+  if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
 
   // Update avatar initials
   const initials = (profile.name || 'A').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);

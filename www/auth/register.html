@@ -388,8 +388,8 @@
     setLoading(true);
     try {
       await VAuth.register(name, email, pw, firestoreRole);
-      showToastMsg('Akun dibuat! Cek email untuk verifikasi.', 'success');
-      setTimeout(() => { window.location.href = 'verify-email.html'; }, 2000);
+      showToastMsg('Akun berhasil dibuat! Selamat datang 🎉', 'success');
+      setTimeout(() => { window.location.href = 'welcome.html'; }, 1200);
     } catch (err) {
       setLoading(false);
       showError(getErrorMessage(err.code));
