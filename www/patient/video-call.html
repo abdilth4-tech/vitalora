@@ -403,12 +403,13 @@
   let wm = null;
 
   document.addEventListener('DOMContentLoaded', async () => {
-    const { user } = await VAuth.guard('patient', 1);
-
-    const params = new URLSearchParams(location.search);
+    const params    = new URLSearchParams(location.search);
+    const isDoctor  = params.get('isDoctor') === 'true';
     const consultId = params.get('consultId');
     const callId    = params.get('callId');
-    const isDoctor  = params.get('isDoctor') === 'true';
+
+    // Guard sesuai role yang mengakses halaman ini
+    const { user } = await VAuth.guard(isDoctor ? 'doctor' : 'patient', 1);
 
     const localVideoEl  = document.getElementById('localVideo');
     const remoteVideoEl = document.getElementById('remoteVideo');
@@ -471,9 +472,18 @@
         showToast('Gagal memulai panggilan: ' + e.message, 'error');
       }
     } else {
-      // No callId and not isDoctor — just show the UI (waiting state or no-op)
+      // Pasien menunggu — listen Firestore untuk incoming call dari dokter
       document.getElementById('connectingLabel').textContent = 'Menunggu dokter...';
-      startTimer(); // start timer anyway for demo/fallback
+      const unsubIncoming = VWebRTCManager.listenForIncomingCall(user.uid, async incoming => {
+        document.getElementById('connectingLabel').textContent = 'Dokter menghubungi...';
+        unsubIncoming(); // stop listening setelah call ditemukan
+        try {
+          await wm.joinCall(incoming.callId);
+          startTimer();
+        } catch (e) {
+          showToast('Gagal bergabung: ' + e.message, 'error');
+        }
+      });
     }
 
     // Load doctor/remote name from consultation
