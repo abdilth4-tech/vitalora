@@ -4,11 +4,13 @@
 
 **Vitalora** adalah platform telemedisin AIoT-driven dengan 3 role (Patient, Doctor, Admin). UI menggunakan **Neumorphic Design** dengan HTML, CSS, JS murni. Proyek ini sedang dalam tahap pembuatan UI prototype — semua data adalah dummy/mock.
 
-### Status Saat Ini
-- ✅ **21 halaman sudah selesai**
-- ❌ **37 halaman belum dibuat**
+### Status Saat Ini (Update: Maret 2026)
+- ✅ **SEMUA halaman sudah selesai dibuat (58 halaman)**
+- ✅ **SEMUA halaman sudah terintegrasi Firebase Auth + Firestore**
 - ✅ Design system (`shared/neumorphic.css`) sudah final
 - ✅ Utility JS (`shared/app.js`) sudah final
+- ✅ Firebase SDK (`shared/firebase.js`) — VAuth, VDB, VitalsManager, VWebRTC, VChatManager
+- 🔧 **Fase saat ini: Debugging & penyempurnaan fitur**
 
 ---
 
@@ -20,67 +22,72 @@ vitalora/
 ├── shared/
 │   ├── neumorphic.css            ← Design system (JANGAN DIUBAH kecuali menambah)
 │   └── app.js                    ← Shared utilities (JANGAN DIUBAH kecuali menambah)
-├── auth/                         ← ❌ BELUM ADA (4 halaman)
-│   ├── login.html
-│   ├── register.html
-│   ├── forgot-password.html
-│   └── otp-verification.html
-├── patient/                      ← ✅ 10 ada, ❌ 17 belum
-│   ├── home.html                 ✅
-│   ├── monitoring.html           ✅
-│   ├── consultation.html         ✅
-│   ├── herbal.html               ✅
-│   ├── lifestyle.html            ✅
-│   ├── disease-risk.html         ✅
-│   ├── profile.html              ✅
-│   ├── news.html                 ✅
-│   ├── notification.html         ✅
-│   ├── device.html               ✅
-│   ├── ai-consultation.html      ❌
-│   ├── doctor-detail.html        ❌
-│   ├── booking.html              ❌
-│   ├── chat-room.html            ❌
-│   ├── video-call.html           ❌
-│   ├── guided-examination.html   ❌ ← PALING PENTING
-│   ├── examination-result.html   ❌
-│   ├── clinic-map.html           ❌
-│   ├── herbal-detail.html        ❌
-│   ├── herbal-formula.html       ❌
-│   ├── news-detail.html          ❌
-│   ├── edit-profile.html         ❌
-│   ├── medical-history.html      ❌
-│   ├── faq.html                  ❌
-│   ├── privacy-policy.html       ❌
-│   ├── emergency-contact.html    ❌
-│   └── health-journal.html       ❌
-├── doctor/                       ← ✅ 5 ada, ❌ 9 belum
-│   ├── home.html                 ✅
-│   ├── patients.html             ✅
-│   ├── chat.html                 ✅
-│   ├── profile.html              ✅
-│   ├── notification.html         ✅
-│   ├── patient-detail.html       ❌
-│   ├── chat-room.html            ❌
-│   ├── guided-examination.html   ❌ ← PALING PENTING
-│   ├── prescription.html         ❌
-│   ├── referral.html             ❌
-│   ├── schedule.html             ❌
-│   ├── earnings.html             ❌
-│   ├── reviews.html              ❌
-│   └── edit-profile.html         ❌
-└── admin/                        ← ✅ 5 ada, ❌ 7 belum
-    ├── home.html                 ✅
-    ├── users.html                ✅
-    ├── notifications.html        ✅
-    ├── news.html                 ✅
-    ├── advertise.html            ✅
-    ├── user-detail.html          ❌
-    ├── doctor-verification.html  ❌
-    ├── create-notification.html  ❌
-    ├── create-article.html       ❌
-    ├── edit-article.html         ❌
-    ├── create-campaign.html      ❌
-    └── campaign-detail.html      ❌
+├── auth/                         ← ✅ SEMUA ADA + Firebase integrated
+│   ├── login.html                ✅ VAuth.login, VAuth.loginGoogle, debug bypass
+│   ├── register.html             ✅ VAuth.register, email verification
+│   ├── forgot-password.html      ✅ VAuth.resetPassword
+│   ├── verify-email.html         ✅ auto-check 5s, resend cooldown
+│   ├── otp-verification.html     ✅
+│   ├── pending-approval.html     ✅
+│   ├── role-rejected.html        ✅
+│   └── select-role.html          ✅
+├── patient/                      ← ✅ SEMUA 27 halaman ada + Firebase integrated
+│   ├── home.html                 ✅ guard, VitalsManager, notif badge
+│   ├── monitoring.html           ✅ VitalsManager subscribe 1s, Firestore history
+│   ├── consultation.html         ✅ guard, getPatientConsultations, getAllUsers(doctor)
+│   ├── herbal.html               ✅ guard
+│   ├── lifestyle.html            ✅ guard
+│   ├── disease-risk.html         ✅ guard
+│   ├── profile.html              ✅ guard, VDB.getUser
+│   ├── news.html                 ✅ guard, VDB.getPublishedArticles, filter kategori
+│   ├── notification.html         ✅ VDB.subscribeNotifications, mark-read
+│   ├── device.html               ✅ guard
+│   ├── ai-consultation.html      ✅ guard, VDB
+│   ├── doctor-detail.html        ✅ guard, VDB.getUser(doctorId)
+│   ├── booking.html              ✅ guard, VDB.createConsultation, VDB.sendMessage
+│   ├── chat-room.html            ✅ VChatManager real-time
+│   ├── video-call.html           ✅ VWebRTC, ICE+TURN, Firestore signaling
+│   ├── guided-examination.html   ✅ guard, VDB.createMedicalRecord
+│   ├── examination-result.html   ✅ guard, VDB.getConsultation, VDB.createMedicalRecord
+│   ├── clinic-map.html           ✅ guard
+│   ├── herbal-detail.html        ✅ guard
+│   ├── herbal-formula.html       ✅ guard
+│   ├── news-detail.html          ✅ guard, VDB.getArticle (by ?id=)
+│   ├── edit-profile.html         ✅ guard, VDB.updateUser, VDB.updatePatient
+│   ├── medical-history.html      ✅ guard, VDB.getPatientRecords
+│   ├── faq.html                  ✅ guard
+│   ├── privacy-policy.html       ✅ guard
+│   ├── emergency-contact.html    ✅ guard, Firestore emergency contacts
+│   └── health-journal.html       ✅ guard, Firestore health journal
+├── doctor/                       ← ✅ SEMUA 14 halaman ada + Firebase integrated
+│   ├── home.html                 ✅ guard, getDoctorConsultations, notif badge
+│   ├── patients.html             ✅ guard, Firestore assignedDoctors query
+│   ├── chat.html                 ✅ guard, VDB
+│   ├── profile.html              ✅ guard, VDB.getUser
+│   ├── notification.html         ✅ VDB.subscribeNotifications, mark-read
+│   ├── patient-detail.html       ✅ guard, VDB.getUser, VDB.getPatient, VitalsManager
+│   ├── chat-room.html            ✅ VChatManager + WebRTC trigger
+│   ├── guided-examination.html   ✅ guard, VDB.createMedicalRecord
+│   ├── prescription.html         ✅ guard, VDB
+│   ├── referral.html             ✅ guard, VDB
+│   ├── schedule.html             ✅ guard, Firestore schedule
+│   ├── earnings.html             ✅ guard, Firestore earnings
+│   ├── reviews.html              ✅ guard, Firestore reviews
+│   └── edit-profile.html         ✅ guard, VDB.updateUser, VDB updateDoctor
+└── admin/                        ← ✅ SEMUA 13 halaman ada + Firebase integrated
+    ├── home.html                 ✅ guard, VDB.getStats(), animateNumber
+    ├── users.html                ✅ VDB.getAllUsers, filter, search, modal tambah user
+    ├── notifications.html        ✅ broadcastNotifications, delete
+    ├── news.html                 ✅ VDB.getAllArticles, publish/delete
+    ├── advertise.html            ✅ guard
+    ├── user-detail.html          ✅ guard, VDB.getUser, status management
+    ├── doctor-verification.html  ✅ VDB.getAllUsers, approve/reject doctor
+    ├── create-notification.html  ✅ VDB.sendNotificationToAll
+    ├── create-article.html       ✅ VDB.createArticle
+    ├── edit-article.html         ✅ VDB.updateArticle (by ?id=)
+    ├── create-campaign.html      ✅ guard, Firestore campaigns
+    ├── campaign-detail.html      ✅ guard, Firestore campaign detail
+    └── seed-data.html            ✅ Firebase direct (dev tool)
 ```
 
 ---
