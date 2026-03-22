@@ -402,6 +402,73 @@
 
   let wm = null;
 
+  // ── Video Call Diagnostic Tool ─────────────────────────────────────────
+  // Jalankan di browser console: vcDiag()
+  window.vcDiag = async function() {
+    const log = (msg, ok) => console.log((ok === false ? '❌' : ok === true ? '✅' : 'ℹ️') + ' ' + msg);
+    console.group('=== VITALORA VIDEO CALL DIAGNOSTIC ===');
+
+    const params = new URLSearchParams(location.search);
+    log('URL params: consultId=' + params.get('consultId') + ' callId=' + params.get('callId') + ' isDoctor=' + params.get('isDoctor'));
+
+    // 1. Firebase Auth
+    const auth = window.VFirebase?.auth;
+    const user = auth?.currentUser;
+    log('Firebase Auth: user=' + (user?.uid || 'null'), !!user);
+
+    // 2. WebRTC Manager
+    log('VWebRTC loaded: ' + typeof VWebRTC, typeof VWebRTC === 'function');
+    log('wm instance: ' + (wm ? 'ada' : 'null'), !!wm);
+    if (wm) {
+      log('PeerConnection state: ' + (wm.pc?.connectionState || 'no pc'), !!(wm.pc));
+      log('ICE state: ' + (wm.pc?.iceConnectionState || 'no pc'));
+      log('Local stream: ' + (wm.localStream ? wm.localStream.getTracks().map(t => t.kind).join(',') : 'null'), !!wm.localStream);
+      log('Remote stream: ' + (wm.remoteStream?.active ? 'active' : 'null/inactive'));
+      log('callId: ' + (wm.callId || 'null'), !!wm.callId);
+    }
+
+    // 3. Camera/Mic permission
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cam = devices.filter(d => d.kind === 'videoinput');
+      const mic = devices.filter(d => d.kind === 'audioinput');
+      log('Kamera ditemukan: ' + cam.length + ' device', cam.length > 0);
+      log('Mikrofon ditemukan: ' + mic.length + ' device', mic.length > 0);
+    } catch (e) { log('Gagal enumerate devices: ' + e.message, false); }
+
+    // 4. Firestore calls collection
+    const consultId = params.get('consultId');
+    if (consultId && window.VFirebase?.db) {
+      try {
+        const snap = await VFirebase.db.collection('calls')
+          .where('consultId', '==', consultId).limit(5).get();
+        log('Firestore calls untuk consultId ini: ' + snap.size + ' dokumen', snap.size > 0);
+        snap.docs.forEach(d => {
+          const data = d.data();
+          log('  call ' + d.id.slice(0,8) + '... status=' + data.status + ' offer=' + !!data.offer + ' answer=' + !!data.answer);
+        });
+      } catch (e) { log('Gagal query Firestore calls: ' + e.message, false); }
+    }
+
+    // 5. STUN test
+    log('Testing STUN connectivity...');
+    try {
+      await new Promise((resolve, reject) => {
+        const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+        pc.createDataChannel('test');
+        pc.createOffer().then(o => pc.setLocalDescription(o));
+        const t = setTimeout(() => { pc.close(); reject(new Error('timeout')); }, 5000);
+        pc.onicecandidate = e => {
+          if (e.candidate) { clearTimeout(t); pc.close(); resolve(); }
+        };
+      });
+      log('STUN Google: OK', true);
+    } catch (e) { log('STUN Google: GAGAL — ' + e.message, false); }
+
+    console.groupEnd();
+  };
+  console.log('%c[VideoCall] Debug tool siap. Ketik vcDiag() di console untuk diagnosa.', 'color:#6FCF97;font-weight:bold');
+
   document.addEventListener('DOMContentLoaded', async () => {
     const params    = new URLSearchParams(location.search);
     const isDoctor  = params.get('isDoctor') === 'true';
