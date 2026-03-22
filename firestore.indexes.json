@@ -83,13 +83,6 @@
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     },
-    {
-      "collectionGroup": "readings",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        { "fieldPath": "timestamp", "order": "ASCENDING" }
-      ]
-    }
   ],
   "fieldOverrides": []
 }
