@@ -71,23 +71,37 @@ async function loadConsultations(doctorId) {
   const chatList = document.getElementById('chatList');
 
   try {
-    // Get consultations for this doctor
+    const db = VFirebase.db;
+
+    // Query 1: consultations assigned to this doctor (by auth UID)
     const consultations = await VDB.getDoctorConsultations(doctorId);
 
-    // Also get consultations where doctorId is null (available for any doctor)
-    const db = VFirebase.db;
-    const availableSnap = await db.collection('consultations')
+    // Query 2: consultations with no doctor assigned (open queue)
+    const nullSnap = await db.collection('consultations')
       .where('doctorId', '==', null)
       .where('status', 'in', ['pending', 'active'])
       .orderBy('startTime', 'desc')
       .limit(20)
       .get();
 
-    const availableConsults = availableSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Query 3: ALL pending consultations (covers seeded/mismatched doctorId)
+    const pendingSnap = await db.collection('consultations')
+      .where('status', 'in', ['pending', 'active'])
+      .orderBy('startTime', 'desc')
+      .limit(30)
+      .get();
 
-    // Combine and sort
-    const allConsults = [...consultations, ...availableConsults]
-      .filter(c => c.status === 'pending' || c.status === 'active');
+    const fromNull = nullSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const fromPending = pendingSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    // Merge all, deduplicate by id
+    const seen = new Set();
+    const allConsults = [...consultations, ...fromNull, ...fromPending]
+      .filter(c => {
+        if (seen.has(c.id)) return false;
+        seen.add(c.id);
+        return c.status === 'pending' || c.status === 'active';
+      });
 
     if (allConsults.length === 0) {
       chatList.innerHTML = `
@@ -153,8 +167,8 @@ async function loadConsultations(doctorId) {
         </div>
       `;
       card.onclick = () => {
-        // If pending and no doctor assigned, claim it
-        if (consult.status === 'pending' && !consult.doctorId) {
+        // If pending and not yet claimed by this doctor, claim it first
+        if (consult.status === 'pending' && consult.doctorId !== doctorId) {
           claimConsultation(consult.id);
         } else {
           nav('chat-room.html?consultId=' + consult.id);
