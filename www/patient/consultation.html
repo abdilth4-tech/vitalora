@@ -376,7 +376,16 @@ function renderDoctors(doctors) {
 async function loadActiveConsultations(patientId) {
   try {
     const consultations = await VDB.getPatientConsultations(patientId);
-    const activeConsults = consultations.filter(c => c.status === 'active' || c.status === 'pending');
+    // Deduplikasi per dokter — tampilkan hanya 1 konsultasi terbaru per dokter
+    const seen = new Set();
+    const activeConsults = consultations
+      .filter(c => c.status === 'active' || c.status === 'pending')
+      .filter(c => {
+        const key = c.doctorId || c.id;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
 
     if (activeConsults.length === 0) return;
 
