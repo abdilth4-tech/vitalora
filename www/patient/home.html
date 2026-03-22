@@ -91,19 +91,13 @@
 
   <!-- CAROUSEL -->
   <div class="section" style="padding-bottom:0">
-    <div class="neu-carousel" data-animate="up" data-delay="100">
-      <div class="carousel-track">
-        <div class="carousel-slide" style="background:linear-gradient(135deg,#27AE60,#6FCF97);color:#fff">
-          <div class="slide-content"><h3>🌿 Jamu Sehat Harian</h3><p>Temukan ramuan herbal terpersonalisasi</p></div>
-        </div>
-        <div class="carousel-slide" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);color:#fff">
-          <div class="slide-content"><h3>🤖 AI Health Assistant</h3><p>Konsultasi cerdas 24/7 dengan AI</p></div>
-        </div>
-        <div class="carousel-slide" style="background:linear-gradient(135deg,#6C63FF,#8B83FF);color:#fff">
-          <div class="slide-content"><h3>⌚ Smartwatch Sync</h3><p>Monitoring vital sign real-time</p></div>
+    <div class="neu-carousel" id="ads-carousel" data-animate="up" data-delay="100">
+      <div class="carousel-track" id="ads-track">
+        <div class="carousel-slide" style="padding:0;background:var(--bg-base);">
+          <img src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;opacity:0;">
         </div>
       </div>
-      <div class="carousel-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+      <div class="carousel-dots" id="ads-dots"><span class="dot active"></span></div>
     </div>
   </div>
 
@@ -206,6 +200,9 @@
     const badge = document.querySelector('.app-header .badge');
     if (badge) { badge.textContent = unread > 9 ? '9+' : unread; badge.style.display = 'flex'; }
   }
+
+  // Load ads banner carousel
+  loadAds();
 
   // Load upcoming/active consultations
   await loadUpcomingConsultation(user.uid);
@@ -359,6 +356,47 @@ function calculateHealthScore(hr, spo2, temp) {
   else if (tempNum < 36.1 || tempNum > 37.2) score -= 5;
 
   return Math.max(0, Math.min(100, score));
+}
+
+// Load ads banner from Firestore ads collection
+async function loadAds() {
+  const track = document.getElementById('ads-track');
+  const dotsEl = document.getElementById('ads-dots');
+  const carousel = document.getElementById('ads-carousel');
+  if (!track || !dotsEl || !carousel) return;
+
+  try {
+    const snap = await VFirebase.db.collection('ads')
+      .where('active', '==', true)
+      .orderBy('order', 'asc')
+      .get();
+
+    const ads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (ads.length === 0) {
+      // No ads — hide carousel entirely
+      carousel.closest('.section').style.display = 'none';
+      return;
+    }
+
+    track.innerHTML = ads.map(ad => `
+      <div class="carousel-slide" style="padding:0;cursor:${ad.linkUrl ? 'pointer' : 'default'};"
+        ${ad.linkUrl ? `onclick="window.open('${ad.linkUrl}','_blank')"` : ''}>
+        <img src="${ad.imageUrl}" alt="${ad.title || ''}"
+          style="width:100%;height:100%;object-fit:cover;display:block;"
+          onerror="this.parentElement.style.background='var(--bg-base)';">
+      </div>
+    `).join('');
+
+    dotsEl.innerHTML = ads.map((_, i) =>
+      `<span class="dot${i === 0 ? ' active' : ''}"></span>`
+    ).join('');
+
+    // Re-init this carousel after dynamic render
+    initCarousels();
+  } catch (e) {
+    // On error, hide carousel
+    carousel.closest('.section').style.display = 'none';
+  }
 }
 
 // Update health score display
