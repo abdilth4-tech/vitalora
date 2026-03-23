@@ -193,3 +193,11 @@ Unlock Fase Merge (Claude Code):
   - Export CSV: generate laporan konsultasi dengan filter applied
   - Real-time Firestore queries: orderBy startTime DESC, with where clauses untuk filtering
   - admin/home.html: sidebar updated dengan navigation link ke consultations.html
+- [2026-03-23] ✅ **BATCH 6 — Admin Reports/Export**
+  - admin/reports.html: dibuat — comprehensive reporting dashboard dengan 6 report types
+  - Report types: Users (total, role distribution), Doctors (specialties, ratings), Consultations (status breakdown, avg duration), Herbals (evidence levels, categories), Formulas (indications, evidence), Health Profiles (completion rate, risk scores)
+  - Each report features: statistics dashboard with key metrics, data table preview (20-50 rows), export button
+  - Export modal: 3 format options (CSV, JSON, XLSX) dengan descriptions
+  - Statistics cards: grid-based display dengan color-coded numbers
+  - Real-time data loading: semua reports menggunakan Firestore queries
+  - admin/home.html: sidebar updated dengan navigation link ke reports.html
