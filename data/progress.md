@@ -174,3 +174,12 @@ Unlock Fase Merge (Claude Code):
   - Button handlers (Parse, Import, Clear, etc) sekarang fully functional dengan try-catch protection
   - **DEPLOY**: firebase deploy --only hosting:vitalora + firestore:indexes ✅
   - **Live URL**: https://vitalora.web.app
+- [2026-03-23] ✅ **BATCH 4 — Admin Formula CRUD**
+  - admin/formulas.html: dibuat — complete admin interface untuk manajemen formula herbal (1051 formulas dari merged dataset)
+  - Features: search by name/indications, filter by evidence level (A/B/C) + preparation type (rebus/seduh/minum/salep), 15 items/page with pagination
+  - Edit modal: name, indications, category, prep type, prep method, ingredients list, dosage, frequency, duration, warnings, evidence level, doctor verified, source
+  - Delete modal: confirmation dialog sebelum delete
+  - Real-time Firestore integration: create, update, delete dengan serverTimestamp
+  - scripts/seed_formulas.js: Firebase Admin SDK utility untuk seed 1051 formulas ke Firestore (batch size 500)
+  - admin/home.html: sidebar updated dengan navigation links ke herbals.html + formulas.html
+  - Formulas schema: recipeNumber, name, indications[], category, ingredients[], preparationMethod, preparationType, dosage, frequency, duration, warnings[], evidenceLevel, doctorVerified, source, tags[], sourceType
