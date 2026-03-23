@@ -99,13 +99,30 @@ Unlock Fase Merge (Claude Code):
 ## 🟢 Claude CLI #1 — Research Log
 <!-- Claude CLI #1: tambah entry di sini setiap selesai bagian -->
 - [2026-03-22] Setup: folder data/claude1/ siap — instruksi ada di CLAUDE_1_TASK.md
+- [2026-03-22] ✅ **Task #1 SELESAI** — herbals_profiles.json (50 tanaman herbal Indonesia)
+  - 25 tanaman kelompok Metabolisme+Kardiovaskular+Urologi
+  - 25 tanaman kelompok Multi/Umum (pencernaan, antiinflamasi, dll)
+  - Setiap tanaman: nama latin, benefits+mechanism, activeCompounds, dosage, kontraindikasi, drug interactions, BPOM status
+  - Sumber: WHO Monographs Vol.1-4, BPOM RI, Farmakope Herbal Indonesia Ed.II, PubMed
+- [2026-03-22] ✅ **Task #2 SELESAI** — formulas_A.json (42 formula evidence-based)
+  - Asam Urat: 8, Diabetes: 8, Kolesterol: 6, Hipertensi: 7, Batu Ginjal: 5, ISK: 4, Obesitas: 4
+  - Basis: FOHAI Kemenkes RI + Saintifikasi Jamu + Farmakope Herbal Indonesia
+- [2026-03-22] DONE.flag dibuat ✅
 
 ---
 
 ## 🔴 Claude CLI #2 — Research Log
 <!-- Claude CLI #2: tambah entry di sini setiap selesai bagian -->
 - [2026-03-22] Setup: folder data/claude2/ siap — instruksi ada di CLAUDE_2_TASK.md
-- [2026-03-22] Task #2 (enrichment) ON HOLD — menunggu data/ocr/raw_formulas.json
+- [2026-03-22] ✅ **Task #1 SELESAI** — formulas_B.json (68 formula evidence-based)
+  - Pencernaan: 15, Imunitas: 15, Anti-Inflamasi: 12, Dermatologi: 10, Relaksasi: 8, Hematologi: 8
+  - 18 formula topikal (isTopical: true)
+  - Basis: FOHAI Kemenkes RI, WHO Monographs, Saintifikasi Jamu
+- [2026-03-22] ✅ **Task #2 SELESAI** — enriched_ocr.json (941 resep OCR diperkaya)
+  - 941 resep dari buku "1001 Resep Herbal" dipertahankan apa adanya
+  - Tambah field: latinNames (150+ herbs mapped), tags, isTopical, duration, evidenceLevel:"C"
+  - 721 formula topikal, 220 formula oral teridentifikasi
+- [2026-03-22] DONE.flag dibuat ✅
 
 ---
 
@@ -149,3 +166,11 @@ Unlock Fase Merge (Claude Code):
   - calculatedWith field: 'ml-hybrid-v2.0' atau 'rule-based-v1.0'
   - admin/ml-models.html: tambah loadMLModelStatus() — fetch metadata.json setiap model, update badge akurasi live
   - Roadmap v2.0 ditandai AKTIF di admin page
+- [2026-03-22 AKHIR] ✅ **TOHA TASKS — FINAL COMPLETION + BUG FIXES**
+  - admin/import-herbal.html: **DIPERBAIKI** — Error handling lengkap di semua fungsi (parseJSON, startImport, clearAll, switchTab, selectCollection, readFile, dll)
+  - Defensive programming: cek element ada + Firebase ready check sebelum operasi
+  - Initialization verification: Firebase readiness monitor (5s timeout) + function availability check
+  - Logging detail: console.error untuk debugging, UI log untuk user feedback
+  - Button handlers (Parse, Import, Clear, etc) sekarang fully functional dengan try-catch protection
+  - **DEPLOY**: firebase deploy --only hosting:vitalora + firestore:indexes ✅
+  - **Live URL**: https://vitalora.web.app

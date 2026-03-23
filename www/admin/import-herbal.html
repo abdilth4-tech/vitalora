@@ -433,49 +433,107 @@ atau array langsung:
   //  AUTH + UI INIT
   // ═══════════════════════════════════════════════════════════════════════════
 
-  VAuth.guard('admin').then(({ profile }) => {
-    document.querySelector('#admin-topbar-name')?.textContent = profile.name;
-  }).catch(() => {});
+  // Tunggu DOM fully loaded sebelum eksekusi guard
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      VAuth.guard('admin').then(({ profile }) => {
+        // Hanya update jika element ada
+        const nameEl = document.querySelector('#admin-topbar-name');
+        if (nameEl) nameEl.textContent = profile.name;
+      }).catch(err => {
+        console.warn('Admin guard error (non-critical):', err);
+      });
+    });
+  } else {
+    VAuth.guard('admin').then(({ profile }) => {
+      const nameEl = document.querySelector('#admin-topbar-name');
+      if (nameEl) nameEl.textContent = profile.name;
+    }).catch(err => {
+      console.warn('Admin guard error (non-critical):', err);
+    });
+  }
 
   function switchTab(tab) {
-    document.getElementById('pane-paste').style.display = tab === 'paste' ? '' : 'none';
-    document.getElementById('pane-file').style.display  = tab === 'file'  ? '' : 'none';
-    document.getElementById('tab-paste').classList.toggle('active', tab === 'paste');
-    document.getElementById('tab-file').classList.toggle('active', tab === 'file');
+    try {
+      document.getElementById('pane-paste').style.display = tab === 'paste' ? '' : 'none';
+      document.getElementById('pane-file').style.display  = tab === 'file'  ? '' : 'none';
+      document.getElementById('tab-paste').classList.toggle('active', tab === 'paste');
+      document.getElementById('tab-file').classList.toggle('active', tab === 'file');
+    } catch(err) {
+      console.error('switchTab error:', err);
+    }
   }
 
   function selectCollection(col) {
-    targetCollection = col;
-    document.getElementById('col-formulas').classList.toggle('selected', col === 'herbalFormulas');
-    document.getElementById('col-herbals').classList.toggle('selected', col === 'herbals');
+    try {
+      targetCollection = col;
+      document.getElementById('col-formulas').classList.toggle('selected', col === 'herbalFormulas');
+      document.getElementById('col-herbals').classList.toggle('selected', col === 'herbals');
+    } catch(err) {
+      console.error('selectCollection error:', err);
+    }
   }
 
-  function handleDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
-  function handleDragLeave(e) { document.getElementById('dropZone').classList.remove('drag-over'); }
-  function handleDrop(e) {
-    e.preventDefault();
-    document.getElementById('dropZone').classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file) readFile(file);
+  function handleDragOver(e) {
+    try {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.add('drag-over');
+    } catch(err) { console.error('handleDragOver error:', err); }
   }
-  function handleFileSelect(e) { const file = e.target.files[0]; if (file) readFile(file); }
+
+  function handleDragLeave(e) {
+    try {
+      document.getElementById('dropZone').classList.remove('drag-over');
+    } catch(err) { console.error('handleDragLeave error:', err); }
+  }
+
+  function handleDrop(e) {
+    try {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) readFile(file);
+    } catch(err) { console.error('handleDrop error:', err); }
+  }
+
+  function handleFileSelect(e) {
+    try {
+      const file = e.target.files[0];
+      if (file) readFile(file);
+    } catch(err) { console.error('handleFileSelect error:', err); }
+  }
+
   function readFile(file) {
-    const info = document.getElementById('fileInfo');
-    info.style.display = '';
-    info.textContent = '📄 ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
-    const reader = new FileReader();
-    reader.onload = ev => {
-      document.getElementById('jsonInput').value = ev.target.result;
-      log('File dimuat: ' + file.name, 'info');
-      switchTab('paste');
-    };
-    reader.readAsText(file);
+    try {
+      const info = document.getElementById('fileInfo');
+      info.style.display = '';
+      info.textContent = '📄 ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          document.getElementById('jsonInput').value = ev.target.result;
+          log('File dimuat: ' + file.name, 'info');
+          switchTab('paste');
+        } catch(err) {
+          log('Error processing file: ' + err.message, 'error');
+          console.error('File processing error:', err);
+        }
+      };
+      reader.onerror = err => {
+        log('Error membaca file: ' + err.message, 'error');
+      };
+      reader.readAsText(file);
+    } catch(err) {
+      log('Error readFile: ' + err.message, 'error');
+      console.error('readFile error:', err);
+    }
   }
 
   // ── Parse + Auto-Clean ─────────────────────────────────────────────────────
   function parseJSON() {
-    const raw = document.getElementById('jsonInput').value.trim();
-    if (!raw) { log('Error: Input JSON kosong', 'error'); return; }
+    try {
+      const raw = document.getElementById('jsonInput').value.trim();
+      if (!raw) { log('Error: Input JSON kosong', 'error'); return; }
 
     let data;
     try { data = JSON.parse(raw); } catch(e) { log('JSON tidak valid: ' + e.message, 'error'); return; }
@@ -524,17 +582,22 @@ atau array langsung:
       log('Auto-detect: berubah ke collection herbals', 'info');
     }
 
-    parsedItems = cleanedItems;
-    renderPreview(cleanedItems, data.metadata, cleanStats);
-    document.getElementById('importBtn').disabled = false;
-    log('Parse berhasil: ' + cleanedItems.length + ' item siap diimport', 'success');
+      parsedItems = cleanedItems;
+      renderPreview(cleanedItems, data.metadata, cleanStats);
+      document.getElementById('importBtn').disabled = false;
+      log('Parse berhasil: ' + cleanedItems.length + ' item siap diimport', 'success');
+    } catch(err) {
+      log('Error dalam parseJSON: ' + err.message, 'error');
+      console.error('parseJSON error:', err);
+    }
   }
 
   function renderPreview(items, meta, cleanStats) {
-    const box   = document.getElementById('previewBox');
-    const stats = document.getElementById('previewStats');
-    const list  = document.getElementById('previewList');
-    const sub   = document.getElementById('previewSub');
+    try {
+      const box   = document.getElementById('previewBox');
+      const stats = document.getElementById('previewStats');
+      const list  = document.getElementById('previewList');
+      const sub   = document.getElementById('previewSub');
 
     box.style.display = '';
     sub.textContent = meta?.source || (isTCMData ? 'TCM-MKG v1.0 — vitalora_enriched.json' : '1001 Resep Herbal — dr. Setiawan Dalimartha (2008)');
@@ -574,43 +637,58 @@ atau array langsung:
     }
 
     // List preview 20 item
-    list.innerHTML = items.slice(0, 20).map(f => {
-      const evColor = f.evidenceLevel === 'A' ? '#27AE60' : f.evidenceLevel === 'B' ? '#2D9CDB' : '#F2994A';
-      const evBg    = f.evidenceLevel === 'A' ? 'rgba(39,174,96,0.12)' : f.evidenceLevel === 'B' ? 'rgba(86,204,242,0.12)' : 'rgba(242,153,74,0.12)';
-      const sub2    = isTCMData
-        ? (f.tcmProperties?.flavor || []).join(', ')
-        : (f.indications || []).slice(0,2).join(', ');
-      return `<div style="padding:5px 0;border-bottom:1px solid var(--shadow-dark);font-size:0.77rem;">
-        <span style="font-weight:700;color:var(--text-primary);">${f.name || f.condition || f.id || '—'}</span>
-        <span style="color:var(--text-tertiary);margin-left:6px;">${sub2}</span>
-        <span style="float:right;font-size:0.65rem;background:${evBg};color:${evColor};padding:1px 7px;border-radius:8px;">ev.${f.evidenceLevel || 'C'}</span>
-      </div>`;
-    }).join('') + (items.length > 20
-      ? `<div style="color:var(--text-tertiary);font-size:0.75rem;padding-top:6px;">...dan ${items.length - 20} item lainnya</div>`
-      : '');
+      list.innerHTML = items.slice(0, 20).map(f => {
+        const evColor = f.evidenceLevel === 'A' ? '#27AE60' : f.evidenceLevel === 'B' ? '#2D9CDB' : '#F2994A';
+        const evBg    = f.evidenceLevel === 'A' ? 'rgba(39,174,96,0.12)' : f.evidenceLevel === 'B' ? 'rgba(86,204,242,0.12)' : 'rgba(242,153,74,0.12)';
+        const sub2    = isTCMData
+          ? (f.tcmProperties?.flavor || []).join(', ')
+          : (f.indications || []).slice(0,2).join(', ');
+        return `<div style="padding:5px 0;border-bottom:1px solid var(--shadow-dark);font-size:0.77rem;">
+          <span style="font-weight:700;color:var(--text-primary);">${f.name || f.condition || f.id || '—'}</span>
+          <span style="color:var(--text-tertiary);margin-left:6px;">${sub2}</span>
+          <span style="float:right;font-size:0.65rem;background:${evBg};color:${evColor};padding:1px 7px;border-radius:8px;">ev.${f.evidenceLevel || 'C'}</span>
+        </div>`;
+      }).join('') + (items.length > 20
+        ? `<div style="color:var(--text-tertiary);font-size:0.75rem;padding-top:6px;">...dan ${items.length - 20} item lainnya</div>`
+        : '');
+    } catch(err) {
+      console.error('renderPreview error:', err);
+      log('Error rendering preview: ' + err.message, 'error');
+    }
   }
 
   // ── Import to Firestore ────────────────────────────────────────────────────
   async function startImport() {
-    if (isImporting || parsedItems.length === 0) return;
+    if (isImporting || parsedItems.length === 0) {
+      log('Error: Tidak ada data untuk diimport atau proses sedang berlangsung', 'error');
+      return;
+    }
+
+    // Check Firebase availability
+    if (typeof VFirebase === 'undefined' || !VFirebase.db) {
+      log('Error: Firebase belum terinisialisasi. Coba refresh halaman.', 'error');
+      return;
+    }
+
     isImporting = true;
 
     const btn = document.getElementById('importBtn');
     btn.disabled = true;
     btn.innerHTML = '<ion-icon name="hourglass-outline"></ion-icon> Mengimport...';
 
-    if (!VFirebase.auth.currentUser) {
-      try { await VFirebase.auth.signInAnonymously(); } catch(e) { /* rules open */ }
-    }
-
-    const total = parsedItems.length;
-    let done = 0;
-    const db = VFirebase.db;
-
-    log('=== MULAI IMPORT: ' + total + ' item → ' + targetCollection + ' ===', 'info');
-    if (isOCRData) log('Sumber: 1001 Resep Herbal (OCR cleaned) — evidenceLevel: C', 'info');
-
     try {
+      if (!VFirebase.auth.currentUser) {
+        try { await VFirebase.auth.signInAnonymously(); } catch(e) { /* rules open */ }
+      }
+
+      const total = parsedItems.length;
+      let done = 0;
+      const db = VFirebase.db;
+
+      log('=== MULAI IMPORT: ' + total + ' item → ' + targetCollection + ' ===', 'info');
+      if (isOCRData) log('Sumber: 1001 Resep Herbal (OCR cleaned) — evidenceLevel: C', 'info');
+
+      try {
       for (let i = 0; i < parsedItems.length; i += BATCH_SIZE) {
         const chunk = parsedItems.slice(i, i + BATCH_SIZE);
         const batch = db.batch();
@@ -634,13 +712,19 @@ atau array langsung:
         log('✓ Batch ' + Math.ceil((i + 1) / BATCH_SIZE) + ': ' + chunk.length + ' item (total ' + done + ')', 'success');
       }
 
-      setProgress(100, done + '/' + total);
-      log('', 'dim');
-      log('=== IMPORT SELESAI: ' + done + ' item → ' + targetCollection + ' ===', 'success');
-      btn.innerHTML = '<ion-icon name="checkmark-circle-outline"></ion-icon> Import Selesai (' + done + ' item)';
+        setProgress(100, done + '/' + total);
+        log('', 'dim');
+        log('=== IMPORT SELESAI: ' + done + ' item → ' + targetCollection + ' ===', 'success');
+        btn.innerHTML = '<ion-icon name="checkmark-circle-outline"></ion-icon> Import Selesai (' + done + ' item)';
+      } catch(e) {
+        log('Error fatal: ' + e.message, 'error');
+        console.error('Import error:', e);
+        btn.disabled = false;
+        btn.innerHTML = '<ion-icon name="cloud-upload-outline"></ion-icon> Mulai Import ke Firestore';
+      }
     } catch(e) {
-      log('Error fatal: ' + e.message, 'error');
-      console.error(e);
+      log('Error fatal (outer): ' + e.message, 'error');
+      console.error('startImport outer error:', e);
       btn.disabled = false;
       btn.innerHTML = '<ion-icon name="cloud-upload-outline"></ion-icon> Mulai Import ke Firestore';
     } finally {
@@ -665,19 +749,25 @@ atau array langsung:
   }
 
   function clearAll() {
-    document.getElementById('jsonInput').value = '';
-    document.getElementById('previewBox').style.display = 'none';
-    document.getElementById('previewSub').textContent = 'Parse JSON terlebih dahulu untuk melihat preview.';
-    document.getElementById('importBtn').disabled = true;
-    document.getElementById('importBtn').innerHTML = '<ion-icon name="cloud-upload-outline"></ion-icon> Mulai Import ke Firestore';
-    document.getElementById('logArea').innerHTML = '<div class="log-line info">[Vitalora Import] Cleared.</div>';
-    setProgress(0, 'Siap');
-    parsedItems = [];
-    isOCRData = false;
+    try {
+      document.getElementById('jsonInput').value = '';
+      document.getElementById('previewBox').style.display = 'none';
+      document.getElementById('previewSub').textContent = 'Parse JSON terlebih dahulu untuk melihat preview.';
+      document.getElementById('importBtn').disabled = true;
+      document.getElementById('importBtn').innerHTML = '<ion-icon name="cloud-upload-outline"></ion-icon> Mulai Import ke Firestore';
+      document.getElementById('logArea').innerHTML = '<div class="log-line info">[Vitalora Import] Cleared.</div>';
+      setProgress(0, 'Siap');
+      parsedItems = [];
+      isOCRData = false;
+      log('Data dan preview berhasil dihapus', 'info');
+    } catch(err) {
+      console.error('clearAll error:', err);
+    }
   }
 
   function loadSample() {
-    document.getElementById('jsonInput').value = JSON.stringify({
+    try {
+      document.getElementById('jsonInput').value = JSON.stringify({
       "metadata": {
         "generatedBy": "Claude CLI #1",
         "generatedAt": "2026-03-22",
@@ -727,9 +817,42 @@ atau array langsung:
           "tags": ["gatal", "eksim", "lidah-buaya", "topikal"]
         }
       ]
-    }, null, 2);
-    log('Contoh JSON dimuat. Klik Parse & Preview untuk melihat hasilnya.', 'info');
+      }, null, 2);
+      log('Contoh JSON dimuat. Klik Parse & Preview untuk melihat hasilnya.', 'info');
+    } catch(err) {
+      log('Error loading sample: ' + err.message, 'error');
+      console.error('loadSample error:', err);
+    }
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  //  INITIALIZATION CHECK
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Tunggu Firebase siap
+  const initCheckInterval = setInterval(() => {
+    if (typeof VFirebase !== 'undefined' && VFirebase.db) {
+      clearInterval(initCheckInterval);
+      console.log('✓ Import Herbal: Firebase siap, semua fungsi loaded');
+      log('[SIAP] Firebase terinisialisasi. Gunakan tab di atas untuk mulai import.', 'success');
+      // Pastikan semua button functions tersedia
+      if (typeof parseJSON === 'function' && typeof startImport === 'function' && typeof clearAll === 'function') {
+        console.log('✓ Semua button handlers terdaftar dengan baik');
+      } else {
+        console.error('⚠ Ada fungsi yang belum terdaftar!');
+        log('⚠ Ada fungsi yang belum terdaftar. Coba refresh halaman.', 'warn');
+      }
+    }
+  }, 100);
+
+  // Timeout jika Firebase tidak siap dalam 5 detik
+  setTimeout(() => {
+    if (typeof VFirebase === 'undefined' || !VFirebase.db) {
+      clearInterval(initCheckInterval);
+      console.error('✗ Firebase tidak terinisialisasi setelah 5 detik');
+      log('✗ Firebase belum terinisialisasi. Coba refresh halaman atau periksa console.', 'error');
+    }
+  }, 5000);
 </script>
 </body>
 </html>
