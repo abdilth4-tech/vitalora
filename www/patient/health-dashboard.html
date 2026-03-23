@@ -213,6 +213,19 @@ async function renderDashboard(hp) {
 
   // Risk scores
   const scores = RiskEngine.calculateAll(hp);
+
+  // Apply personalization adjustments
+  const personalization = RiskEngine.getPersonalizationMultiplier(hp);
+  const models = ['metabolic','diabetes','heart','hypertension','stroke','sleep'];
+  models.forEach(m => {
+    if (scores[m]) {
+      scores[m].score = Math.round(scores[m].score * personalization.multiplier);
+      scores[m].score = Math.min(100, Math.max(0, scores[m].score));
+      scores[m].category = RiskEngine.RISK_CATEGORY(scores[m].score);
+    }
+  });
+  scores.personalizationMultiplier = personalization.multiplier;
+  scores.personalizationAdjustments = personalization.adjustments;
   VDB.saveRiskScore(currentUserId, scores).catch(() => {});
 
   const models = ['metabolic','diabetes','heart','hypertension','stroke','sleep'];

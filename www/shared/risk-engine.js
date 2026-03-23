@@ -604,6 +604,70 @@ window.RiskEngine = (() => {
     return { mode: loaded > 0 ? 'ml-proxy' : 'rule-based', loaded, total: names.length, version };
   }
 
+  // ─── Personalization Adjustments ──────────────────────────────────────────
+  // Calculates risk multiplier based on mental health, diet quality, and SDOH
+  function getPersonalizationMultiplier(profile) {
+    let multiplier = 1.0;
+    let adjustments = [];
+
+    // Mental Health Adjustments (±20%)
+    const mh = profile.mentalHealth || {};
+    if (mh.anxietyLevel === 'severe' || mh.depressionLevel === 'severe') {
+      multiplier *= 1.20;
+      adjustments.push('Stres mental tinggi (+20%)');
+    } else if (mh.anxietyLevel === 'moderate' || mh.depressionLevel === 'moderate') {
+      multiplier *= 1.10;
+      adjustments.push('Stres mental sedang (+10%)');
+    }
+    const workStress = mh.workStressLevel || 5;
+    if (workStress >= 8) {
+      multiplier *= 1.15;
+      adjustments.push('Stress pekerjaan ekstrem (+15%)');
+    }
+
+    // Diet Quality Adjustments (±15%)
+    const diet = profile.diet || {};
+    if (diet.processedFoodIntake === 'high') {
+      multiplier *= 1.12;
+      adjustments.push('Diet ultra-processed tinggi (+12%)');
+    }
+    if (diet.redMeatIntake === 'high') {
+      multiplier *= 1.08;
+      adjustments.push('Daging merah berlebihan (+8%)');
+    }
+    if (diet.fruitVegIntake === 'high') {
+      multiplier *= 0.90;
+      adjustments.push('Diet sayur-buah baik (-10%)');
+    }
+
+    // Social Determinants Adjustments (±20%)
+    const sdoh = profile.socialDeterminants || {};
+    if (sdoh.employmentStatus === 'unemployed') {
+      multiplier *= 1.18;
+      adjustments.push('Pengangguran (+18%)');
+    }
+    if (sdoh.socialIsolation && sdoh.socialIsolation <= 2) {
+      multiplier *= 1.12;
+      adjustments.push('Isolasi sosial tinggi (+12%)');
+    }
+    if (sdoh.healthcareAccess === 'very-difficult' || sdoh.healthcareAccess === 'difficult') {
+      multiplier *= 1.10;
+      adjustments.push('Akses kesehatan terbatas (+10%)');
+    }
+    if (sdoh.educationLevel === 'primary') {
+      multiplier *= 1.08;
+      adjustments.push('Pendidikan rendah (+8%)');
+    } else if (sdoh.educationLevel === 'graduate') {
+      multiplier *= 0.92;
+      adjustments.push('Pendidikan tinggi (-8%)');
+    }
+
+    return {
+      multiplier: clamp(multiplier, 0.7, 1.5),  // Cap between 70%-150%
+      adjustments: adjustments
+    };
+  }
+
   // ─── Public API ────────────────────────────────────────────────────────────
   return {
     calculateAll,
@@ -615,6 +679,7 @@ window.RiskEngine = (() => {
     sleepScore,
     getTopConditions,
     loadModels,
+    getPersonalizationMultiplier,
     get modelsLoaded() { return _modelsLoaded; },
     RISK_TO_CONDITION_MAP,
     RISK_CATEGORY,

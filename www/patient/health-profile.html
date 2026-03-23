@@ -92,8 +92,9 @@
       <div class="progress-step" id="ps-2"></div>
       <div class="progress-step" id="ps-3"></div>
       <div class="progress-step" id="ps-4"></div>
+      <div class="progress-step" id="ps-5"></div>
     </div>
-    <div class="progress-label" id="stepLabel">Langkah 1 dari 5 — Profil Dasar</div>
+    <div class="progress-label" id="stepLabel">Langkah 1 dari 6 — Profil Dasar</div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════ -->
@@ -236,6 +237,80 @@
         <div class="radio-opt" data-group="jobType" data-val="sedentary" onclick="pickRadio(this)">Duduk (Desk)</div>
         <div class="radio-opt selected" data-group="jobType" data-val="active" onclick="pickRadio(this)">Aktif bergerak</div>
         <div class="radio-opt" data-group="jobType" data-val="heavy" onclick="pickRadio(this)">Kerja Keras Fisik</div>
+      </div>
+    </div>
+
+    <!-- MENTAL HEALTH SECTION -->
+    <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border-light);">
+      <div style="font-weight:700;color:var(--text-primary);margin-bottom:14px;">🧠 Kesehatan Mental</div>
+
+      <div class="field-group">
+        <label class="field-label">Tingkat Kecemasan</label>
+        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Dalam minggu terakhir, seberapa sering Anda merasa cemas atau gelisah?</div>
+        <div class="radio-group">
+          <div class="radio-opt selected" data-group="anxietyLevel" data-val="none" onclick="pickRadio(this)">Tidak sama sekali</div>
+          <div class="radio-opt" data-group="anxietyLevel" data-val="mild" onclick="pickRadio(this)">Beberapa hari</div>
+          <div class="radio-opt" data-group="anxietyLevel" data-val="moderate" onclick="pickRadio(this)">Lebih dari setengah hari</div>
+          <div class="radio-opt" data-group="anxietyLevel" data-val="severe" onclick="pickRadio(this)">Hampir setiap hari</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Tingkat Depresi / Kesedihan</label>
+        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Merasa sedih, kosong, atau putus asa?</div>
+        <div class="radio-group">
+          <div class="radio-opt selected" data-group="depressionLevel" data-val="none" onclick="pickRadio(this)">Tidak sama sekali</div>
+          <div class="radio-opt" data-group="depressionLevel" data-val="mild" onclick="pickRadio(this)">Beberapa hari</div>
+          <div class="radio-opt" data-group="depressionLevel" data-val="moderate" onclick="pickRadio(this)">Lebih dari setengah hari</div>
+          <div class="radio-opt" data-group="depressionLevel" data-val="severe" onclick="pickRadio(this)">Hampir setiap hari</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Tingkat Stress Pekerjaan</label>
+        <div class="slider-wrap">
+          <input type="range" id="workStressLevel" min="1" max="10" value="5" oninput="updateSliderRaw('workStressLevel','workStressVal')">
+          <span class="slider-value" id="workStressVal">5 / 10</span>
+        </div>
+        <div class="field-hint">1 = tidak ada stress, 10 = stress ekstrem</div>
+      </div>
+    </div>
+
+    <!-- DIET QUALITY SECTION -->
+    <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border-light);">
+      <div style="font-weight:700;color:var(--text-primary);margin-bottom:14px;">🥗 Kualitas Diet</div>
+
+      <div class="field-group">
+        <label class="field-label">Porsi Sayuran & Buah per Hari</label>
+        <div class="radio-group">
+          <div class="radio-opt" data-group="fruitVegIntake" data-val="none" onclick="pickRadio(this)">Jarang / Tidak pernah</div>
+          <div class="radio-opt" data-group="fruitVegIntake" data-val="low" onclick="pickRadio(this)">1-2 porsi</div>
+          <div class="radio-opt selected" data-group="fruitVegIntake" data-val="moderate" onclick="pickRadio(this)">3-4 porsi</div>
+          <div class="radio-opt" data-group="fruitVegIntake" data-val="high" onclick="pickRadio(this)">5+ porsi</div>
+        </div>
+        <div class="field-hint">1 porsi = 1 genggam atau 150g</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Konsumsi Daging Merah</label>
+        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Berapa kali per minggu Anda makan daging merah (sapi, kambing)?</div>
+        <div class="radio-group">
+          <div class="radio-opt selected" data-group="redMeatIntake" data-val="rare" onclick="pickRadio(this)">Jarang / tidak pernah</div>
+          <div class="radio-opt" data-group="redMeatIntake" data-val="low" onclick="pickRadio(this)">1-2x per minggu</div>
+          <div class="radio-opt" data-group="redMeatIntake" data-val="moderate" onclick="pickRadio(this)">3-4x per minggu</div>
+          <div class="radio-opt" data-group="redMeatIntake" data-val="high" onclick="pickRadio(this)">5+ x per minggu</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Konsumsi Makanan Ultra-Processed</label>
+        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Makanan siap saji, mi instan, snack kemasan, minuman manis?</div>
+        <div class="radio-group">
+          <div class="radio-opt selected" data-group="processedFoodIntake" data-val="rare" onclick="pickRadio(this)">Jarang / tidak pernah</div>
+          <div class="radio-opt" data-group="processedFoodIntake" data-val="low" onclick="pickRadio(this)">1-2x per minggu</div>
+          <div class="radio-opt" data-group="processedFoodIntake" data-val="moderate" onclick="pickRadio(this)">3-4x per minggu</div>
+          <div class="radio-opt" data-group="processedFoodIntake" data-val="high" onclick="pickRadio(this)">Hampir setiap hari</div>
+        </div>
       </div>
     </div>
 
@@ -416,9 +491,84 @@
 
     <div class="step-actions">
       <button class="btn-skip" onclick="skipLab()">Lewati</button>
-      <button class="btn-next" onclick="saveLab()">Simpan &amp; Selesai <ion-icon name="checkmark-circle-outline"></ion-icon></button>
+      <button class="btn-next" onclick="nextStep()">Lanjut <ion-icon name="arrow-forward-outline"></ion-icon></button>
     </div>
     <div class="save-indicator" id="save-4">✓ Tersimpan</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <!-- STEP F — Determinan Sosial (SDOH)                                     -->
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="section step-pane" id="step-5">
+    <div class="step-title">Determinan Sosial Kesehatan</div>
+    <div class="step-sub">Faktor sosial & ekonomi mempengaruhi kesehatan jangka panjang</div>
+
+    <div class="field-group">
+      <label class="field-label">Tingkat Pendidikan</label>
+      <div class="radio-group">
+        <div class="radio-opt" data-group="educationLevel" data-val="primary" onclick="pickRadio(this)">SD/Dasar</div>
+        <div class="radio-opt" data-group="educationLevel" data-val="secondary" onclick="pickRadio(this)">SMP/SMA</div>
+        <div class="radio-opt selected" data-group="educationLevel" data-val="tertiary" onclick="pickRadio(this)">Diploma/Sarjana</div>
+        <div class="radio-opt" data-group="educationLevel" data-val="graduate" onclick="pickRadio(this)">Pascasarjana</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Status Pekerjaan</label>
+      <div class="radio-group">
+        <div class="radio-opt" data-group="employmentStatus" data-val="employed" onclick="pickRadio(this)">Bekerja</div>
+        <div class="radio-opt selected" data-group="employmentStatus" data-val="self-employed" onclick="pickRadio(this)">Wiraswasta</div>
+        <div class="radio-opt" data-group="employmentStatus" data-val="unemployed" onclick="pickRadio(this)">Tidak Bekerja</div>
+        <div class="radio-opt" data-group="employmentStatus" data-val="retired" onclick="pickRadio(this)">Pensiun</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Status Pernikahan</label>
+      <div class="radio-group">
+        <div class="radio-opt selected" data-group="maritalStatus" data-val="married" onclick="pickRadio(this)">Kawin</div>
+        <div class="radio-opt" data-group="maritalStatus" data-val="single" onclick="pickRadio(this)">Belum Kawin</div>
+        <div class="radio-opt" data-group="maritalStatus" data-val="divorced" onclick="pickRadio(this)">Cerai</div>
+        <div class="radio-opt" data-group="maritalStatus" data-val="widowed" onclick="pickRadio(this)">Duda/Janda</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Tingkat Pendapatan Rumah Tangga</label>
+      <div class="radio-group">
+        <div class="radio-opt" data-group="householdIncome" data-val="very-low" onclick="pickRadio(this)">&lt; 5 juta/bulan</div>
+        <div class="radio-opt" data-group="householdIncome" data-val="low" onclick="pickRadio(this)">5-10 juta/bulan</div>
+        <div class="radio-opt selected" data-group="householdIncome" data-val="middle" onclick="pickRadio(this)">10-20 juta/bulan</div>
+        <div class="radio-opt" data-group="householdIncome" data-val="high" onclick="pickRadio(this)">&gt; 20 juta/bulan</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Isolasi Sosial</label>
+      <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Seberapa sering Anda berkumpul dengan keluarga/teman?</div>
+      <div class="slider-wrap">
+        <input type="range" id="socialIsolation" min="1" max="5" value="3" oninput="updateSocialSlider()">
+        <span class="slider-value" id="socialVal">Cukup sering</span>
+      </div>
+      <div class="field-hint">1 = sangat terisolasi, 5 = sangat terhubung dengan sosial</div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Akses ke Layanan Kesehatan</label>
+      <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Seberapa mudah Anda mengakses dokter/rumah sakit?</div>
+      <div class="radio-group">
+        <div class="radio-opt" data-group="healthcareAccess" data-val="very-difficult" onclick="pickRadio(this)">Sangat Sulit</div>
+        <div class="radio-opt" data-group="healthcareAccess" data-val="difficult" onclick="pickRadio(this)">Sulit</div>
+        <div class="radio-opt selected" data-group="healthcareAccess" data-val="moderate" onclick="pickRadio(this)">Cukup Mudah</div>
+        <div class="radio-opt" data-group="healthcareAccess" data-val="easy" onclick="pickRadio(this)">Mudah</div>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn-prev" onclick="prevStep()"><ion-icon name="arrow-back-outline"></ion-icon></button>
+      <button class="btn-next" onclick="saveSDOH()">Simpan &amp; Selesai <ion-icon name="checkmark-circle-outline"></ion-icon></button>
+    </div>
+    <div class="save-indicator" id="save-5">✓ Tersimpan</div>
   </div>
 
 </div><!-- end .mobile-frame -->
@@ -429,7 +579,7 @@
 <script src="../shared/firebase.js"></script>
 <script src="../shared/app.js"></script>
 <script>
-  const STEP_LABELS = ['Profil Dasar','Gaya Hidup','Riwayat Keluarga','Kondisi Diketahui','Hasil Lab'];
+  const STEP_LABELS = ['Profil Dasar','Gaya Hidup','Riwayat Keluarga','Kondisi Diketahui','Hasil Lab','Determinan Sosial'];
   let currentStep = 0;
   let userId = null;
 
@@ -492,12 +642,33 @@
     if (lab.uricAcid)        document.getElementById('labUricAcid').value        = lab.uricAcid;
     if (lab.creatinine)      document.getElementById('labCreatinine').value      = lab.creatinine;
     if (lab.labDate)         document.getElementById('labDate').value            = lab.labDate;
+
+    // Mental Health
+    const mh = p.mentalHealth || {};
+    if (mh.anxietyLevel)     pickRadioVal('anxietyLevel', mh.anxietyLevel);
+    if (mh.depressionLevel)  pickRadioVal('depressionLevel', mh.depressionLevel);
+    if (mh.workStressLevel)  { document.getElementById('workStressLevel').value = mh.workStressLevel; updateSliderRaw('workStressLevel','workStressVal'); }
+
+    // Diet
+    const diet = p.diet || {};
+    if (diet.fruitVegIntake)     pickRadioVal('fruitVegIntake', diet.fruitVegIntake);
+    if (diet.redMeatIntake)      pickRadioVal('redMeatIntake', diet.redMeatIntake);
+    if (diet.processedFoodIntake) pickRadioVal('processedFoodIntake', diet.processedFoodIntake);
+
+    // Social Determinants of Health
+    const sdoh = p.socialDeterminants || {};
+    if (sdoh.educationLevel)   pickRadioVal('educationLevel', sdoh.educationLevel);
+    if (sdoh.employmentStatus) pickRadioVal('employmentStatus', sdoh.employmentStatus);
+    if (sdoh.maritalStatus)    pickRadioVal('maritalStatus', sdoh.maritalStatus);
+    if (sdoh.householdIncome)  pickRadioVal('householdIncome', sdoh.householdIncome);
+    if (sdoh.socialIsolation)  { document.getElementById('socialIsolation').value = sdoh.socialIsolation; updateSocialSlider(); }
+    if (sdoh.healthcareAccess) pickRadioVal('healthcareAccess', sdoh.healthcareAccess);
   }
 
   // ── Step navigation ───────────────────────────────────────────────────────
   async function nextStep() {
     await saveCurrentStep();
-    if (currentStep < 4) goToStep(currentStep + 1);
+    if (currentStep < 5) goToStep(currentStep + 1);
   }
 
   async function nextStepD() {
@@ -519,12 +690,13 @@
   }
 
   function updateProgressBar() {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       const el = document.getElementById('ps-' + i);
+      if (!el) continue;
       el.className = 'progress-step' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
     }
     document.getElementById('stepLabel').textContent =
-      'Langkah ' + (currentStep + 1) + ' dari 5 — ' + STEP_LABELS[currentStep];
+      'Langkah ' + (currentStep + 1) + ' dari 6 — ' + STEP_LABELS[currentStep];
   }
 
   // ── Save logic ────────────────────────────────────────────────────────────
@@ -547,6 +719,7 @@
     }
     if (step === 1) {
       return {
+        // Lifestyle
         smokingStatus:        getRadioVal('smokingStatus'),
         alcoholUse:           getRadioVal('alcoholUse'),
         exerciseFreqPerWeek:  parseInt(document.getElementById('exerciseFreqPerWeek').value),
@@ -556,6 +729,18 @@
         sugarIntake:          getRadioVal('sugarIntake'),
         saltIntake:           getRadioVal('saltIntake'),
         jobType:              getRadioVal('jobType'),
+        // Mental Health
+        mentalHealth: {
+          anxietyLevel:       getRadioVal('anxietyLevel'),
+          depressionLevel:    getRadioVal('depressionLevel'),
+          workStressLevel:    parseInt(document.getElementById('workStressLevel').value),
+        },
+        // Diet Quality
+        diet: {
+          fruitVegIntake:     getRadioVal('fruitVegIntake'),
+          redMeatIntake:      getRadioVal('redMeatIntake'),
+          processedFoodIntake: getRadioVal('processedFoodIntake'),
+        }
       };
     }
     if (step === 2) {
@@ -576,6 +761,22 @@
           highCholesterol: document.getElementById('condHighChol').checked,
           heartAttack:     document.getElementById('condHeartAttack').checked,
           onBPMeds:        document.getElementById('condOnBPMeds').checked,
+        }
+      };
+    }
+    if (step === 4) {
+      // Lab data will be saved separately via saveLab()
+      return {};
+    }
+    if (step === 5) {
+      return {
+        socialDeterminants: {
+          educationLevel:     getRadioVal('educationLevel'),
+          employmentStatus:   getRadioVal('employmentStatus'),
+          maritalStatus:      getRadioVal('maritalStatus'),
+          householdIncome:    getRadioVal('householdIncome'),
+          socialIsolation:    parseInt(document.getElementById('socialIsolation').value),
+          healthcareAccess:   getRadioVal('healthcareAccess'),
         }
       };
     }
@@ -602,7 +803,21 @@
     setTimeout(() => nav('health-dashboard.html'), 800);
   }
 
-  function skipLab() { nav('health-dashboard.html'); }
+  function skipLab() { nextStep(); }
+
+  async function saveSDOH() {
+    if (!userId) return;
+    const data = collectStepData(5);
+    await VDB.updateHealthSection(userId, data);
+    flashSave(5);
+    setTimeout(() => nav('health-dashboard.html'), 800);
+  }
+
+  function updateSocialSlider() {
+    const val = parseInt(document.getElementById('socialIsolation').value);
+    const labels = ['Sangat terisolasi', 'Terisolasi', 'Cukup sering', 'Sering terhubung', 'Sangat terhubung'];
+    document.getElementById('socialVal').textContent = labels[val - 1] || 'Cukup sering';
+  }
 
   function flashSave(step) {
     const el = document.getElementById('save-' + step);
