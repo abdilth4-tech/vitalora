@@ -615,6 +615,7 @@ window.RiskEngine = (() => {
     sleepScore,
     getTopConditions,
     loadModels,
+    get modelsLoaded() { return _modelsLoaded; },
     RISK_TO_CONDITION_MAP,
     RISK_CATEGORY,
     RISK_LABEL_ID,

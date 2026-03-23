@@ -56,6 +56,7 @@
         <p style="font-size:0.78rem;color:var(--text-tertiary);">Rata-rata Skor Risiko</p>
         <div class="gauge-container" id="overall-gauge" style="width:140px;height:140px;margin:12px auto;"></div>
         <div id="overall-label" style="font-size:0.88rem;font-weight:700;margin-top:4px;"></div>
+        <span id="ml-status-badge" style="display:inline-block;margin-top:8px;"></span>
         <p style="font-size:0.68rem;color:var(--text-muted);margin-top:6px;" id="calcTime"></p>
         <div id="completeness-row" style="display:none;margin-top:10px;">
           <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-secondary);margin-bottom:4px;">
@@ -132,6 +133,17 @@ const MODEL_META = {
   }
 
   document.getElementById('risk-content').style.display = '';
+
+  // Load ML models for hybrid mode
+  await RiskEngine.loadModels();
+
+  // Update ML status badge
+  const mlBadge = document.getElementById('ml-status-badge');
+  if (RiskEngine.modelsLoaded) {
+    mlBadge.innerHTML = '<span style="background:rgba(39,174,96,0.12);color:#27AE60;font-size:0.65rem;padding:4px 12px;border-radius:10px;font-weight:600;display:inline-block;">🧠 AI Aktif</span>';
+  } else {
+    mlBadge.innerHTML = '<span style="background:rgba(242,153,74,0.12);color:#F2994A;font-size:0.65rem;padding:4px 12px;border-radius:10px;font-weight:600;display:inline-block;">📊 Mode Rule-Based</span>';
+  }
 
   // Run scoring
   const scores = RiskEngine.calculateAll(profile);

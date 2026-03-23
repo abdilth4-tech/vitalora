@@ -446,6 +446,26 @@
 
         <div class="divider"></div>
 
+        <div class="section-title">Konfigurasi AI Chat</div>
+
+        <div class="setting-item">
+          <label class="setting-label">Gemini API Key</label>
+          <div class="setting-desc">API key untuk Gemini AI — dapatkan gratis di aistudio.google.com (1500 req/hari)</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:0.75rem;">
+            <input type="password" id="input-gemini-key" class="select-input" placeholder="AIza..." style="flex:1;font-family:monospace;font-size:0.85rem;">
+            <button class="btn-save" onclick="toggleShowGeminiKey()" style="width:auto;padding:0.5rem 1rem;">
+              <ion-icon name="eye-outline" id="gemini-eye-icon" style="font-size:1rem;"></ion-icon>
+            </button>
+          </div>
+          <div id="gemini-status" style="font-size:0.75rem;margin-top:0.75rem;"></div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-save" onclick="testGeminiKey()" style="width:100%;margin-bottom:0.5rem;">🔌 Test Koneksi</button>
+        </div>
+
+        <div class="divider"></div>
+
         <div class="section-title">Danger Zone</div>
 
         <div class="info-box">
@@ -523,6 +543,8 @@
       document.getElementById('maxLoginAttempts').value = settings.maxLoginAttempts || 5;
       document.getElementById('dataRetention').value = settings.dataRetention || 365;
       document.getElementById('backupSchedule').value = settings.backupSchedule || 'daily';
+
+      loadGeminiSettings();
     }
 
     function toggleSetting(settingId) {
@@ -682,6 +704,58 @@
       setTimeout(() => {
         notifEl.classList.remove('show');
       }, 3000);
+    }
+
+    // Gemini API Key Functions
+    function toggleShowGeminiKey() {
+      const input = document.getElementById('input-gemini-key');
+      const icon = document.getElementById('gemini-eye-icon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.setAttribute('name', 'eye-off-outline');
+      } else {
+        input.type = 'password';
+        icon.setAttribute('name', 'eye-outline');
+      }
+    }
+
+    async function testGeminiKey() {
+      const key = document.getElementById('input-gemini-key').value.trim();
+      const statusEl = document.getElementById('gemini-status');
+      if (!key) {
+        statusEl.innerHTML = '<span style="color:#EB5757;">⚠️ Masukkan API key dulu</span>';
+        return;
+      }
+      statusEl.textContent = 'Testing...';
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: 'Hi' }] }] })
+          }
+        );
+        if (res.ok) {
+          statusEl.innerHTML = '<span style="color:#27AE60;">✅ API key valid</span>';
+          // Save key
+          settings.geminiApiKey = key;
+          saveSettings();
+          showNotification('Gemini API key berhasil disimpan', 'success');
+        } else {
+          statusEl.innerHTML = '<span style="color:#EB5757;">❌ Key tidak valid</span>';
+        }
+      } catch (e) {
+        statusEl.innerHTML = `<span style="color:#EB5757;">❌ ${e.message}</span>`;
+      }
+    }
+
+    // Load Gemini key on init
+    function loadGeminiSettings() {
+      if (settings.geminiApiKey) {
+        document.getElementById('input-gemini-key').value = settings.geminiApiKey;
+        document.getElementById('gemini-status').innerHTML = '<span style="color:#27AE60;">✅ Key tersimpan</span>';
+      }
     }
 
     function nav(url) {

@@ -176,10 +176,14 @@
 </div>
 
 <script src="../shared/app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
+<script src="../shared/vdb.js"></script>
 <script>
   // ── Konfigurasi ─────────────────────────────────────────────────────────
   // Isi dengan API key dari https://aistudio.google.com/app/apikey (gratis)
-  const GEMINI_KEY = 'YOUR_GEMINI_API_KEY';
+  let GEMINI_KEY = 'YOUR_GEMINI_API_KEY';
 
   const SYSTEM_PROMPT = `Kamu adalah Vitalora AI, asisten kesehatan yang ramah dan berpengetahuan.
 Selalu jawab dalam Bahasa Indonesia yang mudah dipahami oleh masyarakat umum.
@@ -199,6 +203,14 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
       const { user, profile } = await VAuth.guard('patient', 1);
       userInitials = (profile.name || 'Pengguna').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
     } catch(e) { /* guest mode ok */ }
+
+    // Load Gemini key from Firestore
+    try {
+      const appConfig = await VDB.getAppConfig();
+      if (appConfig.geminiApiKey && appConfig.geminiApiKey.startsWith('AIza')) {
+        GEMINI_KEY = appConfig.geminiApiKey;
+      }
+    } catch(e) { /* gunakan default/placeholder */ }
 
     if (GEMINI_KEY === 'YOUR_GEMINI_API_KEY') {
       showNoKeyBanner();
