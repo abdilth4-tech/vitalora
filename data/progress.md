@@ -183,3 +183,13 @@ Unlock Fase Merge (Claude Code):
   - scripts/seed_formulas.js: Firebase Admin SDK utility untuk seed 1051 formulas ke Firestore (batch size 500)
   - admin/home.html: sidebar updated dengan navigation links ke herbals.html + formulas.html
   - Formulas schema: recipeNumber, name, indications[], category, ingredients[], preparationMethod, preparationType, dosage, frequency, duration, warnings[], evidenceLevel, doctorVerified, source, tags[], sourceType
+- [2026-03-23] ✅ **BATCH 5 — Admin Consultations**
+  - admin/consultations.html: dibuat — complete admin interface untuk manajemen semua konsultasi dalam sistem
+  - Dashboard stats: Total konsultasi, Aktif, Selesai hari ini, Rata-rata durasi
+  - Features: search by patient/doctor name, filter by status (pending/active/completed/cancelled) + type (chat/video/integratif)
+  - Table: 15 items/page with pagination, shows patient, doctor, type, status (color-coded badge), start time, duration
+  - Detail modal: full consultation details (patient, doctor, type, status, timestamps, duration, rating, notes)
+  - Actions: Cancel consultation (for pending/active only) dengan confirmation dialog
+  - Export CSV: generate laporan konsultasi dengan filter applied
+  - Real-time Firestore queries: orderBy startTime DESC, with where clauses untuk filtering
+  - admin/home.html: sidebar updated dengan navigation link ke consultations.html
