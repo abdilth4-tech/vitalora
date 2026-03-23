@@ -40,6 +40,38 @@
 
 ---
 
+# 📅 JADWAL EKSEKUSI OPTIMAL (Off-Peak Anthropic Promo — s/d 27 Maret 2026)
+
+**Current date: 24 Maret 2026 (Selasa)**
+**Zona waktu Anda: WIB (UTC+7)**
+
+## Tabel Off-Peak Hours — 2x Usage Limit
+
+| Kapan | Jam WIB | Status Usage | Rekomendasi |
+|-------|---------|-------------|-------------|
+| **Weekdays (Senin–Jumat)** | **01:00–19:00** | ✅ **2x limit** | 🚀 Eksekusi Batch berat (8, 9, 12, 13) |
+| **Weekdays (Senin–Jumat)** | **19:00–01:00** | ⚠️ Normal | 📝 Task ringan, review, dokumentasi |
+| **Weekends (Sabtu–Minggu)** | **24 jam** | ✅ **2x limit** | 🏆 Heavy lifting, ML training |
+
+## Jadwal Recommended Execution
+
+```
+HARI INI (Selasa 24 Mar 2026):
+  19:00–01:00 WIB: Persiapan, dokumentasi, setup (normal limit OK)
+
+BESOK (Rabu 25 Mar):
+  08:00–18:00 WIB: ⭐ Mulai Batch 8 + Batch 9 (2x limit aktif)
+
+KAMIS–JUMAT (26–27 Mar):
+  08:00–18:00 WIB: Lanjut Batch 10, 11, 12 (2x limit masih aktif)
+
+AKHIR PEKAN (28–29 Mar):
+  Anytime: ⭐ Batch 13 (Vademekum OCR) — Heavy lifting dengan 2x limit full day
+  ⚠️ Jika masih ada yang belum selesai: Lanjut dengan 2x limit
+```
+
+---
+
 ## BATCH 1 — Onboarding Pasien Baru
 > **Scope:** 1 file baru + 1 file dimodifikasi
 > **Dampak:** Langsung dirasakan semua user baru — paling kritis untuk UX
@@ -1711,6 +1743,233 @@ if (!navigator.bluetooth) {
     'Browser tidak support BLE. Gunakan input manual.';
 }
 ```
+
+---
+
+## BATCH 13 — OCR Vademekum Tanaman Obat (Database Baru)
+
+> **Scope:** 2 script baru + update admin/import-herbal.html
+> **Durasi:** ~6–8 jam (termasuk OCR semua halaman)
+> **Engine:** Alibaba Qwen-VL-OCR via Model Studio API
+> **Output:** ~200–400 entri tanaman ke Firestore `herbals` collection
+> **Evidence Level:** A (Kemenkes-validated Saintifikasi Jamu)
+
+### Tentang Sumber Buku
+
+**Vademekum Tanaman Obat untuk Saintifikasi Jamu Jilid 1 (Edisi Revisi)**
+- Publisher: Kemenkes RI (Ministry of Health Indonesia)
+- Kategori: Saintifikasi Jamu — penelitian ilmiah tanaman obat tradisional
+- Evidence Level: **A** — data tervalidasi Kemenkes RI
+- Benefit: Menambah ~200–400 entri tanaman berkualitas tinggi ke herbals database
+
+---
+
+### Strategi OCR: Alibaba Qwen-VL-OCR vs Tesseract
+
+| Aspek | Alibaba Qwen-VL-OCR | Tesseract |
+|-------|---------------------|-----------|
+| **Harga** | ✅ Free quota (token existing) | ✅ Gratis |
+| **Akurasi Cetakan** | 95–98% | 90–95% |
+| **Tabel/Layout Kompleks** | ✅ Sangat baik | ⚠️ Perlu preprocessing |
+| **Bahasa Indonesia** | ✅ Optimal | ⚠️ Kurang optimal |
+| **Setup** | API call (cloud) | Local processing |
+| **Kecepatan** | 1–3 detik/halaman | 0.5–1 detik/halaman |
+
+**Kesimpulan:** Pakai **Alibaba Qwen-VL-OCR** karena:
+- Token sudah ada (gratis)
+- Hasil lebih akurat untuk dokumen kompleks Kemenkes
+- Dukungan bahasa Indonesia lebih baik
+
+---
+
+### 13A — Scripts yang Harus Disiapkan
+
+#### **`scripts/vademekum_ocr.py`** — OCR Halaman ke Text
+
+```python
+import os
+import json
+import base64
+from pathlib import Path
+from dashscope import MultiModalConversation
+
+ALIBABA_API_KEY = os.environ.get('ALIBABA_API_KEY', '')
+
+def ocr_page(image_path: str) -> str:
+    """Kirim satu halaman ke Qwen-VL-OCR, return teks hasil."""
+    with open(image_path, 'rb') as f:
+        img_b64 = base64.b64encode(f.read()).decode()
+
+    messages = [{
+        'role': 'user',
+        'content': [
+            {'image': f'data:image/jpeg;base64,{img_b64}'},
+            {'text': '''Ekstrak SEMUA teks dari halaman ini secara lengkap dan akurat.
+Pertahankan struktur: nama tanaman, nama latin, keluarga (family),
+bagian yang digunakan, kandungan aktif, manfaat, dosis, kontraindikasi,
+efek samping, interaksi obat, status BPOM.
+Jika ada tabel, preserve struktur dengan tab/newline.
+Output: teks mentah tanpa formatting.'''}
+        ]
+    }]
+
+    response = MultiModalConversation.call(
+        model='qwen-vl-ocr',
+        messages=messages,
+        api_key=ALIBABA_API_KEY
+    )
+    return response.output.choices[0].message.content[0]['text']
+
+def ocr_all_pages(img_folder: str, output_file: str):
+    """OCR semua image di folder → JSON."""
+    results = {}
+    imgs = sorted(Path(img_folder).glob('*.jpg'))
+
+    if not imgs:
+        print(f'❌ No JPG files found in {img_folder}')
+        return
+
+    print(f'Found {len(imgs)} images. Starting OCR...\n')
+
+    for i, img in enumerate(imgs, 1):
+        print(f'[{i}/{len(imgs)}] {img.name}...', end=' ', flush=True)
+        try:
+            results[img.stem] = ocr_page(str(img))
+            print('✅')
+        except Exception as e:
+            print(f'❌ ERROR: {e}')
+            results[img.stem] = ''
+
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+
+    print(f'\n✅ Done! Output → {output_file}')
+
+if __name__ == '__main__':
+    ocr_all_pages('data/vademekum/pages', 'data/vademekum/ocr_raw.json')
+```
+
+#### **`scripts/parse_vademekum.py`** — Parse Text ke Schema Firestore
+
+```python
+import json
+import re
+
+SCHEMA_TEMPLATE = {
+    'name': '',
+    'latinName': '',
+    'family': '',
+    'partsUsed': [],
+    'activeCompounds': [],
+    'benefits': [],
+    'mechanism': '',
+    'dosage': '',
+    'frequency': '',
+    'contraindications': [],
+    'sideEffects': [],
+    'drugInteractions': [],
+    'bpomStatus': 'Jamu Saintifikasi',
+    'evidenceLevel': 'A',
+    'source': 'Vademekum Tanaman Obat Saintifikasi Jamu Jilid 1, Kemenkes RI',
+    'sourceType': 'kemenkes',
+    'categories': [],
+    'notes': ''
+}
+
+def parse_entry(raw_text: str) -> dict:
+    """Parse raw OCR text satu tanaman → dict schema Firestore."""
+    entry = SCHEMA_TEMPLATE.copy()
+
+    if not raw_text or len(raw_text) < 20:
+        return None
+
+    # ⚠️ TOHA akan implement detail parsing logic di sini berdasarkan struktur actual buku
+    # Regex patterns untuk ekstrak field (nama, latin, family, benefits, dll)
+
+    lines = [l.strip() for l in raw_text.split('\n') if l.strip()]
+    entry['name'] = lines[0] if lines else ''
+
+    return entry if entry['name'] else None
+
+def parse_all(ocr_json: str, output_json: str):
+    """Parse semua OCR mentah → schema terstruktur."""
+    with open(ocr_json, 'r', encoding='utf-8') as f:
+        raw = json.load(f)
+
+    entries = []
+    for page_name, text in raw.items():
+        if not text or len(text) < 20:
+            continue
+
+        parsed = parse_entry(text)
+        if parsed and parsed['name']:
+            entries.append(parsed)
+
+    with open(output_json, 'w', encoding='utf-8') as f:
+        json.dump(entries, f, ensure_ascii=False, indent=2)
+
+    print(f'✅ Parsed {len(entries)} tanaman → {output_json}')
+
+if __name__ == '__main__':
+    parse_all('data/vademekum/ocr_raw.json', 'data/vademekum/herbals_vademekum.json')
+```
+
+---
+
+### 13B — Langkah-Langkah Eksekusi TOHA (Step by Step)
+
+**Prasyarat:**
+- File PDF: Vademekum Tanaman Obat Jilid 1
+- Alibaba Model Studio account (sudah ada)
+- API key Alibaba (export sebagai env var)
+
+```bash
+# STEP 1: Install dependencies
+pip install dashscope pdf2image pillow
+
+# STEP 2: Konversi PDF → images (300 DPI, JPEG)
+# (Jika belum ada poppler: brew install poppler atau apt-get install poppler-utils)
+pdftoppm -r 300 -jpeg data/vademekum/vademekum_jilid1.pdf data/vademekum/pages/page
+# Hasilnya: page-1.jpg, page-2.jpg, ... (satu per halaman)
+
+# STEP 3: Set environment variable (Alibaba API key)
+export ALIBABA_API_KEY=sk-xxxxx...
+# (Verify: echo $ALIBABA_API_KEY)
+
+# STEP 4: Jalankan OCR (JPEG → text JSON)
+python scripts/vademekum_ocr.py
+# Output: data/vademekum/ocr_raw.json (~2–5MB)
+# Waktu: 5–15 menit (depend jumlah halaman + rate limit)
+
+# STEP 5: Parse OCR → Firestore schema
+python scripts/parse_vademekum.py
+# Output: data/vademekum/herbals_vademekum.json
+# File siap untuk import
+
+# STEP 6: Upload ke Firestore via Admin UI
+# Buka browser: https://vitalora.web.app/admin/import-herbal.html
+# Login dengan akun admin
+# - Collection: pilih "herbals"
+# - Klik tombol "Upload File" atau drag-drop
+# - Select: data/vademekum/herbals_vademekum.json
+# - Klik [Import] button
+# - Monitor progress bar
+# - Verifikasi: Cek Firestore Console → `herbals` collection → lihat entries baru
+
+# SELESAI! ✅
+```
+
+---
+
+### 13C — Verifikasi Setelah Batch 13 Selesai
+
+1. ✅ **Images ada:** `data/vademekum/pages/` berisi 300+ JPG files
+2. ✅ **OCR berhasil:** `ocr_raw.json` ada, ukuran >1MB, berisi text dari semua halaman
+3. ✅ **Parse berhasil:** `herbals_vademekum.json` ada, berisi array objek tanaman dengan field yang benar
+4. ✅ **Import ke Firestore:** Buka `admin/import-herbal.html` → cek import history atau Firestore Console
+5. ✅ **Firestore entries:** Di Firestore Console, collection `herbals` → filter `sourceType == 'kemenkes'` → minimal 200 entries muncul
+6. ✅ **Evidence badge:** entries baru punya `evidenceLevel: 'A'` dan `source: 'Vademekum...'`
+7. ✅ **Visible di app:** Buka `patient/herbal.html` → scroll ke bawah → kelihatan tanaman dari Vademekum dengan badge "Evidence: A"
 
 ---
 
