@@ -190,6 +190,12 @@
   // Auth guard + load user profile
   const { user, profile } = await VAuth.guard('patient', 1);
 
+  // Check if onboarding is complete
+  if (!profile.onboardingDone) {
+    nav('onboarding.html');
+    return;
+  }
+
   // Update greeting with real name
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Selamat Pagi' : hour < 17 ? 'Selamat Siang' : 'Selamat Malam';

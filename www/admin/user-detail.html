@@ -79,7 +79,7 @@
         <button class="neu-btn" style="color:var(--warning);border-color:var(--warning);" onclick="document.getElementById('suspendModal').classList.add('open')">
           <ion-icon name="ban-outline"></ion-icon> Suspend
         </button>
-        <button class="neu-btn-danger neu-btn-sm" onclick="showToast('Fitur hapus memerlukan konfirmasi lebih lanjut.','warning')">
+        <button class="neu-btn-danger neu-btn-sm" onclick="document.getElementById('deleteModal').classList.add('open')">
           <ion-icon name="trash-outline"></ion-icon> Delete
         </button>
       </div>
@@ -188,8 +188,26 @@
     </div>
     <div class="modal-actions">
       <button class="neu-btn neu-btn-sm" onclick="document.getElementById('suspendModal').classList.remove('open')">Batal</button>
-      <button class="neu-btn-danger neu-btn-sm" onclick="document.getElementById('suspendModal').classList.remove('open'); showToast('Akun telah disuspend.','warning')">
+      <button class="neu-btn-danger neu-btn-sm" onclick="suspendUser()">
         <ion-icon name="ban-outline"></ion-icon> Suspend Akun
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <div class="modal-title" style="color:var(--danger);">
+      <ion-icon name="warning-outline"></ion-icon> Hapus Akun?
+    </div>
+    <div class="modal-desc">
+      Akun <strong id="modal-delete-name">pengguna ini</strong> akan dihapus permanen. Data konsultasi tetap tersimpan untuk keperluan medis. Tindakan ini tidak dapat dibatalkan.
+    </div>
+    <div class="modal-actions">
+      <button class="neu-btn neu-btn-sm" onclick="document.getElementById('deleteModal').classList.remove('open')">Batal</button>
+      <button class="neu-btn-danger neu-btn-sm" onclick="deleteUserSoft()">
+        <ion-icon name="trash-outline"></ion-icon> Hapus Akun
       </button>
     </div>
   </div>
@@ -442,6 +460,67 @@ async function saveNewRole() {
     btn.innerHTML = '<ion-icon name="save-outline"></ion-icon> Simpan';
   }
 }
+
+// === SUSPEND USER ===
+async function suspendUser() {
+  if (!_currentUser) return;
+
+  const reason = 'Akun disuspend oleh admin';
+  document.getElementById('suspendModal').classList.remove('open');
+
+  try {
+    await VDB.updateUser(uid, {
+      isActive: false,
+      suspended: true,
+      suspendedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      suspendReason: reason
+    });
+
+    // Update UI
+    const chip = document.getElementById('status-chip');
+    chip.textContent = 'Suspended';
+    chip.style.cssText = 'background:rgba(235,87,87,0.12);color:#EB5757;';
+    document.getElementById('btn-deactivate').style.display = 'none';
+    document.getElementById('btn-activate').style.display = '';
+
+    _currentUser.suspended = true;
+    _currentUser.isActive = false;
+
+    showToast('Akun berhasil disuspend', 'warning');
+  } catch (e) {
+    showToast('Gagal: ' + (e.message || e), 'error');
+  }
+}
+
+// === DELETE USER (SOFT DELETE) ===
+async function deleteUserSoft() {
+  if (!_currentUser) return;
+
+  document.getElementById('deleteModal').classList.remove('open');
+
+  try {
+    await VDB.updateUser(uid, {
+      deleted: true,
+      isActive: false,
+      deletedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    showToast('Akun berhasil dihapus', 'success');
+    setTimeout(() => nav('users.html'), 1500);
+  } catch (e) {
+    showToast('Gagal: ' + (e.message || e), 'error');
+  }
+}
+
+// === INITIALIZE DELETE MODAL NAME ===
+document.addEventListener('DOMContentLoaded', () => {
+  const modalDeleteName = document.getElementById('modal-delete-name');
+  setTimeout(() => {
+    if (_currentUser && modalDeleteName) {
+      modalDeleteName.textContent = _currentUser.name || 'pengguna ini';
+    }
+  }, 100);
+});
 </script>
 </body>
 </html>
