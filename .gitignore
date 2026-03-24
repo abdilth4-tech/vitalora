@@ -75,3 +75,4 @@ data/tcm_mkg/raw/
 __pycache__/
 *.pyc
 *.pkl
+serviceAccountKey.json
