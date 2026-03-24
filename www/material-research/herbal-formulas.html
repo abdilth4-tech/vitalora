@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traditional Herbal Formulas — Vitalora Evidence Portal</title>
+  <link rel="stylesheet" href="../../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    :root {
+      --primary-herbal: #27AE60;
+      --primary-herbal-dark: #1E8449;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
+    }
+
+    .header-section {
+      background: linear-gradient(135deg, var(--primary-herbal) 0%, #3ED77F 100%);
+      color: #fff;
+      padding: 60px 20px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(39, 174, 96, 0.3);
+    }
+
+    .header-section h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 0 0 12px;
+    }
+
+    .header-section p {
+      font-size: 1rem;
+      opacity: 0.95;
+      margin: 0;
+    }
+
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .indication-section {
+      margin-bottom: 40px;
+    }
+
+    .indication-header {
+      background: rgba(39, 174, 96, 0.08);
+      border-left: 6px solid var(--primary-herbal);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .indication-header h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary-herbal);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
+    }
+
+    .formula-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 16px rgba(39, 174, 96, 0.1);
+      transition: all 0.3s;
+      border-top: 4px solid var(--primary-herbal);
+    }
+
+    .formula-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(39, 174, 96, 0.15);
+    }
+
+    .formula-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .formula-meta {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .badge-empirical { background: #E3F2FD; color: #1565C0; }
+    .badge-verified { background: #E8F5E9; color: #2E7D32; }
+
+    .ingredients-list {
+      background: #f9f9f9;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .ingredients-list h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .ingredient-item {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .prep-method {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .dosage-box {
+      background: rgba(39, 174, 96, 0.05);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: var(--primary-herbal-dark);
+      font-weight: 600;
+    }
+
+    .warning-box {
+      background: #FFEBEE;
+      color: #C62828;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    footer {
+      background: #fff;
+      border-top: 1px solid rgba(39, 174, 96, 0.1);
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-tertiary);
+      margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .formula-grid { grid-template-columns: 1fr; }
+    }
+
+    /* BREADCRUMBS */
+    .breadcrumb-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 12px 40px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #6B7B8D;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      z-index: 1000;
+    }
+
+    .breadcrumb-nav a {
+      color: var(--primary-herbal);
+      text-decoration: none;
+    }
+
+    .breadcrumb-nav a:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumb-nav span {
+      opacity: 0.5;
+    }
+
+    body {
+      padding-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="breadcrumb-nav">
+  <a href="../../index.html">Vitalora</a>
+  <span>/</span>
+  <a href="../slr-portal/index.html">Evidence Portal</a>
+  <span>/</span>
+  <a href="index.html">Material Research</a>
+  <span>/</span>
+  Herbal Formulas
+</nav>
+
+<div class="header-section">
+  <h1>💚 Traditional Herbal Formulas</h1>
+  <p>Adapting 1001 Resep Herbal by Dr. Setiawan Dalimartha</p>
+</div>
+
+<div class="content-wrapper">
+
+  <!-- ANTI-LIPID -->
+  <div class="indication-section">
+    <div class="indication-header">
+      <h2><ion-icon name="heart-outline"></ion-icon> Anti-Lipid (Kolesterol)</h2>
+    </div>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <div class="formula-name">Ramuan Belimbing Wuluh</div>
+        <div class="formula-meta">
+          <span class="badge badge-empirical">EMPIRIS</span>
+          <span class="badge">RESEP #518</span>
+        </div>
+        <div class="ingredients-list">
+          <h3>Bahan</h3>
+          <div class="ingredient-item"><span>Belimbing Wuluh</span> <span>3 buah</span></div>
+        </div>
+        <div class="prep-method">
+          Iris tipis-tipis buah belimbing wuluh. Rebus dengan 1 gelas air sampai mendidih, lalu teruskan selama 15 menit. Angkat dan dinginkan.
+        </div>
+        <div class="dosage-box">
+          Minum air rebusan sekaligus. Lakukan 2 kali sehari.
+        </div>
+        <div class="warning-box">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>Dilarang untuk penderita maag atau kencing batu.</span>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-name">Jus Avokad Murni</div>
+        <div class="formula-meta">
+          <span class="badge badge-empirical">EMPIRIS</span>
+          <span class="badge">RESEP #519</span>
+        </div>
+        <div class="ingredients-list">
+          <h3>Bahan</h3>
+          <div class="ingredient-item"><span>Buah Avokad Masak</span> <span>150g</span></div>
+        </div>
+        <div class="prep-method">
+          Pilih buah avokad yang sudah masak. Blender daging buah dengan air secukupnya hingga menjadi jus kental.
+        </div>
+        <div class="dosage-box">
+          Konsumsi jus buah avokad setiap hari.
+        </div>
+        <div class="warning-box">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>JANGAN tambahkan gula pasir karena meningkatkan trigliserida.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANTI-HYPERTENSION -->
+  <div class="indication-section">
+    <div class="indication-header">
+      <h2><ion-icon name="speedometer-outline"></ion-icon> Anti-Hypertension (Hipertensi)</h2>
+    </div>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <div class="formula-name">Ramuan Bawang Putih</div>
+        <div class="formula-meta">
+          <span class="badge badge-empirical">EMPIRIS</span>
+          <span class="badge">RESEP #522</span>
+        </div>
+        <div class="ingredients-list">
+          <h3>Bahan</h3>
+          <div class="ingredient-item"><span>Bawang Putih</span> <span>2 siung</span></div>
+        </div>
+        <div class="prep-method">
+          Iris tipis-tipis bawang putih, kemudian buat menjadi bulatan-bulatan kecil. Bisa juga ditumbuk kasar.
+        </div>
+        <div class="dosage-box">
+          Telan bersama nasi. Lakukan 2 kali sehari.
+        </div>
+        <div class="warning-box">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>Jangan berlebihan karena bisa menyebabkan mual atau iritasi lambung.</span>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-name">Sari Labu Siam</div>
+        <div class="formula-meta">
+          <span class="badge badge-empirical">EMPIRIS</span>
+          <span class="badge">RESEP #523</span>
+        </div>
+        <div class="ingredients-list">
+          <h3>Bahan</h3>
+          <div class="ingredient-item"><span>Labu Siam Sedang</span> <span>1 buah</span></div>
+        </div>
+        <div class="prep-method">
+          Kupas kulitnya, potong kecil-kecil. Blender dan saring untuk memisahkan sari dari ampasnya.
+        </div>
+        <div class="dosage-box">
+          Minum air sarinya sekaligus, lakukan setiap hari.
+        </div>
+        <div class="warning-box">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>Penderita maag dan reumatik dilarang mengonsumsi ramuan ini.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANTI-DIABETES -->
+  <div class="indication-section">
+    <div class="indication-header">
+      <h2><ion-icon name="water-outline"></ion-icon> Anti-Diabetes (Gula Darah)</h2>
+    </div>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <div class="formula-name">Rebusan Biji Avokad</div>
+        <div class="formula-meta">
+          <span class="badge badge-empirical">EMPIRIS</span>
+          <span class="badge">RESEP #195</span>
+        </div>
+        <div class="ingredients-list">
+          <h3>Bahan</h3>
+          <div class="ingredient-item"><span>Biji Avokad</span> <span>1 buah</span></div>
+        </div>
+        <div class="prep-method">
+          Panggang biji avokad, potong kecil-kecil. Rebus dengan air hingga airnya berwarna cokelat. Dinginkan dan saring.
+        </div>
+        <div class="dosage-box">
+          Minum pagi hari 30 menit sebelum makan. 2x sehari.
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-name">Ramuan Biji Buncis</div>
+        <div class="formula-meta">
+          <span class="badge badge-empirical">EMPIRIS</span>
+          <span class="badge">RESEP #197</span>
+        </div>
+        <div class="ingredients-list">
+          <h3>Bahan</h3>
+          <div class="ingredient-item"><span>Biji Buncis</span> <span>120g</span></div>
+        </div>
+        <div class="prep-method">
+          Rebus biji buncis dengan 3 gelas air hingga tersisa 1 gelas. Dinginkan dan saring.
+        </div>
+        <div class="dosage-box">
+          Minum 2 kali sehari, masing-masing 1/2 gelas.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVER SUPPORT -->
+  <div class="indication-section">
+    <div class="indication-header">
+      <h2><ion-icon name="medkit-outline"></ion-icon> Liver Support (Lemak Hati/Hepatitis)</h2>
+    </div>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <div class="formula-name">Ramuan Pegagan</div>
+        <div class="formula-meta">
+          <span class="badge badge-empirical">EMPIRIS</span>
+          <span class="badge">RESEP #332</span>
+        </div>
+        <div class="ingredients-list">
+          <h3>Bahan</h3>
+          <div class="ingredient-item"><span>Herba Pegagan Segar</span> <span>30-60g</span></div>
+        </div>
+        <div class="prep-method">
+          Rebus pegagan segar dalam 3 gelas air sampai sisa 1.5 gelas. Bagi menjadi 3 bagian.
+        </div>
+        <div class="dosage-box">
+          Minum pagi hari sewaktu perut kosong.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METABOLIC BALANCE -->
+  <div class="indication-section">
+    <div class="indication-header">
+      <h2><ion-icon name="git-compare-outline"></ion-icon> Metabolic Balance (Asam Urat)</h2>
+    </div>
+    <div class="formula-grid">
+      <div class="formula-card">
+        <div class="formula-name">Ramuan Tempuyung</div>
+        <div class="formula-meta">
+          <span class="badge badge-empirical">EMPIRIS</span>
+          <span class="badge">RESEP #4</span>
+        </div>
+        <div class="ingredients-list">
+          <h3>Bahan</h3>
+          <div class="ingredient-item"><span>Herba Tempuyung Segar</span> <span>15-60g</span></div>
+        </div>
+        <div class="prep-method">
+          Rebus herba tempuyung dengan 3 gelas air hingga sisa 1 gelas. Saring.
+        </div>
+        <div class="dosage-box">
+          Minum 2 kali sehari, masing-masing 1/2 gelas.
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-name">Ramuan Meniran</div>
+        <div class="formula-meta">
+          <span class="badge badge-empirical">EMPIRIS</span>
+          <span class="badge">RESEP #6</span>
+        </div>
+        <div class="ingredients-list">
+          <h3>Bahan</h3>
+          <div class="ingredient-item"><span>Herba Meniran Segar</span> <span>30-60g</span></div>
+        </div>
+        <div class="prep-method">
+          Cuci bersih dan rebus herba meniran secukupnya. Saring airnya.
+        </div>
+        <div class="dosage-box">
+          Minum air rebusan sekaligus.
+        </div>
+        <div class="warning-box">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>Jangan berlebihan karena dapat memicu disfungsi ereksi.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Vitalora Traditional Formulas — Source: Adaptasi 1001 Resep Herbal Dr. Setiawan Dalimartha</p>
+  <p><a href="index.html" style="color: var(--primary-herbal); text-decoration: none;">← Back to Evidence Portal</a></p>
+</footer>
+
+</body>
+</html>
