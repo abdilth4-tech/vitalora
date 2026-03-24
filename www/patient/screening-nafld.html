@@ -76,6 +76,33 @@
     }
     .fib4-val { font-size: 2.4rem; font-weight: 800; color: var(--text-primary); }
     .fib4-lbl { font-size: 0.75rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-top: 4px; }
+
+    /* Radio Option Styling */
+    .radio-group { display: grid; gap: 8px; margin-top: 12px; }
+    .radio-opt {
+      background: var(--bg);
+      box-shadow: var(--shadow-out-sm);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .radio-opt:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(47,128,237,0.2);
+    }
+    .radio-opt:active { transform: scale(0.98); }
+    .radio-opt.selected {
+      background: linear-gradient(135deg, var(--primary-nafld), #56CCF2);
+      color: #fff;
+      border-color: var(--primary-nafld);
+      box-shadow: 0 4px 14px rgba(47,128,237,0.4);
+    }
   </style>
 </head>
 <body>
