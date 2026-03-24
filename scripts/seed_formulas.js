@@ -70,13 +70,23 @@ async function seedFormulas() {
       }
     }
 
-    console.log(`\n✨ Successfully seeded ${successCount} formulas to Firestore!`);
-    console.log(`📊 Statistics:`);
-    console.log(`   - Total formulas: ${data.metadata.totalFormulas}`);
-    console.log(`   - Categories: ${Object.keys(data.metadata.categories).length}`);
-    console.log(`   - Evidence A: ${data.metadata.evidenceLevels.A}`);
-    console.log(`   - Evidence B: ${data.metadata.evidenceLevels.B}`);
-    console.log(`   - Evidence C: ${data.metadata.evidenceLevels.C}`);
+    // Hitung statistik dari data aktual
+    const evCount = { A: 0, B: 0, C: 0 };
+    const cats = new Set();
+    formulas.forEach(f => {
+      const ev = f.evidenceLevel || 'C';
+      evCount[ev] = (evCount[ev] || 0) + 1;
+      (f.indications || f.category ? [f.category].filter(Boolean) : []).forEach(c => cats.add(c));
+    });
+
+    console.log(`\n Successfully seeded ${successCount} formulas to Firestore!`);
+    console.log(`Statistics:`);
+    console.log(`   - Total formulas : ${formulas.length}`);
+    console.log(`   - Evidence A     : ${evCount.A}`);
+    console.log(`   - Evidence B     : ${evCount.B}`);
+    console.log(`   - Evidence C     : ${evCount.C}`);
+    console.log(`   - Sumber FOHAI   : ${formulas.filter(f => f.sourceRef && f.sourceRef.sourceType === 'evidence-based').length}`);
+    console.log(`   - Sumber OCR     : ${formulas.filter(f => f.sourceRef && f.sourceRef.sourceType === 'book-ocr').length}`);
 
     process.exit(0);
   } catch (error) {

@@ -242,11 +242,41 @@ const usageDesc = {
       </div>`;
     }).join('');
 
-    const refsHTML = (herb.references || []).filter(r => r.author).map(r =>
-      `<div style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:6px;line-height:1.5;padding:8px 12px;background:var(--bg);box-shadow:var(--shadow-out-sm);border-radius:10px;">
-        📄 ${r.author} (${r.year}) — <i>${r.journal}</i>${r.pmid ? ` · <span style="color:var(--primary-dark);">PMID: ${r.pmid}</span>` : ''}
-      </div>`
-    ).join('');
+    // Badge warna per tipe sumber
+    const srcTypeLabel = { 'kemenkes':'Kemenkes RI', 'riset-ilmiah':'Riset Ilmiah', 'book-ocr':'Buku Herbal', 'monograph':'Monograf WHO' };
+    const srcTypeColor = { 'kemenkes':'#27AE60', 'riset-ilmiah':'#2D9CDB', 'book-ocr':'#F2994A', 'monograph':'#9B51E0' };
+    const srcType = herb.sourceType || 'riset-ilmiah';
+    const srcColor = srcTypeColor[srcType] || '#2D9CDB';
+    const srcLabel = srcTypeLabel[srcType] || srcType;
+
+    const sourceBadgeHTML = `
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <span style="background:${srcColor}18;color:${srcColor};padding:3px 12px;border-radius:20px;font-size:0.68rem;font-weight:700;">
+          📋 ${srcLabel}
+        </span>
+        ${herb.source ? `<span style="font-size:0.72rem;color:var(--text-tertiary);">${herb.source}</span>` : ''}
+      </div>`;
+
+    // Support both schema lama (author/journal/pmid) dan schema baru (title/publisher/year/url)
+    const refsHTML = (herb.references || []).map(r => {
+      if (r.author) {
+        // Schema lama — PubMed style
+        return `<div style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:6px;line-height:1.5;padding:10px 14px;background:var(--bg);box-shadow:var(--shadow-out-sm);border-radius:12px;">
+          <div style="font-weight:600;margin-bottom:2px;">📄 ${r.author} (${r.year || ''})</div>
+          <div style="font-style:italic;color:var(--text-tertiary);">${r.journal || ''}</div>
+          ${r.pmid ? `<div style="margin-top:4px;"><a href="https://pubmed.ncbi.nlm.nih.gov/${r.pmid}" target="_blank" style="color:var(--primary-dark);font-size:0.7rem;">PubMed: ${r.pmid} ↗</a></div>` : ''}
+        </div>`;
+      } else {
+        // Schema baru — book/monograph/database style
+        const typeIcon = { book:'📖', monograph:'📗', pharmacopeia:'⚕️', 'government-guide':'🏛️', database:'🗄️', 'book-ocr':'📚' };
+        const icon = typeIcon[r.type] || '📋';
+        return `<div style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:6px;line-height:1.5;padding:10px 14px;background:var(--bg);box-shadow:var(--shadow-out-sm);border-radius:12px;">
+          <div style="font-weight:600;margin-bottom:2px;">${icon} ${r.title || ''}</div>
+          <div style="color:var(--text-tertiary);">${r.publisher || ''}${r.year ? ` · ${r.year}` : ''}${r.isbn ? ` · ISBN ${r.isbn}` : ''}</div>
+          ${r.url ? `<div style="margin-top:4px;"><a href="${r.url}" target="_blank" style="color:var(--primary-dark);font-size:0.7rem;">${r.url} ↗</a></div>` : ''}
+        </div>`;
+      }
+    }).join('');
 
     const compoundsHTML = (herb.activeCompounds || []).map(c =>
       `<span style="display:inline-block;background:#E8EAF6;color:#3F51B5;padding:4px 12px;border-radius:20px;font-size:0.72rem;font-weight:600;margin:3px;">${c}</span>`
@@ -301,9 +331,11 @@ const usageDesc = {
         ${interactionHTML}
       </div>` : ''}
 
-      ${refsHTML ? `
-      <div class="section-header mt-24" data-animate="up" data-delay="650"><div class="section-title">Referensi Ilmiah</div></div>
-      <div data-animate="up" data-delay="680">${refsHTML}</div>` : ''}
+      <div class="section-header mt-24" data-animate="up" data-delay="650"><div class="section-title">Sumber & Referensi</div></div>
+      <div data-animate="up" data-delay="680">
+        ${sourceBadgeHTML}
+        ${refsHTML || `<div style="font-size:0.78rem;color:var(--text-tertiary);padding:10px 0;">Tidak ada referensi tambahan.</div>`}
+      </div>
 
       <button class="neu-btn-primary neu-btn-block mt-24" data-animate="up" data-delay="700" onclick="showToast('${herb.name} ditambahkan ke tracker','success')">
         <ion-icon name="add-circle-outline"></ion-icon>

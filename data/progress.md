@@ -8,9 +8,10 @@
 | AI | Role | Territory | Status |
 |----|------|-----------|--------|
 | 🔵 Claude Code | UI & Integrasi | `www/` | ✅ Aktif |
-| 🟡 Claude Desktop | OCR Buku Jamu | `data/ocr/` | ⏳ Proses |
-| 🟢 Claude CLI #1 | Tanaman + Formula A | `data/claude1/` | ⏳ Menunggu mulai |
-| 🔴 Claude CLI #2 | Formula B + Enrichment | `data/claude2/` | ⏳ Menunggu mulai |
+| 🟡 Claude Desktop | OCR Buku Jamu | `data/ocr/` | ✅ Selesai |
+| 🟢 Claude CLI #1 | Tanaman + Formula A | `data/claude1/` | ✅ Selesai |
+| 🔴 Claude CLI #2 | Formula B + Enrichment | `data/claude2/` | ✅ Selesai |
+| 🟣 Claude Cowork | Batch 13 — OCR Vademekum + Data Pipeline | `data/vademekum/`, `data/final/` | ✅ Selesai |
 
 ---
 
@@ -19,13 +20,17 @@
 | File | Status | Dibuat oleh |
 |------|--------|-------------|
 | data/ocr/raw_formulas.json | ✅ Ada — 941 resep, 113 kondisi | Claude Desktop (Tugas A) ✅ |
-| data/tcm_mkg/vitalora_enriched.json | ❌ Belum ada | Claude Desktop (Tugas B) |
-| data/claude1/herbals_profiles.json | ❌ Belum ada | Claude CLI #1 |
-| data/claude1/formulas_A.json | ❌ Belum ada | Claude CLI #1 |
-| data/claude2/formulas_B.json | ❌ Belum ada | Claude CLI #2 |
-| data/claude2/enriched_ocr.json | ❌ Belum ada | Claude CLI #2 |
-| data/final/herbals_merged.json | ⏳ Menunggu herbals_profiles.json dari CLI #1 | Claude Code (scripts/merge_herbals.js siap) |
-| data/final/formulas_merged.json | ❌ Belum ada | Claude Code |
+| data/tcm_mkg/vitalora_enriched.json | ✅ Ada — 32 tanaman Indonesia | Claude Desktop (Tugas B) ✅ |
+| data/claude1/herbals_profiles.json | ✅ Ada — 50 tanaman + references[] | Claude CLI #1 ✅ |
+| data/claude1/formulas_A.json | ✅ Ada — 42 formula + sourceRef | Claude CLI #1 ✅ |
+| data/claude2/formulas_B.json | ✅ Ada — 68 formula + sourceRef | Claude CLI #2 ✅ |
+| data/claude2/enriched_ocr.json | ✅ Ada — 941 resep + sourceRef | Claude CLI #2 ✅ |
+| data/vademekum/ocr_raw.json | ✅ Ada — 212 halaman (205 berisi teks) | Claude Cowork Batch 13 ✅ |
+| data/vademekum/herbals_vademekum.json | ✅ Ada — 25 tanaman Evidence Level A | Claude Cowork Batch 13 ✅ |
+| data/final/herbals_merged.json | ✅ Ada — 60 tanaman (CLI#1 + Vademekum) | Claude Cowork ✅ |
+| data/final/formulas_merged.json | ✅ Ada — 1051 formula (A+B+OCR) | Claude Cowork ✅ |
+| Firestore: herbals collection | ✅ Seeded — 60 tanaman | SEED_FIRESTORE.bat ✅ |
+| Firestore: herbalFormulas collection | ✅ Seeded — 1051 formula | SEED_FIRESTORE.bat ✅ |
 
 ---
 
@@ -213,3 +218,34 @@ Unlock Fase Merge (Claude Code):
   - Confirmation modals untuk aksi-aksi destructive (reset data, database optimization)
   - Notification system dengan success/error/warning states dan auto-hide
   - admin/home.html: sidebar updated dengan navigation link ke settings.html
+- [2026-03-24] ✅ **BATCH 13 — OCR Vademekum Tanaman Obat (SELESAI)**
+  - **Engine:** Claude Vision (multimodal) — bukan Tesseract/Qwen-VL/pihak ketiga
+  - **Input:** 212 halaman JPG dari "Vademekum Tanaman Obat untuk Saintifikasi Jamu Jilid 1" (Kemenkes RI 2012)
+  - **OCR:** 7 agent Claude Vision paralel → 205 halaman berisi teks, 7 halaman kosong
+  - **Output OCR:** `data/vademekum/ocr_raw.json` (299 KB, 212 entries)
+  - **Tanaman terdeteksi:** 25 tanaman Evidence Level A (Kemenkes-validated):
+    Lengkuas, Pule, Sambiloto, Seledri, Sembung, Pegagan, Kunyit, Temulawak, Adas,
+    Daun Ungu, Jati Belanda, Sambungyawa, Kencur, Menta, Kemuning, Kumis Kucing,
+    Meniran, Purwoceng, Sirih, Cabe Jawa, Daun Sendok, Tempuyung, Jombang, Brotowali, Jahe
+  - **Output parse:** `data/vademekum/herbals_vademekum.json` (25 tanaman, schema Firestore lengkap)
+  - **Fields per tanaman:** name, latinName, family, categories, activeCompounds, benefits,
+    mechanism, indications, contraindications, sideEffects, drugInteractions, warnings,
+    storage, exampleFormulas, partUsed, evidenceLevel:A, sourceType:kemenkes, references[]
+  - **Script parser:** `scripts/smart_parser.py` (dibuat baru, lebih akurat dari parse_vademekum.py bawaan)
+- [2026-03-24] ✅ **DATA PIPELINE — References + Merge + Seed Firestore**
+  - **Step 1:** Tambah `references[]` ke semua 50 herbals CLI#1 (WHO + BPOM + PubMed)
+  - **Step 2:** Tambah `references[]` ke 25 herbals Vademekum (Kemenkes RI 2012)
+  - **Step 3:** Tambah `sourceRef` ke 42 formulas_A (FOHAI + Saintifikasi Jamu)
+  - **Step 4:** Tambah `sourceRef` ke 68 formulas_B (FOHAI + WHO Monographs)
+  - **Step 5:** Tambah `sourceRef` ke 941 enriched_ocr (1001 Resep Herbal - Dalimartha)
+  - **Step 6:** Merge herbals → `data/final/herbals_merged.json` (60 tanaman: 15 di-enrich ke Ev.A, 10 baru)
+  - **Step 7:** Merge formulas → `data/final/formulas_merged.json` (1051 formula)
+  - **Seed:** SEED_FIRESTORE.bat → 60 herbals + 1051 formulas → Firestore ✅
+  - **Script pipeline:** `add_references.py`
+  - **Distribusi evidence:** 30×A (Kemenkes), 22×B (WHO/riset), 8×C (empiris)
+- [2026-03-24] ✅ **UI UPDATE — Tampilan Sumber & Referensi**
+  - `patient/herbal-detail.html`: seksi "Sumber & Referensi" diperbarui — support schema baru (title/publisher/year/isbn/url) + schema lama PubMed (author/journal/pmid), badge warna per sourceType
+  - `patient/herbal-formula.html`: blok sumber diperkaya — badge tipe, nama sumber utama, daftar referensi lengkap, info collectedBy, catatan OCR
+  - `scripts/seed_formulas.js`: fix bug statistik post-seeding (TypeError metadata.categories)
+  - `SEED_FIRESTORE.bat`: dibuat — one-click seed herbals + formulas dari CMD
+  - `DEPLOY.bat`: dibuat — one-click deploy hosting ke vitalora.web.app

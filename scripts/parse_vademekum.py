@@ -26,8 +26,8 @@ SCHEMA_TEMPLATE = {
     'notes': ''
 }
 
-OCR_JSON = r"C:\Users\mosto\Desktop\VITALORA\data\vademekum\ocr_raw.json"
-OUTPUT_JSON = r"C:\Users\mosto\Desktop\VITALORA\data\vademekum\herbals_vademekum.json"
+OCR_JSON = r"/sessions/nice-funny-archimedes/mnt/VITALORA/data/vademekum/ocr_raw.json"
+OUTPUT_JSON = r"/sessions/nice-funny-archimedes/mnt/VITALORA/data/vademekum/herbals_vademekum.json"
 
 def parse_entry(raw_text: str, page_name: str) -> dict:
     """Parse raw OCR text satu tanaman → dict schema Firestore"""

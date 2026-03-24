@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(git remote add:*)",
-      "Bash(firebase deploy:*)"
+      "Bash(firebase deploy:*)",
+      "Bash(python -m platformio run -e esp32-s3-waveshare --target upload)"
     ]
   }
 }

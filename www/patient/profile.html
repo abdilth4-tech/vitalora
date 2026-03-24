@@ -26,7 +26,7 @@
   <header class="app-header">
     <button class="neu-icon-btn" onclick="nav('home.html')"><ion-icon name="arrow-back-outline"></ion-icon></button>
     <div style="font-size:1.05rem;font-weight:700;">Profil Saya</div>
-    <button class="neu-icon-btn" ><ion-icon name="settings-outline"></ion-icon></button>
+    <button class="neu-icon-btn" onclick="nav('edit-profile.html')"><ion-icon name="settings-outline"></ion-icon></button>
   </header>
 
   <div class="section">
@@ -44,32 +44,32 @@
 
     <!-- Menu Items -->
     <div style="margin-top:24px;display:flex;flex-direction:column;gap:4px;">
-      <div class="neu-list-item" data-animate="up" data-delay="100" onclick="showToast('Edit profil')">
+      <div class="neu-list-item" data-animate="up" data-delay="100" onclick="nav('edit-profile.html')">
         <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:var(--primary-bg);"><ion-icon name="person-outline" style="color:var(--primary-dark);"></ion-icon></div>
         <div class="li-info"><div class="li-title">Edit Profil</div><div class="li-subtitle">Nama, tanggal lahir, riwayat kesehatan</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>
       </div>
-      <div class="neu-list-item" data-animate="up" data-delay="150" onclick="showToast('Riwayat medis')">
+      <div class="neu-list-item" data-animate="up" data-delay="150" onclick="nav('medical-history.html')">
         <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:var(--info-bg);"><ion-icon name="document-text-outline" style="color:var(--info);"></ion-icon></div>
         <div class="li-info"><div class="li-title">Riwayat Medis</div><div class="li-subtitle">Diagnosa, obat, operasi, alergi</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>
       </div>
-      <div class="neu-list-item" data-animate="up" data-delay="200">
+      <div class="neu-list-item" data-animate="up" data-delay="200" onclick="nav('faq.html')">
         <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:var(--accent-bg);"><ion-icon name="help-circle-outline" style="color:var(--accent);"></ion-icon></div>
         <div class="li-info"><div class="li-title">FAQ / Q&A</div><div class="li-subtitle">Pertanyaan umum tentang Vitalora</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>
       </div>
-      <div class="neu-list-item" data-animate="up" data-delay="250">
+      <div class="neu-list-item" data-animate="up" data-delay="250" onclick="nav('privacy-policy.html')">
         <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:var(--warning-bg);"><ion-icon name="shield-checkmark-outline" style="color:var(--warning);"></ion-icon></div>
         <div class="li-info"><div class="li-title">Kebijakan Privasi</div><div class="li-subtitle">Bagaimana data Anda dilindungi</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>
       </div>
-      <div class="neu-list-item" data-animate="up" data-delay="300">
+      <div class="neu-list-item" data-animate="up" data-delay="300" onclick="nav('notification.html')">
         <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:var(--success-bg);"><ion-icon name="notifications-outline" style="color:var(--success);"></ion-icon></div>
         <div class="li-info"><div class="li-title">Pengaturan Notifikasi</div><div class="li-subtitle">Kustomisasi preferensi alert</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>
       </div>
-      <div class="neu-list-item" data-animate="up" data-delay="350">
+      <div class="neu-list-item" data-animate="up" data-delay="350" onclick="nav('emergency-contact.html')">
         <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:var(--danger-bg);"><ion-icon name="call-outline" style="color:var(--danger);"></ion-icon></div>
         <div class="li-info"><div class="li-title">Kontak Darurat</div><div class="li-subtitle">Atur emergency contact</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>

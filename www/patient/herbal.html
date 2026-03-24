@@ -26,7 +26,7 @@
   <header class="app-header">
     <button class="neu-icon-btn" onclick="nav('home.html')"><ion-icon name="arrow-back-outline"></ion-icon></button>
     <div style="font-size:1.05rem;font-weight:700;">Jamu & Herbal</div>
-    <button class="neu-icon-btn" ><ion-icon name="search-outline"></ion-icon></button>
+    <button class="neu-icon-btn" onclick="focusSearchInput()"><ion-icon name="search-outline"></ion-icon></button>
   </header>
 
   <div class="section" style="padding-bottom:0">
@@ -308,6 +308,18 @@ document.getElementById('search-formula').addEventListener('input', function() {
   formulaSearchQ = this.value.toLowerCase().trim();
   applyFormulaFilters();
 });
+
+// ── Search button handler ──────────────────────────────────────────────────
+function focusSearchInput() {
+  const currentTab = document.querySelector('.neu-tab.active');
+  if (currentTab.textContent.includes('Katalog')) {
+    document.getElementById('search-herbal').focus();
+    document.getElementById('search-herbal').select();
+  } else if (currentTab.textContent.includes('Formula')) {
+    document.getElementById('search-formula').focus();
+    document.getElementById('search-formula').select();
+  }
+}
 
 async function loadMoreFormulas() {
   if (!formulaHasMore) return;
