@@ -74,7 +74,9 @@
       <!-- NEW: Interactive Clinical Screenings (Batch 17-22) -->
       <div class="section-header mt-24">
         <span class="section-title">🔬 Skrining Klinis Mendalam</span>
-        <span style="font-size:0.65rem;color:var(--text-tertiary);margin-left:auto;font-weight:600;">PRISMA-2020 Compliant</span>
+        <button class="neu-btn neu-btn-sm" onclick="nav('screening-history.html')" style="margin-left:auto;font-size:0.65rem;font-weight:700;padding:4px 10px;display:flex;align-items:center;gap:4px;">
+          <ion-icon name="time-outline"></ion-icon> Riwayat
+        </button>
       </div>
       
       <div id="interactive-screenings" style="display:flex;flex-direction:column;gap:12px;margin-top:10px;">
@@ -118,9 +120,84 @@
           </div>
         </div>
 
-        <!-- Placeholder for other Batch 19-22 -->
-        <div style="padding:12px;text-align:center;font-size:0.7rem;color:var(--text-muted);background:rgba(0,0,0,0.02);border-radius:12px;border:1px dashed var(--shadow-dark);">
-          Skrining NAFLD & Sindrom Metabolik segera hadir.
+        <!-- NAFLD -->
+        <div class="neu-card" style="padding:16px;border-left:4px solid #2F80ED;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(47,128,237,0.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">💧</div>
+              <div>
+                <div style="font-weight:800;font-size:0.9rem;">Skrining NAFLD</div>
+                <div style="font-size:0.7rem;color:var(--text-tertiary);">Analisis perlemakan hati & Indeks FIB-4</div>
+              </div>
+            </div>
+            <button class="neu-btn neu-btn-sm neu-btn-primary" onclick="nav('screening-nafld.html')" style="background:#2F80ED;box-shadow:0 4px 12px rgba(47,128,237,0.3);">Mulai</button>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--shadow-dark);display:flex;justify-content:space-between;align-items:center;">
+            <a href="research-nafld.html" style="font-size:0.68rem;color:#2F80ED;font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;">
+              <ion-icon name="beaker-outline"></ion-icon> Lihat Dasar Penelitian (60+ Papers)
+            </a>
+            <span style="font-size:0.6rem;background:rgba(47,128,237,0.1);color:#2F80ED;padding:2px 8px;border-radius:10px;font-weight:700;">Grade B</span>
+          </div>
+        </div>
+
+        <!-- Metabolic Syndrome -->
+        <div class="neu-card" style="padding:16px;border-left:4px solid #6C63FF;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(108,99,255,0.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🔋</div>
+              <div>
+                <div style="font-weight:800;font-size:0.9rem;">Sindrom Metabolik</div>
+                <div style="font-size:0.7rem;color:var(--text-tertiary);">Evaluasi 5 kriteria IDF (Obesitas + Komorbid)</div>
+              </div>
+            </div>
+            <button class="neu-btn neu-btn-sm neu-btn-primary" onclick="nav('screening-metabolic-syndrome.html')" style="background:#6C63FF;box-shadow:0 4px 12px rgba(108,99,255,0.3);">Mulai</button>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--shadow-dark);display:flex;justify-content:space-between;align-items:center;">
+            <a href="research-metabolic-syndrome.html" style="font-size:0.68rem;color:#6C63FF;font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;">
+              <ion-icon name="beaker-outline"></ion-icon> Lihat Dasar Penelitian (60+ Papers)
+            </a>
+            <span style="font-size:0.6rem;background:rgba(108,99,255,0.1);color:#6C63FF;padding:2px 8px;border-radius:10px;font-weight:700;">Grade A</span>
+          </div>
+        </div>
+
+        <!-- Obesity & Insulin Resistance -->
+        <div class="neu-card" style="padding:16px;border-left:4px solid #6FCF97;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(111,207,151,0.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">⚖️</div>
+              <div>
+                <div style="font-weight:800;font-size:0.9rem;">Obesitas & Insulin</div>
+                <div style="font-size:0.7rem;color:var(--text-tertiary);">Analisis HOMA-IR & Fleksibilitas Metabolik</div>
+              </div>
+            </div>
+            <button class="neu-btn neu-btn-sm neu-btn-primary" onclick="nav('screening-obesity-insulin.html')" style="background:#27AE60;box-shadow:0 4px 12px rgba(39,174,96,0.3);">Mulai</button>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--shadow-dark);display:flex;justify-content:space-between;align-items:center;">
+            <a href="research-insulin-resistance.html" style="font-size:0.68rem;color:#27AE60;font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;">
+              <ion-icon name="beaker-outline"></ion-icon> Lihat Dasar Penelitian (120+ Papers)
+            </a>
+            <span style="font-size:0.6rem;background:rgba(111,207,151,0.1);color:#27AE60;padding:2px 8px;border-radius:10px;font-weight:700;">Grade B</span>
+          </div>
+        </div>
+
+        <!-- Depression -->
+        <div class="neu-card" style="padding:16px;border-left:4px solid #4A235A;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(74, 35, 90, 0.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🧠</div>
+              <div>
+                <div style="font-weight:800;font-size:0.9rem;">Kesehatan Mental</div>
+                <div style="font-size:0.7rem;color:var(--text-tertiary);">Skrining PHQ-9 (Mood, Energi, & Fokus)</div>
+              </div>
+            </div>
+            <button class="neu-btn neu-btn-sm neu-btn-primary" onclick="nav('screening-depression.html')" style="background:#4A235A;box-shadow:0 4px 12px rgba(74,35,90,0.3);">Mulai</button>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--shadow-dark);display:flex;justify-content:space-between;align-items:center;">
+            <a href="research-depression.html" style="font-size:0.68rem;color:#4A235A;font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;">
+              <ion-icon name="beaker-outline"></ion-icon> Lihat Dasar Penelitian (60+ Papers)
+            </a>
+            <span style="font-size:0.6rem;background:rgba(74,35,90,0.1);color:#4A235A;padding:2px 8px;border-radius:10px;font-weight:700;">Grade A</span>
+          </div>
         </div>
       </div>
 

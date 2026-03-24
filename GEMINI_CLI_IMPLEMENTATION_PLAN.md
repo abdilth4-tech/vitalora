@@ -1196,8 +1196,25 @@ Before marking session complete:
 
 ---
 
-**Status:** PHASE 1 & PHASE 2 POC COMPLETE
-**Next Task:** Implement remaining wizards (Batch 19-22) using established template.
+### ✅ Task 2.5: Full Batch 17-22 Implementation — COMPLETED
+**Timestamp:** 2026-03-24 18:30
+**Output:** www/patient/screening-*.html (6 files)
+**Features:** All 6 interactive screenings (Dyslipidemia, Hypertension, NAFLD, MetS, Obesity/Insulin, Depression) fully implemented with scoring and recommendations.
+**Git Commit:** [TO_BE_COMMITTED]
+**Notes:** Integrated into disease-risk.html dashboard.
+
+### ✅ Task 2.6: Screening History View — COMPLETED
+**Timestamp:** 2026-03-24 19:00
+**Output:** www/patient/screening-history.html
+**Features:** Centralized view for all 6 screening categories, fetching latest 5 results per category with date and risk levels.
+**Git Commit:** [TO_BE_COMMITTED]
+
+---
+
+**Status:** ALL PHASE 1 & PHASE 2 TASKS COMPLETE
+**Final Notes:** 6 interactive screenings implemented, integrated, and history view active. Ready for clinical testing.
+
+
 
 
 
