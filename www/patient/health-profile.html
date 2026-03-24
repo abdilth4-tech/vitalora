@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../shared/neumorphic.css">
   <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
   <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <script src="../shared/notification-audio.js"></script>
   <style>
     .app-header { background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%); box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
     .app-header .logo { color: #fff; }
@@ -920,6 +921,14 @@
   function flashSave(step) {
     const el = document.getElementById('save-' + step);
     if (!el) return;
+    // Play notification sound when data is saved
+    try {
+      if (typeof playNotification === 'function') {
+        playNotification('success');  // Play success beep
+      }
+    } catch (e) {
+      console.warn('⚠️ Notification sound unavailable');
+    }
     el.style.display = 'block';
     setTimeout(() => { el.style.display = 'none'; }, 2000);
   }

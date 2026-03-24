@@ -22,10 +22,22 @@ echo.
 echo 🔔 DING! DING! DING!
 echo.
 
-REM Play system beep sound (3 times)
-for /L %%i in (1,1,3) do (
-    powershell -Command "[Console]::Beep(1000, 500)"
-    timeout /t 1 /nobreak >nul
+REM Play system beep sound (3 times) — Multiple methods for compatibility
+REM Method 1: PowerShell beep (Windows 10/11)
+(
+  powershell -Command "[Console]::Beep(1000, 500)" 2>nul &
+  timeout /t 1 /nobreak >nul
+  powershell -Command "[Console]::Beep(1200, 500)" 2>nul &
+  timeout /t 1 /nobreak >nul
+  powershell -Command "[Console]::Beep(1000, 500)" 2>nul
+) || (
+  REM Method 2: Fallback - Windows sound file (if available)
+  if exist "C:\Windows\Media\tada.wav" (
+    powershell -Command "Add-Type -AssemblyName System.IO; (New-Object System.Media.SoundPlayer 'C:\Windows\Media\tada.wav').PlaySync()"
+  ) || (
+    REM Method 3: Final fallback - System bell character
+    echo
+  )
 )
 
 REM Alternative: Windows notification (Windows 10+)
