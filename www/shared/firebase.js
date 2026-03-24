@@ -658,4 +658,21 @@ VDB._calcCompleteness = (p) => {
   return Math.round((filled.length / required.length) * 100);
 };
 
+// ─── SCREENING RESULTS (Batch 17-22) ───────────────────────────────────────
+
+VDB.saveScreeningResult = async (userId, disease, resultData) => {
+  return _db.collection('screeningResults').doc(userId)
+    .collection(disease).add({
+      ...resultData,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+};
+
+VDB.getScreeningHistory = async (userId, disease, limitN = 20) => {
+  const snap = await _db.collection('screeningResults').doc(userId)
+    .collection(disease)
+    .orderBy('timestamp', 'desc').limit(limitN).get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+};
+
 console.log('[Vitalora] Firebase initialized. VAuth, VDB, VitalsManager ready.');

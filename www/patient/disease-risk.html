@@ -68,8 +68,61 @@
       </div>
 
       <!-- 6 Disease Risk Cards -->
-      <div class="section-header mt-24"><span class="section-title">Detail Risiko per Penyakit</span></div>
+      <div class="section-header mt-24"><span class="section-title">Hasil Prediksi Cepat (Rule-Based)</span></div>
       <div id="risk-cards" style="display:flex;flex-direction:column;gap:12px;"></div>
+
+      <!-- NEW: Interactive Clinical Screenings (Batch 17-22) -->
+      <div class="section-header mt-24">
+        <span class="section-title">🔬 Skrining Klinis Mendalam</span>
+        <span style="font-size:0.65rem;color:var(--text-tertiary);margin-left:auto;font-weight:600;">PRISMA-2020 Compliant</span>
+      </div>
+      
+      <div id="interactive-screenings" style="display:flex;flex-direction:column;gap:12px;margin-top:10px;">
+        <!-- Dyslipidemia -->
+        <div class="neu-card" style="padding:16px;border-left:4px solid #F2994A;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(242,153,74,0.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🧬</div>
+              <div>
+                <div style="font-weight:800;font-size:0.9rem;">Skrining Dyslipidemia</div>
+                <div style="font-size:0.7rem;color:var(--text-tertiary);">Analisis mendalam profil lipid & antropometri</div>
+              </div>
+            </div>
+            <button class="neu-btn neu-btn-sm neu-btn-primary" onclick="nav('screening-dyslipidemia.html')" style="background:var(--primary-dys);box-shadow:0 4px 12px rgba(242,153,74,0.3);">Mulai</button>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--shadow-dark);display:flex;justify-content:space-between;align-items:center;">
+            <a href="research-dyslipidemia.html" style="font-size:0.68rem;color:#F2994A;font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;">
+              <ion-icon name="beaker-outline"></ion-icon> Lihat Dasar Penelitian (180+ Papers)
+            </a>
+            <span style="font-size:0.6rem;background:rgba(242,153,74,0.1);color:#F2994A;padding:2px 8px;border-radius:10px;font-weight:700;">Grade B</span>
+          </div>
+        </div>
+
+        <!-- Hypertension -->
+        <div class="neu-card" style="padding:16px;border-left:4px solid #EB5757;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(235,87,87,0.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">💓</div>
+              <div>
+                <div style="font-weight:800;font-size:0.9rem;">Manajemen Hipertensi</div>
+                <div style="font-size:0.7rem;color:var(--text-tertiary);">Monitoring HBPM & Intervensi DASH-Indo</div>
+              </div>
+            </div>
+            <button class="neu-btn neu-btn-sm neu-btn-primary" onclick="nav('screening-hypertension.html')" style="background:#EB5757;box-shadow:0 4px 12px rgba(235,87,87,0.3);">Mulai</button>
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--shadow-dark);display:flex;justify-content:space-between;align-items:center;">
+            <a href="research-hypertension.html" style="font-size:0.68rem;color:#EB5757;font-weight:700;display:flex;align-items:center;gap:4px;text-decoration:none;">
+              <ion-icon name="beaker-outline"></ion-icon> Lihat Dasar Penelitian (60+ Papers)
+            </a>
+            <span style="font-size:0.6rem;background:rgba(39,174,96,0.1);color:#27AE60;padding:2px 8px;border-radius:10px;font-weight:700;">Grade A</span>
+          </div>
+        </div>
+
+        <!-- Placeholder for other Batch 19-22 -->
+        <div style="padding:12px;text-align:center;font-size:0.7rem;color:var(--text-muted);background:rgba(0,0,0,0.02);border-radius:12px;border:1px dashed var(--shadow-dark);">
+          Skrining NAFLD & Sindrom Metabolik segera hadir.
+        </div>
+      </div>
 
       <!-- Personalization Insights -->
       <div id="personalization-section" style="display:none;margin-top:20px;padding:14px 16px;background:rgba(108,99,255,0.06);border-radius:14px;border-left:4px solid #6C63FF;">
