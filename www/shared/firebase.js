@@ -14,7 +14,6 @@
  */
 
 // ─── FIREBASE CONFIG ───────────────────────────────────────────────────────
-// Ganti dengan config dari Firebase Console Anda
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDnL3nDROWm7TdR99aXIcss01XnE7_d32A",
   authDomain: "vitalora.firebaseapp.com",
@@ -39,7 +38,6 @@ window.VFirebase = { auth: _auth, db: _db };
 // ═══════════════════════════════════════════════════════════════════════════
 window.VAuth = {
 
-  /** Daftar dengan email + password */
   async register(name, email, password, role = 'patient') {
     const cred = await _auth.createUserWithEmailAndPassword(email, password);
     await cred.user.updateProfile({ displayName: name });
@@ -54,45 +52,31 @@ window.VAuth = {
         weight: null, height: null, allergies: [], familyHistory: [], assignedDoctors: []
       });
     }
-    // Email verification DISABLED - tidak perlu kirim email verifikasi
-    // await cred.user.sendEmailVerification({ url: window.location.origin + '/auth/login.html' });
     return cred.user;
   },
 
-  /** Login dengan email + password */
   async login(email, password) {
     const cred = await _auth.signInWithEmailAndPassword(email, password);
-    // Email verification disabled - langsung login
     const profile = await VAuth.getProfile(cred.user.uid);
     return { user: cred.user, role: profile?.role || 'patient' };
   },
 
-  /** Login / daftar via Google */
   async loginGoogle(defaultRole = 'patient') {
     const provider = new firebase.auth.GoogleAuthProvider();
     const cred = await _auth.signInWithPopup(provider);
     const exists = await _db.collection('users').doc(cred.user.uid).get();
 
     if (!exists.exists) {
-      // New user - redirect to role selection page
       return { user: cred.user, role: null, isNewUser: true };
     }
 
     const profile = exists.data();
-
-    // Check role approval status
-    if (profile.roleStatus === 'pending') {
-      return { user: cred.user, role: profile.role, roleStatus: 'pending' };
-    }
-
-    if (profile.roleStatus === 'rejected') {
-      return { user: cred.user, role: profile.role, roleStatus: 'rejected' };
-    }
+    if (profile.roleStatus === 'pending') return { user: cred.user, role: profile.role, roleStatus: 'pending' };
+    if (profile.roleStatus === 'rejected') return { user: cred.user, role: profile.role, roleStatus: 'rejected' };
 
     return { user: cred.user, role: profile.role, roleStatus: 'approved' };
   },
 
-  /** Logout */
   async logout() {
     localStorage.removeItem('vitalora_debug_role');
     await _auth.signOut();
@@ -101,26 +85,22 @@ window.VAuth = {
       window.location.pathname.includes('/patient/') ? '../auth/login.html' : 'auth/login.html';
   },
 
-  /** Reset password via email */
   async resetPassword(email) {
     await _auth.sendPasswordResetEmail(email, {
       url: window.location.origin + '/auth/login.html'
     });
   },
 
-  /** Kirim ulang email verifikasi */
   async resendVerification() {
     const user = _auth.currentUser;
     if (user) await user.sendEmailVerification({ url: window.location.origin + '/auth/login.html' });
   },
 
-  /** Ambil profil user dari Firestore */
   async getProfile(uid) {
     const snap = await _db.collection('users').doc(uid).get();
     return snap.exists ? snap.data() : null;
   },
 
-  /** URL redirect berdasarkan role */
   redirectByRole(role, depth = 1) {
     const prefix = '../'.repeat(depth);
     const map = {
@@ -132,10 +112,7 @@ window.VAuth = {
     window.location.href = prefix + (map[role] || 'auth/login.html');
   },
 
-  /** Guard: panggil di setiap halaman app.
-   *  super_admin dapat mengakses semua halaman admin. */
   guard(expectedRole = null, depth = 1) {
-    // ── DEBUG BYPASS ──────────────────────────────────────────────────────
     const debugRole = localStorage.getItem('vitalora_debug_role');
     if (debugRole) {
       const nameMap = {
@@ -144,9 +121,7 @@ window.VAuth = {
       };
       return new Promise(async (resolve) => {
         if (!_auth.currentUser) {
-          try { await _auth.signInAnonymously(); } catch(e) {
-            console.warn('[Debug] Enable Anonymous auth di Firebase Console: Authentication → Sign-in method → Anonymous');
-          }
+          try { await _auth.signInAnonymously(); } catch(e) {}
         }
         const uid = _auth.currentUser ? _auth.currentUser.uid : ('debug-uid-' + debugRole);
         try {
@@ -154,10 +129,9 @@ window.VAuth = {
             { uid, name: nameMap[debugRole] || debugRole, email: debugRole + '@debug.local', role: debugRole, isActive: true },
             { merge: true }
           );
-        } catch(e) { /* rules belum aktif, lanjutkan saja */ }
+        } catch(e) {}
         const mockUser    = { uid, email: debugRole + '@debug.local', emailVerified: true, providerData: [] };
         const mockProfile = { uid, name: nameMap[debugRole] || debugRole, email: mockUser.email, role: debugRole };
-        // super_admin dapat akses halaman admin
         const roleMatch = !expectedRole || expectedRole === debugRole ||
           (expectedRole === 'admin' && debugRole === 'super_admin');
         if (roleMatch) {
@@ -167,7 +141,6 @@ window.VAuth = {
         VAuth.redirectByRole(debugRole, depth);
       });
     }
-    // ─────────────────────────────────────────────────────────────────────
     return new Promise((resolve) => {
       _auth.onAuthStateChanged(async (user) => {
         if (!user) {
@@ -179,7 +152,6 @@ window.VAuth = {
           window.location.href = '../'.repeat(depth) + 'auth/select-role.html';
           return;
         }
-
         if (profile.roleStatus === 'pending') {
           window.location.href = '../'.repeat(depth) + 'auth/pending-approval.html';
           return;
@@ -188,8 +160,6 @@ window.VAuth = {
           window.location.href = '../'.repeat(depth) + 'auth/role-rejected.html';
           return;
         }
-
-        // super_admin dapat mengakses semua halaman admin
         const roleMatch = !expectedRole || profile.role === expectedRole ||
           (expectedRole === 'admin' && profile.role === 'super_admin');
         if (!roleMatch) {
@@ -207,7 +177,6 @@ window.VAuth = {
 // ═══════════════════════════════════════════════════════════════════════════
 window.VDB = {
 
-  // ── Users ─────────────────────────────────────────────────────────────
   async getUser(uid) {
     const s = await _db.collection('users').doc(uid).get();
     return s.exists ? s.data() : null;
@@ -222,7 +191,6 @@ window.VDB = {
     return snap.docs.map(d => d.data());
   },
 
-  // ── Patient profile ───────────────────────────────────────────────────
   async getPatient(uid) {
     const s = await _db.collection('patients').doc(uid).get();
     return s.exists ? s.data() : null;
@@ -231,7 +199,6 @@ window.VDB = {
     await _db.collection('patients').doc(uid).set(data, { merge: true });
   },
 
-  // ── Vitals ────────────────────────────────────────────────────────────
   async saveVitals(patientId, vitalsData) {
     await _db.collection('vitals').doc(patientId).collection('readings').add({
       ...vitalsData,
@@ -249,7 +216,6 @@ window.VDB = {
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   },
 
-  // ── Consultations ─────────────────────────────────────────────────────
   async createConsultation(data) {
     const ref = await _db.collection('consultations').add({
       ...data,
@@ -280,7 +246,6 @@ window.VDB = {
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   },
 
-  // ── Messages (real-time) ──────────────────────────────────────────────
   subscribeMessages(consultId, callback) {
     return _db.collection('messages').doc(consultId).collection('items')
       .orderBy('timestamp', 'asc')
@@ -296,7 +261,6 @@ window.VDB = {
     });
   },
 
-  // ── Medical Records ───────────────────────────────────────────────────
   async createMedicalRecord(data) {
     const ref = await _db.collection('medicalRecords').add({
       ...data,
@@ -312,7 +276,6 @@ window.VDB = {
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   },
 
-  // ── Notifications ─────────────────────────────────────────────────────
   async sendNotification(uid, { title, body, type = 'info', data = {} }) {
     await _db.collection('notifications').doc(uid).collection('items').add({
       title, body, type, data, read: false,
@@ -343,7 +306,6 @@ window.VDB = {
     return snap.size;
   },
 
-  // ── Articles / News ───────────────────────────────────────────────────
   async createArticle(data) {
     const ref = await _db.collection('articles').add({
       ...data,
@@ -372,7 +334,6 @@ window.VDB = {
     await _db.collection('articles').doc(articleId).delete();
   },
 
-  // ── Admin stats ───────────────────────────────────────────────────────
   async getStats() {
     const [usersSnap, consultSnap, articlesSnap] = await Promise.all([
       _db.collection('users').get(),
@@ -388,7 +349,6 @@ window.VDB = {
     };
   },
 
-  // ── Herbals ───────────────────────────────────────────────────────────
   async getHerbals(category = null) {
     let q = _db.collection('herbals').orderBy('name', 'asc');
     const snap = await q.get();
@@ -420,7 +380,6 @@ window.VDB = {
     return { id: doc.id, ...doc.data() };
   },
 
-  /** Formula by kondisi (indication), dengan pagination opsional */
   async getHerbalFormulasByCondition(condition, limitN = 20, lastDoc = null) {
     let q = _db.collection('herbalFormulas')
       .where('indications', 'array-contains', condition)
@@ -435,7 +394,6 @@ window.VDB = {
     };
   },
 
-  /** Semua formula dengan pagination (untuk list besar 1000+ resep) */
   async getHerbalFormulasPage(limitN = 20, lastDoc = null, category = null) {
     let q = _db.collection('herbalFormulas').orderBy('name', 'asc').limit(limitN);
     if (category) q = _db.collection('herbalFormulas')
@@ -451,7 +409,6 @@ window.VDB = {
     };
   },
 
-  /** Herbal berdasarkan kategori (Firestore query, bukan in-memory) */
   async getHerbalsByCategory(category) {
     if (!category || category === 'semua') return VDB.getHerbals();
     const snap = await _db.collection('herbals')
@@ -461,7 +418,6 @@ window.VDB = {
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   },
 
-  /** Batch seed herbals (maks 500 per batch — Firestore limit) */
   async batchSeedHerbals(herbalsArray) {
     const CHUNK = 490;
     let total = 0;
@@ -477,13 +433,6 @@ window.VDB = {
     return total;
   },
 
-  /**
-   * Full-text search sederhana di herbalFormulas.
-   * Firestore tidak support native full-text, jadi kita load semua (max limitN)
-   * dan filter di client. Untuk production, gunakan Algolia/Typesense.
-   * @param {string} query - kata kunci pencarian
-   * @param {number} limitN - maks dokumen yang di-load dari Firestore
-   */
   async searchHerbalFormulas(query, limitN = 200) {
     if (!query || !query.trim()) return VDB.getHerbalFormulasPage(limitN);
     const q = query.toLowerCase().trim();
@@ -499,7 +448,6 @@ window.VDB = {
     return { formulas: matches, lastDoc: null, hasMore: false };
   },
 
-  /** Batch seed herbal formulas (maks 490 per batch) */
   async batchSeedFormulas(formulasArray) {
     const CHUNK = 490;
     let total = 0;
@@ -513,6 +461,85 @@ window.VDB = {
       total += Math.min(CHUNK, formulasArray.length - i);
     }
     return total;
+  },
+
+  // ── SCREENING RESULTS (Batch 17-22) ───────────────────────────────────────
+  async saveScreeningResult(userId, disease, resultData) {
+    return _db.collection('screeningResults').doc(userId)
+      .collection(disease).add({
+        ...resultData,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+  },
+
+  async getScreeningHistory(userId, disease, limitN = 20) {
+    const snap = await _db.collection('screeningResults').doc(userId)
+      .collection(disease)
+      .orderBy('timestamp', 'desc').limit(limitN).get();
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  },
+
+  // ── HEALTH PROFILE (ML Tasks Batch 1.A) ──────────────────────────────
+  async saveHealthProfile(userId, profileData) {
+    const bmi = profileData.weightKg && profileData.heightCm
+      ? profileData.weightKg / Math.pow(profileData.heightCm / 100, 2)
+      : null;
+    const completeness = VDB._calcCompleteness(profileData);
+    return _db.collection('userHealthProfile').doc(userId).set({
+      ...profileData,
+      bmi: bmi ? parseFloat(bmi.toFixed(1)) : null,
+      profileCompleteness: completeness,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+  },
+
+  async getHealthProfile(userId) {
+    const doc = await _db.collection('userHealthProfile').doc(userId).get();
+    return doc.exists ? doc.data() : null;
+  },
+
+  async updateHealthSection(userId, sectionData) {
+    return _db.collection('userHealthProfile').doc(userId).set({
+      ...sectionData,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+  },
+
+  async saveLabResults(userId, labData) {
+    return _db.collection('userHealthProfile').doc(userId).set({
+      labResults: { ...labData, labDate: firebase.firestore.FieldValue.serverTimestamp() },
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+  },
+
+  async saveRiskScore(userId, scores) {
+    return _db.collection('userHealthProfile').doc(userId)
+      .collection('riskScores').add({
+        ...scores,
+        calculatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+  },
+
+  async getLatestRiskScore(userId) {
+    const snap = await _db.collection('userHealthProfile').doc(userId)
+      .collection('riskScores')
+      .orderBy('calculatedAt', 'desc').limit(1).get();
+    return snap.empty ? null : snap.docs[0].data();
+  },
+
+  async getRiskScoreHistory(userId, limitN = 30) {
+    const snap = await _db.collection('userHealthProfile').doc(userId)
+      .collection('riskScores')
+      .orderBy('calculatedAt', 'desc').limit(limitN).get();
+    return snap.docs.map(d => d.data());
+  },
+
+  _calcCompleteness(p) {
+    const required = ['dateOfBirth','gender','heightCm','weightKg','waistCircumferenceCm',
+      'smokingStatus','exerciseFreqPerWeek','sleepHoursPerNight',
+      'sugarIntake','saltIntake','familyHistory','knownConditions'];
+    const filled = required.filter(k => p[k] !== undefined && p[k] !== null);
+    return Math.round((filled.length / required.length) * 100);
   }
 };
 
@@ -527,7 +554,6 @@ window.VitalsManager = (() => {
   let _uploadInterval = null;
   let _isStarted = false;
 
-  // Simulate BLE sensor data (replace with Web Bluetooth API for real device)
   function _simulate() {
     _buffer = {
       hr:              72 + Math.round((Math.random() - 0.5) * 16),
@@ -557,122 +583,29 @@ window.VitalsManager = (() => {
       _patientId = patientId;
       _isStarted = true;
       _simulate(); // initial reading
-
-      // Update display every 1 second
       _displayInterval = setInterval(() => {
         _simulate();
         _subscribers.forEach(cb => cb({ ..._buffer }));
       }, 1000);
-
-      // Upload to Firestore every 60 seconds
       _uploadInterval = setInterval(_uploadToFirestore, 60000);
     },
-
     stop() {
       clearInterval(_displayInterval);
       clearInterval(_uploadInterval);
       _isStarted = false;
       _subscribers = [];
     },
-
     getCurrent() { return { ..._buffer }; },
-
     subscribe(callback) {
       _subscribers.push(callback);
-      if (_buffer.hr) callback({ ..._buffer }); // immediate first value
+      if (_buffer.hr) callback({ ..._buffer }); 
       return () => { _subscribers = _subscribers.filter(c => c !== callback); };
     },
-
     async getHistory(patientId, days = 7) {
       return await VDB.getVitalsHistory(patientId, days);
     },
-
-    // Force upload now (e.g., before page unload)
     forceUpload() { return _uploadToFirestore(); }
   };
 })();
-
-// ═══════════════════════════════════════════════════════════════════════════
-//  VDB — HEALTH PROFILE & RISK SCORES  (Batch 1.A)
-// ═══════════════════════════════════════════════════════════════════════════
-
-VDB.saveHealthProfile = async (userId, profileData) => {
-  const bmi = profileData.weightKg && profileData.heightCm
-    ? profileData.weightKg / Math.pow(profileData.heightCm / 100, 2)
-    : null;
-  const completeness = VDB._calcCompleteness(profileData);
-  return _db.collection('userHealthProfile').doc(userId).set({
-    ...profileData,
-    bmi: bmi ? parseFloat(bmi.toFixed(1)) : null,
-    profileCompleteness: completeness,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  }, { merge: true });
-};
-
-VDB.getHealthProfile = async (userId) => {
-  const doc = await _db.collection('userHealthProfile').doc(userId).get();
-  return doc.exists ? doc.data() : null;
-};
-
-VDB.updateHealthSection = async (userId, sectionData) => {
-  return _db.collection('userHealthProfile').doc(userId).set({
-    ...sectionData,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  }, { merge: true });
-};
-
-VDB.saveLabResults = async (userId, labData) => {
-  return _db.collection('userHealthProfile').doc(userId).set({
-    labResults: { ...labData, labDate: firebase.firestore.FieldValue.serverTimestamp() },
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  }, { merge: true });
-};
-
-VDB.saveRiskScore = async (userId, scores) => {
-  return _db.collection('userHealthProfile').doc(userId)
-    .collection('riskScores').add({
-      ...scores,
-      calculatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-};
-
-VDB.getLatestRiskScore = async (userId) => {
-  const snap = await _db.collection('userHealthProfile').doc(userId)
-    .collection('riskScores')
-    .orderBy('calculatedAt', 'desc').limit(1).get();
-  return snap.empty ? null : snap.docs[0].data();
-};
-
-VDB.getRiskScoreHistory = async (userId, limitN = 30) => {
-  const snap = await _db.collection('userHealthProfile').doc(userId)
-    .collection('riskScores')
-    .orderBy('calculatedAt', 'desc').limit(limitN).get();
-  return snap.docs.map(d => d.data());
-};
-
-VDB._calcCompleteness = (p) => {
-  const required = ['dateOfBirth','gender','heightCm','weightKg','waistCircumferenceCm',
-    'smokingStatus','exerciseFreqPerWeek','sleepHoursPerNight',
-    'sugarIntake','saltIntake','familyHistory','knownConditions'];
-  const filled = required.filter(k => p[k] !== undefined && p[k] !== null);
-  return Math.round((filled.length / required.length) * 100);
-};
-
-// ─── SCREENING RESULTS (Batch 17-22) ───────────────────────────────────────
-
-VDB.saveScreeningResult = async (userId, disease, resultData) => {
-  return _db.collection('screeningResults').doc(userId)
-    .collection(disease).add({
-      ...resultData,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-};
-
-VDB.getScreeningHistory = async (userId, disease, limitN = 20) => {
-  const snap = await _db.collection('screeningResults').doc(userId)
-    .collection(disease)
-    .orderBy('timestamp', 'desc').limit(limitN).get();
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-};
 
 console.log('[Vitalora] Firebase initialized. VAuth, VDB, VitalsManager ready.');

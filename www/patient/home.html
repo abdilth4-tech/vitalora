@@ -103,11 +103,11 @@
 
   <!-- HEALTH SCORE -->
   <div class="section" style="padding-bottom:0">
-    <div class="neu-card-primary" data-animate="up" data-delay="150" style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="neu-card-primary" data-animate="up" data-delay="150" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onclick="nav('health-dashboard.html')">
       <div>
         <p style="font-size:0.75rem;opacity:0.85;">Health Score Hari Ini</p>
-        <p style="font-size:2.4rem;font-weight:800;margin:4px 0;">87<small style="font-size:1rem">/100</small></p>
-        <span style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:600;">↑ 3 dari kemarin</span>
+        <p style="font-size:2.4rem;font-weight:800;margin:4px 0;"><span id="main-health-score">87</span><small style="font-size:1rem">/100</small></p>
+        <span id="score-change-label" style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:600;">→ Stabil</span>
       </div>
       <div style="width:80px;height:80px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;">
         <ion-icon name="heart" style="font-size:2rem;animation:heartbeat 1.5s ease-in-out infinite;"></ion-icon>
@@ -119,16 +119,13 @@
   <div class="section">
     <div class="section-header" data-animate="up" data-delay="200"><span class="section-title">Menu Cepat</span></div>
     <div class="quick-grid" data-animate="up" data-delay="250">
+      <div class="quick-item" onclick="nav('health-dashboard.html')"><div class="qi-icon" style="color:#2D9CDB;background:rgba(45,156,219,0.1)"><ion-icon name="grid-outline"></ion-icon></div><span class="qi-label">Dashboard</span></div>
       <div class="quick-item" onclick="nav('monitoring.html')"><div class="qi-icon" style="color:#EB5757;background:rgba(235,87,87,0.1)"><ion-icon name="pulse-outline"></ion-icon></div><span class="qi-label">Monitoring</span></div>
       <div class="quick-item" onclick="nav('consultation.html')"><div class="qi-icon" style="color:#2F80ED;background:rgba(47,128,237,0.1)"><ion-icon name="chatbubbles-outline"></ion-icon></div><span class="qi-label">Konsultasi</span></div>
       <div class="quick-item" onclick="nav('herbal.html')"><div class="qi-icon" style="color:#27AE60;background:rgba(39,174,96,0.12)"><ion-icon name="leaf-outline"></ion-icon></div><span class="qi-label">Jamu</span></div>
-      <div class="quick-item" onclick="nav('health-profile.html')"><div class="qi-icon" style="color:#9B51E0;background:rgba(155,81,224,0.12)"><ion-icon name="person-circle-outline"></ion-icon></div><span class="qi-label">Profil Kesehatan</span></div>
+      <div class="quick-item" onclick="nav('health-profile.html')"><div class="qi-icon" style="color:#9B51E0;background:rgba(155,81,224,0.12)"><ion-icon name="person-circle-outline"></ion-icon></div><span class="qi-label">Profil</span></div>
       <div class="quick-item" onclick="nav('disease-risk.html')"><div class="qi-icon" style="color:#F2994A;background:rgba(242,153,74,0.12)"><ion-icon name="shield-checkmark-outline"></ion-icon></div><span class="qi-label">Risk Score</span></div>
-      <div class="quick-item" onclick="nav('lifestyle.html')"><div class="qi-icon" style="color:#F2C94C;background:rgba(242,201,76,0.12)"><ion-icon name="fitness-outline"></ion-icon></div><span class="qi-label">Lifestyle</span></div>
-      <div class="quick-item" onclick="nav('news.html')"><div class="qi-icon" style="color:#6C63FF;background:rgba(108,99,255,0.1)"><ion-icon name="newspaper-outline"></ion-icon></div><span class="qi-label">News</span></div>
       <div class="quick-item" onclick="nav('ai-chat.html')"><div class="qi-icon" style="color:#2F80ED;background:rgba(47,128,237,0.12)"><ion-icon name="sparkles-outline"></ion-icon></div><span class="qi-label">AI Health</span></div>
-      <div class="quick-item" onclick="nav('stress-check.html')"><div class="qi-icon" style="background:linear-gradient(135deg,#6C63FF,#8B83FF);color:#fff"><ion-icon name="body-outline"></ion-icon></div><span class="qi-label">Cek Stres</span></div>
-      <div class="quick-item" onclick="nav('device.html')"><div class="qi-icon" style="color:#56CCF2;background:rgba(86,204,242,0.1)"><ion-icon name="watch-outline"></ion-icon></div><span class="qi-label">Perangkat</span></div>
       <div class="quick-item" onclick="showToast('SOS Emergency','error')"><div class="qi-icon" style="color:#fff;background:linear-gradient(135deg,#EB5757,#FF6B6B)"><ion-icon name="alert-circle-outline"></ion-icon></div><span class="qi-label">SOS</span></div>
     </div>
   </div>
@@ -158,8 +155,8 @@
   <div class="section" style="padding-top:0">
     <div class="section-header" data-animate="up" data-delay="500"><span class="section-title">💡 AI Insight</span></div>
     <div class="neu-card" data-animate="up" data-delay="550" style="border-left:4px solid var(--accent);padding-left:20px;">
-      <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;"><strong style="color:var(--accent);">HRV Anda turun 12%</strong> minggu ini. Pertimbangkan teknik relaksasi dan tidur yang cukup.</p>
-      <button class="neu-btn neu-btn-sm" style="margin-top:12px;" onclick="nav('monitoring.html')"><ion-icon name="analytics-outline"></ion-icon> Lihat Detail</button>
+      <p id="ai-insight-text" style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;"><strong style="color:var(--accent);">Memuat insight...</strong></p>
+      <button class="neu-btn neu-btn-sm" style="margin-top:12px;" onclick="nav('health-dashboard.html')"><ion-icon name="analytics-outline"></ion-icon> Lihat Detail</button>
     </div>
   </div>
 
@@ -186,6 +183,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="../shared/firebase.js"></script>
+<script src="../shared/risk-engine.js"></script>
 <script>
 (async () => {
   // Auth guard + load user profile
@@ -219,7 +217,10 @@
   // Load vitals history and calculate health score
   await loadVitalsAndScore(user.uid);
 
-  // Sparklines static seeds (will update with real values on VitalsManager)
+  // Load AI Insight
+  loadAIInsight(user.uid);
+
+  // Sparklines static seeds
   setTimeout(() => {
     sparkline(document.getElementById('hr-sp'), [72,75,78,74,80,77,78,82,79,78], '#EB5757');
     sparkline(document.getElementById('spo2-sp'), [97,98,98,97,99,98,98,97,98,98], '#2F80ED');
@@ -240,197 +241,113 @@
   window.addEventListener('beforeunload', () => VitalsManager.forceUpload());
 })();
 
-// Load upcoming consultation from Firestore
 async function loadUpcomingConsultation(uid) {
   const card = document.getElementById('upcoming-consultation');
   if (!card) return;
-
   try {
     const consultations = await VDB.getPatientConsultations(uid);
-    // Filter for active/pending consultations
     const upcoming = consultations.filter(c =>
       c.status === 'active' || c.status === 'pending' || c.status === 'scheduled'
     );
-
     if (upcoming.length === 0) {
-      // No upcoming consultations - show empty state
-      card.style.flexDirection = 'column';
-      card.style.textAlign = 'center';
-      card.innerHTML = `
-        <ion-icon name="calendar-outline" style="font-size:2rem;color:var(--text-muted);"></ion-icon>
-        <p style="font-size:0.85rem;color:var(--text-tertiary);margin-top:8px;">Belum ada jadwal konsultasi</p>
-        <button class="neu-btn neu-btn-sm neu-btn-primary" style="margin-top:12px;" onclick="event.stopPropagation();nav('consultation.html')">
-          <ion-icon name="add-outline"></ion-icon> Buat Konsultasi
-        </button>
-      `;
-      card.onclick = null;
-      return;
+      card.style.flexDirection = 'column'; card.style.textAlign = 'center';
+      card.innerHTML = `<ion-icon name="calendar-outline" style="font-size:2rem;color:var(--text-muted);"></ion-icon><p style="font-size:0.85rem;color:var(--text-tertiary);margin-top:8px;">Belum ada jadwal konsultasi</p><button class="neu-btn neu-btn-sm neu-btn-primary" style="margin-top:12px;" onclick="event.stopPropagation();nav('consultation.html')"><ion-icon name="add-outline"></ion-icon> Buat Konsultasi</button>`;
+      card.onclick = null; return;
     }
-
-    // Show first upcoming consultation
     const consult = upcoming[0];
     const scheduleTime = consult.scheduledTime?.toDate?.() || consult.startTime?.toDate?.() || new Date();
     const timeStr = formatScheduleTime(scheduleTime);
     const typeLabel = consult.type === 'video' ? 'Video Call' : consult.type === 'chat' ? 'Chat' : 'Konsultasi';
-
     card.onclick = () => nav(`chat-room.html?id=${consult.id}`);
-    card.innerHTML = `
-      <div class="neu-avatar" style="background:linear-gradient(135deg,#2F80ED,#56CCF2)">
-        <ion-icon name="person" style="font-size:1.2rem"></ion-icon>
-      </div>
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:0.88rem;">${consult.doctorName || 'Dokter'}</div>
-        <div style="font-size:0.72rem;color:var(--text-tertiary);margin-top:2px;">${consult.doctorSpecialty || 'Dokter Umum'}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
-          <span style="background:var(--info-bg);color:var(--info);padding:2px 8px;border-radius:20px;font-size:0.65rem;font-weight:600;">📅 ${timeStr}</span>
-          <span class="neu-chip" style="font-size:0.65rem;">${typeLabel}</span>
-          <span class="neu-chip-primary" style="font-size:0.65rem;">${consult.status === 'active' ? '● Aktif' : 'Terjadwal'}</span>
-        </div>
-      </div>
-      <ion-icon name="chevron-forward-outline" style="color:var(--text-muted)"></ion-icon>
-    `;
+    card.innerHTML = `<div class="neu-avatar" style="background:linear-gradient(135deg,#2F80ED,#56CCF2)"><ion-icon name="person" style="font-size:1.2rem"></ion-icon></div><div style="flex:1"><div style="font-weight:600;font-size:0.88rem;">${consult.doctorName || 'Dokter'}</div><div style="font-size:0.72rem;color:var(--text-tertiary);margin-top:2px;">${consult.doctorSpecialty || 'Dokter Umum'}</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"><span style="background:var(--info-bg);color:var(--info);padding:2px 8px;border-radius:20px;font-size:0.65rem;font-weight:600;">📅 ${timeStr}</span><span class="neu-chip" style="font-size:0.65rem;">${typeLabel}</span><span class="neu-chip-primary" style="font-size:0.65rem;">${consult.status === 'active' ? '● Aktif' : 'Terjadwal'}</span></div></div><ion-icon name="chevron-forward-outline" style="color:var(--text-muted)"></ion-icon>`;
   } catch (e) {
-    console.error('Failed to load consultations:', e);
-    card.innerHTML = `
-      <div style="flex:1;text-align:center;">
-        <p style="font-size:0.85rem;color:var(--text-tertiary);">Gagal memuat jadwal</p>
-      </div>
-    `;
+    card.innerHTML = `<div style="flex:1;text-align:center;"><p style="font-size:0.85rem;color:var(--text-tertiary);">Gagal memuat jadwal</p></div>`;
   }
 }
 
-// Format schedule time
 function formatScheduleTime(date) {
-  const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
+  const now = new Date(); const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
   const isToday = date.toDateString() === now.toDateString();
   const isTomorrow = date.toDateString() === tomorrow.toDateString();
-
   const timeStr = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
   if (isToday) return `Hari ini, ${timeStr}`;
   if (isTomorrow) return `Besok, ${timeStr}`;
   return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + `, ${timeStr}`;
 }
 
-// Load vitals history and calculate health score
 async function loadVitalsAndScore(uid) {
   try {
     const vitals = await VDB.getVitalsHistory(uid, 7);
-
     if (vitals.length > 0) {
-      // Calculate averages
       const avgHr = Math.round(vitals.reduce((sum, v) => sum + (v.hr || 75), 0) / vitals.length);
       const avgSpo2 = Math.round(vitals.reduce((sum, v) => sum + (v.spo2 || 98), 0) / vitals.length);
       const avgTemp = (vitals.reduce((sum, v) => sum + (v.temperature || 36.5), 0) / vitals.length).toFixed(1);
-
-      // Update sparklines with real data
       const hrData = vitals.slice(-10).map(v => v.hr || 75);
       const spo2Data = vitals.slice(-10).map(v => v.spo2 || 98);
-
       setTimeout(() => {
         if (hrData.length > 1) sparkline(document.getElementById('hr-sp'), hrData, '#EB5757');
         if (spo2Data.length > 1) sparkline(document.getElementById('spo2-sp'), spo2Data, '#2F80ED');
       }, 300);
-
-      // Calculate health score (simple algorithm)
       const healthScore = calculateHealthScore(avgHr, avgSpo2, avgTemp);
       updateHealthScoreDisplay(healthScore);
     }
-  } catch (e) {
-    console.error('Failed to load vitals:', e);
-  }
+  } catch (e) { console.error('Failed to load vitals:', e); }
 }
 
-// Simple health score calculation
 function calculateHealthScore(hr, spo2, temp) {
   let score = 100;
-
-  // Heart rate scoring (optimal: 60-80)
-  if (hr < 50 || hr > 100) score -= 20;
-  else if (hr < 60 || hr > 90) score -= 10;
-  else if (hr < 65 || hr > 85) score -= 5;
-
-  // SpO2 scoring (optimal: 95-100)
-  if (spo2 < 90) score -= 30;
-  else if (spo2 < 95) score -= 15;
-  else if (spo2 < 97) score -= 5;
-
-  // Temperature scoring (optimal: 36.1-37.2)
+  if (hr < 50 || hr > 100) score -= 20; else if (hr < 60 || hr > 90) score -= 10;
+  if (spo2 < 90) score -= 30; else if (spo2 < 95) score -= 15;
   const tempNum = parseFloat(temp);
-  if (tempNum < 35 || tempNum > 38.5) score -= 20;
-  else if (tempNum < 36 || tempNum > 37.5) score -= 10;
-  else if (tempNum < 36.1 || tempNum > 37.2) score -= 5;
-
+  if (tempNum < 35 || tempNum > 38.5) score -= 20; else if (tempNum < 36 || tempNum > 37.5) score -= 10;
   return Math.max(0, Math.min(100, score));
 }
 
-// Load ads banner from Firestore ads collection
 async function loadAds() {
-  const track = document.getElementById('ads-track');
-  const dotsEl = document.getElementById('ads-dots');
-  const carousel = document.getElementById('ads-carousel');
+  const track = document.getElementById('ads-track'); const dotsEl = document.getElementById('ads-dots'); const carousel = document.getElementById('ads-carousel');
   if (!track || !dotsEl || !carousel) return;
-
   try {
-    const snap = await VFirebase.db.collection('ads')
-      .where('active', '==', true)
-      .orderBy('order', 'asc')
-      .get();
-
+    const snap = await VFirebase.db.collection('ads').where('active', '==', true).orderBy('order', 'asc').get();
     const ads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    if (ads.length === 0) {
-      // No ads — hide carousel entirely
-      carousel.closest('.section').style.display = 'none';
-      return;
-    }
-
-    track.innerHTML = ads.map(ad => `
-      <div class="carousel-slide" style="padding:0;cursor:${ad.linkUrl ? 'pointer' : 'default'};"
-        ${ad.linkUrl ? `onclick="window.open('${ad.linkUrl}','_blank')"` : ''}>
-        <img src="${ad.imageUrl}" alt="${ad.title || ''}"
-          style="width:100%;height:100%;object-fit:cover;display:block;"
-          onerror="this.parentElement.style.background='var(--bg-base)';">
-      </div>
-    `).join('');
-
-    dotsEl.innerHTML = ads.map((_, i) =>
-      `<span class="dot${i === 0 ? ' active' : ''}"></span>`
-    ).join('');
-
-    // Re-init this carousel after dynamic render
+    if (ads.length === 0) { carousel.closest('.section').style.display = 'none'; return; }
+    track.innerHTML = ads.map(ad => `<div class="carousel-slide" style="padding:0;cursor:${ad.linkUrl ? 'pointer' : 'default'};" ${ad.linkUrl ? `onclick="window.open('${ad.linkUrl}','_blank')"` : ''}><img src="${ad.imageUrl}" alt="${ad.title || ''}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.style.background='var(--bg-base)';"></div>`).join('');
+    dotsEl.innerHTML = ads.map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}"></span>`).join('');
     initCarousels();
-  } catch (e) {
-    // On error, hide carousel
-    carousel.closest('.section').style.display = 'none';
-  }
+  } catch (e) { carousel.closest('.section').style.display = 'none'; }
 }
 
-// Update health score display
 function updateHealthScoreDisplay(score) {
-  const scoreEl = document.querySelector('.neu-card-primary p[style*="2.4rem"]');
-  if (scoreEl) {
-    scoreEl.innerHTML = `${score}<small style="font-size:1rem">/100</small>`;
-  }
-
-  // Update change indicator
-  const changeEl = document.querySelector('.neu-card-primary span[style*="rgba(255,255,255,0.2)"]');
+  const scoreEl = document.getElementById('main-health-score');
+  if (scoreEl) scoreEl.textContent = score;
+  const changeEl = document.getElementById('score-change-label');
   if (changeEl) {
     const prevScore = parseInt(localStorage.getItem('vitalora_prev_score') || score);
     const diff = score - prevScore;
-    if (diff > 0) {
-      changeEl.textContent = `↑ ${diff} dari kemarin`;
-      changeEl.style.background = 'rgba(255,255,255,0.2)';
-    } else if (diff < 0) {
-      changeEl.textContent = `↓ ${Math.abs(diff)} dari kemarin`;
-      changeEl.style.background = 'rgba(235,87,87,0.3)';
-    } else {
-      changeEl.textContent = '→ Stabil';
-    }
+    if (diff > 0) { changeEl.textContent = `↑ ${diff} dari kemarin`; changeEl.style.background = 'rgba(255,255,255,0.2)'; }
+    else if (diff < 0) { changeEl.textContent = `↓ ${Math.abs(diff)} dari kemarin`; changeEl.style.background = 'rgba(235,87,87,0.3)'; }
+    else { changeEl.textContent = '→ Stabil'; }
     localStorage.setItem('vitalora_prev_score', score);
   }
+}
+
+async function loadAIInsight(uid) {
+  const p = document.getElementById('ai-insight-text');
+  if (!p) return;
+  try {
+    const profile = await VDB.getHealthProfile(uid);
+    if (!profile) { p.innerHTML = 'Isi profil kesehatan untuk mendapatkan insight personal.'; return; }
+    const scores = RiskEngine.calculateAll(profile);
+    const entries = Object.entries(scores).filter(e => e[1] && e[1].score !== undefined).sort((a,b) => b[1].score - a[1].score);
+    const top = entries[0];
+    if (top && top[1].score > 40) {
+      const diseaseNames = { diabetes: 'Diabetes', heart: 'Jantung', hypertension: 'Hipertensi', stroke: 'Stroke', metabolic: 'Metabolik', sleep: 'Tidur' };
+      const name = diseaseNames[top[0]] || top[0];
+      const factor = top[1].factors[0] || 'faktor gaya hidup';
+      p.innerHTML = `<strong style="color:var(--accent);">Risiko ${name} diperhatikan</strong> karena ${factor}. Segera cek detail di Dashboard.`;
+    } else {
+      p.innerHTML = 'Kondisi kesehatan Anda terpantau stabil. Pertahankan pola hidup sehat Anda.';
+    }
+  } catch(e) { console.warn('[home] AI insight error:', e); }
 }
 </script>
 </body>
