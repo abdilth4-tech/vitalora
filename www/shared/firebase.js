@@ -499,15 +499,29 @@ window.VDB = {
   },
 
   async updateHealthSection(userId, sectionData) {
+    // Fetch existing profile to calculate completeness accurately
+    const doc = await _db.collection('userHealthProfile').doc(userId).get();
+    const existingData = doc.exists ? doc.data() : {};
+    const mergedData = { ...existingData, ...sectionData };
+    const completeness = VDB._calcCompleteness(mergedData);
+
     return _db.collection('userHealthProfile').doc(userId).set({
       ...sectionData,
+      profileCompleteness: completeness,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
   },
 
   async saveLabResults(userId, labData) {
+    // Fetch existing profile to calculate completeness accurately
+    const doc = await _db.collection('userHealthProfile').doc(userId).get();
+    const existingData = doc.exists ? doc.data() : {};
+    const mergedData = { ...existingData, labResults: labData };
+    const completeness = VDB._calcCompleteness(mergedData);
+
     return _db.collection('userHealthProfile').doc(userId).set({
       labResults: { ...labData, labDate: firebase.firestore.FieldValue.serverTimestamp() },
+      profileCompleteness: completeness,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
   },
