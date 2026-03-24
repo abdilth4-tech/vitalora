@@ -315,23 +315,93 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="../shared/firebase.js"></script>
 <script src="../shared/app.js"></script>
+<script src="../shared/firebase.js"></script>
+<script src="../shared/app.js"></script>
 <script>
   let _geUser = null;
+  let currentStep = 1;
+  const totalSteps = 4;
+  let responses = {};
 
   (async () => {
     try {
       const { user } = await VAuth.guard('patient', 1);
       _geUser = user;
+      buildStepDots();
     } catch (e) {
       console.error('[hypertension-exam] guard error:', e);
     }
   })();
 
-  let currentStep = 1;
-...
+  function buildStepDots() {
+    const container = document.getElementById('stepDots');
+    let html = '';
+    for (let i = 1; i <= totalSteps; i++) {
+      const className = i < currentStep ? 'past' : i === currentStep ? 'current' : '';
+      html += `<div class="step-dot ${className}">${i}</div>`;
+      if (i < totalSteps) html += '<div class="step-line"></div>';
+    }
+    container.innerHTML = html;
+    updateStepDisplay();
+  }
+
+  function updateStepDisplay() {
+    document.querySelectorAll('.step-pane').forEach(pane => pane.classList.remove('active'));
+    document.getElementById('step-' + currentStep).classList.add('active');
+
+    const stepTitles = [
+      'Step 1 — Tekanan Darah',
+      'Step 2 — Data Pribadi',
+      'Step 3 — Riwayat Kesehatan',
+      'Step 4 — Hasil & Rekomendasi'
+    ];
+
+    document.getElementById('stepTitleText').textContent = stepTitles[currentStep - 1] || 'Step ' + currentStep;
+    document.getElementById('stepCounter').textContent = currentStep + ' / ' + totalSteps;
+
+    const btnText = currentStep === totalSteps ? 'Simpan Hasil & Selesai' : 'Lanjut ke Step ' + (currentStep + 1);
+    document.getElementById('btn-text').textContent = btnText;
+
+    window.scrollTo(0, 0);
+  }
+
+  function nextStep() {
+    if (currentStep < totalSteps) {
+      if (validateCurrentStep()) {
+        currentStep++;
+        buildStepDots();
+      } else {
+        showToast('Mohon isi semua field yang diperlukan', 'warning');
+      }
+    } else if (currentStep === totalSteps) {
+      saveAndFinish();
+    }
+  }
+
+  function validateCurrentStep() {
+    if (currentStep === 1) {
+      const sys = document.getElementById('in-sys').value;
+      const dia = document.getElementById('in-dia').value;
+      return sys && dia && parseInt(sys) > 0 && parseInt(dia) > 0;
+    }
+    if (currentStep === 2) {
+      const age = document.getElementById('in-age').value;
+      const weight = document.getElementById('in-weight').value;
+      return age && weight && parseInt(age) > 0 && parseFloat(weight) > 0;
+    }
+    return true;
+  }
+
+  function selectOption(el, key, val) {
+    const parent = el.parentElement;
+    parent.querySelectorAll('.option-opt').forEach(opt => opt.classList.remove('selected'));
+    el.classList.add('selected');
+    responses[key] = val;
+  }
+
   async function saveAndFinish() {
     if (!_geUser) {
-      showToast('User tidak terdeteksi, kembali ke dashboard', 'warning');
+      showToast('User tidak terdeteksi', 'warning');
       setTimeout(() => nav('disease-risk.html'), 1500);
       return;
     }
@@ -339,30 +409,65 @@
     try {
       const sys = parseInt(document.getElementById('in-sys').value);
       const dia = parseInt(document.getElementById('in-dia').value);
-      const levelEl = document.getElementById('res-level-badge');
-      
+      const age = parseInt(document.getElementById('in-age').value);
+      const weight = parseFloat(document.getElementById('in-weight').value);
+
+      // BP category classification
+      let bpCategory = 'Normal';
+      let score = 20;
+
+      if (sys >= 180 || dia >= 120) {
+        bpCategory = 'Krisis Hipertensi';
+        score = 95;
+      } else if (sys >= 160 || dia >= 100) {
+        bpCategory = 'Hipertensi Derajat 3';
+        score = 85;
+      } else if (sys >= 140 || dia >= 90) {
+        bpCategory = 'Hipertensi Derajat 2';
+        score = 70;
+      } else if (sys >= 130 || dia >= 80) {
+        bpCategory = 'Hipertensi Derajat 1';
+        score = 50;
+      } else if (sys >= 120 || dia >= 80) {
+        bpCategory = 'Tekanan Tinggi';
+        score = 35;
+      }
+
+      // Add risk factors
+      if (responses['fam-hyp']) score += 10;
+      if (responses['smoking']) score += 15;
+      if (responses['activity'] === 0) score += 15;
+      if (age > 60) score += 10;
+
+      score = Math.min(100, Math.max(0, score));
+
+      let riskLevel = 'Rendah';
+      if (score >= 70) riskLevel = 'Tinggi';
+      else if (score >= 50) riskLevel = 'Sedang';
+
       const resultData = {
+        score: score,
+        riskLevel: riskLevel,
         systolic: sys,
         diastolic: dia,
-        riskLevel: levelEl.textContent,
+        bpCategory: bpCategory,
         inputs: {
-          age: parseInt(document.getElementById('in-age').value),
-          weight: parseFloat(document.getElementById('in-weight').value),
+          age: age,
+          weight: weight,
           ...responses
-        }
+        },
+        timestamp: new Date().toISOString()
       };
 
       await VDB.saveScreeningResult(_geUser.uid, 'hypertension', resultData);
-      
-      showToast('Data hipertensi tersimpan!', 'success');
+
+      showToast('Hasil hipertensi tersimpan!', 'success');
       setTimeout(() => nav('disease-risk.html'), 1500);
     } catch (e) {
       console.error('[hypertension] save error:', e);
       showToast('Gagal menyimpan hasil', 'error');
     }
   }
-
-  buildStepDots();
 </script>
 </body>
 </html>
