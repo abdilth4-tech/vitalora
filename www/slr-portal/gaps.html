@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Gaps & Opportunities — Vitalora Evidence Portal</title>
+  <link rel="stylesheet" href="../../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    :root {
+      --primary-slr: #6C63FF;
+      --primary-slr-dark: #5A51D4;
+      --severity-high: #E74C3C;
+      --severity-moderate: #F39C12;
+      --severity-low: #27AE60;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
+    }
+
+    .header-section {
+      background: linear-gradient(135deg, var(--primary-slr) 0%, #8B7FFF 100%);
+      color: #fff;
+      padding: 60px 20px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(108,99,255,0.3);
+    }
+
+    .header-section h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 0 0 12px;
+    }
+
+    .header-section p {
+      font-size: 1rem;
+      opacity: 0.95;
+      margin: 0;
+    }
+
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .executive-summary {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 16px rgba(108,99,255,0.1);
+    }
+
+    .gap-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 16px rgba(108,99,255,0.1);
+      border-top: 6px solid var(--primary-slr);
+      position: relative;
+    }
+
+    .severity-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .severity-badge.high {
+      background: rgba(231, 76, 60, 0.15);
+      color: var(--severity-high);
+    }
+
+    .severity-badge.moderate {
+      background: rgba(243, 156, 18, 0.15);
+      color: var(--severity-moderate);
+    }
+
+    .severity-badge.low {
+      background: rgba(39, 174, 96, 0.15);
+      color: var(--severity-low);
+    }
+
+    .gap-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary-slr);
+      margin: 0 0 16px;
+      padding-right: 120px;
+    }
+
+    .gap-section {
+      margin: 24px 0;
+    }
+
+    .gap-section h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 12px;
+    }
+
+    .gap-section p {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .gap-evidence {
+      background: rgba(108,99,255,0.05);
+      border-left: 4px solid var(--primary-slr);
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
+
+    .gap-evidence strong {
+      color: var(--text-primary);
+    }
+
+    .severity-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.03);
+      margin: 16px 0;
+    }
+
+    .severity-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .severity-dot.high { background: var(--severity-high); }
+    .severity-dot.moderate { background: var(--severity-moderate); }
+    .severity-dot.low { background: var(--severity-low); }
+
+    .opportunity-list {
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.08), rgba(52, 152, 219, 0.05));
+      border-left: 6px solid #27AE60;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .opportunity-list h4 {
+      color: #27AE60;
+      margin: 0 0 12px;
+      font-weight: 700;
+    }
+
+    .opportunity-list ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .opportunity-list li {
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    .gap-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .summary-card {
+      background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(139,127,255,0.05));
+      border: 2px solid rgba(108,99,255,0.2);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .summary-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary-slr);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .summary-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .research-roadmap {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 16px rgba(108,99,255,0.1);
+    }
+
+    .timeline {
+      position: relative;
+      padding: 20px 0 20px 40px;
+    }
+
+    .timeline-item {
+      padding: 16px;
+      margin-bottom: 16px;
+      background: rgba(108,99,255,0.05);
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-slr);
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -45px;
+      top: 20px;
+      width: 20px;
+      height: 20px;
+      background: var(--primary-slr);
+      border-radius: 50%;
+      border: 4px solid #fff;
+      box-shadow: 0 0 0 2px var(--primary-slr);
+    }
+
+    .timeline-item h4 {
+      margin: 0 0 8px;
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    footer {
+      background: #fff;
+      border-top: 1px solid rgba(108,99,255,0.1);
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-tertiary);
+      margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .severity-badge {
+        position: static;
+        display: block;
+        width: fit-content;
+        margin-bottom: 16px;
+      }
+
+      .gap-title {
+        padding-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-section">
+  <h1>🔍 Research Gaps & Innovation Opportunities</h1>
+  <p>Identified Research Gaps and Strategic Opportunities for Vitalora</p>
+</div>
+
+<div class="content-wrapper">
+
+  <div class="executive-summary">
+    <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--primary-slr); margin: 0 0 20px;">Executive Summary</h2>
+
+    <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">Systematic analysis of 15 landmark papers identified 5 major research gaps. While the existing evidence base is strong (Grade A-B) for current screening algorithms, significant opportunities exist for platform innovation through addressing these gaps.</p>
+
+    <div class="gap-summary">
+      <div class="summary-card">
+        <div class="summary-number">5</div>
+        <div class="summary-label">Major Gaps Identified</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-number">15+</div>
+        <div class="summary-label">Research Opportunities</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-number">3</div>
+        <div class="summary-label">Priority Levels</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-number">HIGH</div>
+        <div class="summary-label">Platform Impact</div>
+      </div>
+    </div>
+
+    <h3 style="color: var(--text-primary); font-size: 1.05rem; margin-top: 24px; margin-bottom: 16px;">Key Findings</h3>
+    <ul style="color: var(--text-secondary); line-height: 1.8;">
+      <li>✅ <strong>Existing algorithms sufficient for implementation:</strong> Current risk scoring frameworks (Framingham, INTERHEART, FIB-4, FINDRISC) supported by Grade A-B evidence</li>
+      <li>⚠️ <strong>Herbal medicine evidence limited:</strong> HIGH severity gap — most herbal recommendations lack rigorous RCT data</li>
+      <li>⚠️ <strong>Ethnic-specific cutoffs missing:</strong> HIGH severity gap — screening thresholds developed in Caucasian cohorts, need validation in Asian/Indonesian populations</li>
+      <li>⚠️ <strong>Wearable integration not validated:</strong> HIGH severity gap — smartwatch data (HR, SpO2, activity) not yet rigorously tested for screening</li>
+      <li>⚠️ <strong>Implementation barriers understudied:</strong> HIGH severity gap — real-world adoption, patient adherence not fully characterized</li>
+    </ul>
+  </div>
+
+  <!-- GAP 1 -->
+  <div class="gap-item">
+    <span class="severity-badge moderate">MODERATE SEVERITY</span>
+    <h2 class="gap-title">🔀 Gap 1: Integrated Multi-Biomarker Risk Prediction in Asymptomatic Populations</h2>
+
+    <div class="gap-section">
+      <h3>Current Evidence Status</h3>
+      <p>Individual risk algorithms exist for each disease (Framingham for BP, INTERHEART for lipids, FIB-4 for NAFLD, FINDRISC for diabetes). However:</p>
+      <ul style="color: var(--text-secondary); margin-left: 20px; line-height: 1.7;">
+        <li>Most algorithms developed in <strong>symptomatic or at-risk</strong> populations, not screening cohorts</li>
+        <li>Limited evidence on optimal <strong>combination</strong> of biomarkers for asymptomatic risk prediction</li>
+        <li>Sensor data (wearables, CGM) not yet integrated into prediction models</li>
+        <li>Re-screening intervals and dynamic risk reassessment not well-defined</li>
+      </ul>
+
+      <div class="severity-indicator">
+        <div class="severity-dot moderate"></div>
+        <span><strong>Severity: MODERATE</strong> — Algorithms predictive in asymptomatic groups, but direct screening evidence limited. Current algorithms can be implemented; integration improvements possible.</span>
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Implications for Vitalora</h3>
+      <div class="gap-evidence">
+        <strong>Concern:</strong> Risk scoring based on individual algorithms, but patient may have multiple borderline markers across diseases. Integrated assessment needed.
+        <br><br>
+        <strong>Example:</strong> Patient with LDL 150 (borderline), BP 135 (stage 1), waist 95cm (overweight), HbA1c 5.9 (prediabetic) — integrated risk assessment unclear.
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Research Opportunities</h3>
+      <div class="opportunity-list">
+        <h4>✅ Priority Research Projects</h4>
+        <ul>
+          <li><strong>Multi-Biomarker Risk Calculator:</strong> Prospective study validating combined biomarker scores for asymptomatic screening (n=2,000-5,000)</li>
+          <li><strong>Trajectory Prediction Models:</strong> Machine learning to predict 1-, 5-, 10-year disease progression based on Vitalora longitudinal data</li>
+          <li><strong>Wearable-Integrated Risk Scores:</strong> Validation of smartwatch HR variability, activity patterns, sleep data as screening adjuncts</li>
+          <li><strong>Re-screening Interval Study:</strong> Determine optimal biomarker re-measurement frequency post-intervention</li>
+          <li><strong>Implementation Study:</strong> Test uptake and adherence to integrated risk assessment in primary care setting</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAP 2 -->
+  <div class="gap-item">
+    <span class="severity-badge high">HIGH SEVERITY</span>
+    <h2 class="gap-title">🌿 Gap 2: Herbal Medicine Evidence (Limited RCT Data)</h2>
+
+    <div class="gap-section">
+      <h3>Current Evidence Status</h3>
+      <p>Herbal remedies widely used but evidence quality varies significantly:</p>
+      <ul style="color: var(--text-secondary); margin-left: 20px; line-height: 1.7;">
+        <li><strong>Curcumin (turmeric):</strong> 8 RCTs (Grade B-C) — shows modest lipid reduction (2-8%), mechanism proven but clinical benefit unclear</li>
+        <li><strong>Garlic extract:</strong> 6 RCTs (Grade C) — small trials, short-term, conflicting results</li>
+        <li><strong>Green tea:</strong> 3 RCTs (Grade B) — moderate NAFLD benefit, but outcome heterogeneity</li>
+        <li><strong>Cinnamon:</strong> 4-12 RCTs (Grade C) — conflicting diabetes outcomes, heterogeneous populations</li>
+      </ul>
+
+      <div class="severity-indicator">
+        <div class="severity-dot high"></div>
+        <span><strong>Severity: HIGH</strong> — Vitalora recommending herbal interventions; insufficient RCT evidence base. Risk of overstating efficacy and patient harm if interactions not monitored.</span>
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Implications for Vitalora</h3>
+      <div class="gap-evidence">
+        <strong>Concern:</strong> Herbal section features formulas (jamu) with traditional uses but limited evidence. Marketing may overstate efficacy.
+        <br><br>
+        <strong>Safety Issue:</strong> Interactions with medications understudied. Patient taking warfarin + garlic + ginger could face bleeding risk.
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Research Opportunities</h3>
+      <div class="opportunity-list">
+        <h4>✅ Priority Research Projects</h4>
+        <ul>
+          <li><strong>Large-Scale Herbal RCTs:</strong> Conduct rigorous RCTs for curcumin (dyslipidemia), green tea (NAFLD), cinnamon (diabetes) — n=500+, 6-12 month duration</li>
+          <li><strong>Interaction Testing:</strong> Pharmacokinetic studies for common herbal-drug interactions (warfarin, statins, metformin)</li>
+          <li><strong>Evidence Transparency Tool:</strong> Develop Vitalora feature showing evidence level for each herbal recommendation (Grade A-D)</li>
+          <li><strong>Combination Formula Validation:</strong> Test traditional polyherbal jamu formulas in modern clinical trials</li>
+          <li><strong>Metabolomic Biomarkers:</strong> Identify herbal active compounds and mechanism validation in human trials</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAP 3 -->
+  <div class="gap-item">
+    <span class="severity-badge high">HIGH SEVERITY</span>
+    <h2 class="gap-title">🧬 Gap 3: Precision Medicine & Ethnic-Specific Cutoffs</h2>
+
+    <div class="gap-section">
+      <h3>Current Evidence Status</h3>
+      <p>Screening thresholds developed primarily in Caucasian cohorts; limited validation in non-European populations:</p>
+      <ul style="color: var(--text-secondary); margin-left: 20px; line-height: 1.7;">
+        <li><strong>FIB-4 index (NAFLD):</strong> AUROC 0.81 in mixed cohorts; unknown accuracy in Indonesians with different obesity patterns</li>
+        <li><strong>FINDRISC (diabetes):</strong> Developed in Finnish cohort; may over/under-estimate risk in Asian populations</li>
+        <li><strong>BP thresholds:</strong> 130/80 (ACC/AHA) derived from largely US/European trials; cardiovascular outcome curves may differ in Asian cohorts</li>
+        <li><strong>Lipid cutoffs:</strong> LDL <100 mg/dL based on Caucasian data; genetic variants (e.g., APOE, PCSK9) vary by ethnicity</li>
+      </ul>
+
+      <div class="severity-indicator">
+        <div class="severity-dot high"></div>
+        <span><strong>Severity: HIGH</strong> — Vitalora targets Indonesian population; using Caucasian cutoffs may result in missed diagnoses (sensitivity ↓) or false alarms (specificity ↓).</span>
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Implications for Vitalora</h3>
+      <div class="gap-evidence">
+        <strong>Clinical Risk:</strong> Applying US/European screening thresholds to Indonesian population may misclassify risk. Obesity prevalence and metabolic patterns differ between populations.
+        <br><br>
+        <strong>Example:</strong> Waist circumference threshold for MetS: 94 cm (males) in Europeans vs. 90 cm in Asians — different baseline prevalence.
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Research Opportunities</h3>
+      <div class="opportunity-list">
+        <h4>✅ Priority Research Projects</h4>
+        <ul>
+          <li><strong>Ethnic-Specific Validation Study:</strong> Prospective cohort (n=5,000+) of Indonesian adults; validate Framingham, INTERHEART, FINDRISC, FIB-4 against outcomes</li>
+          <li><strong>Cutoff Optimization:</strong> Re-calibrate risk thresholds for Indonesian population (e.g., optimal FIB-4 cutoff for detecting advanced fibrosis)</li>
+          <li><strong>Genetic Biomarkers:</strong> GWAS study to identify genetic variants affecting lipid, glucose metabolism in Indonesians (APOE, CETP, PCSK9)</li>
+          <li><strong>Population-Specific Risk Calculator:</strong> Develop Indonesian-calibrated risk scores incorporating ethnic-specific baseline prevalences and effect sizes</li>
+          <li><strong>Digital Phenotyping:</strong> Use Vitalora data to refine risk algorithms in real-time based on Indonesian patient cohort</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAP 4 -->
+  <div class="gap-item">
+    <span class="severity-badge high">HIGH SEVERITY</span>
+    <h2 class="gap-title">📱 Gap 4: Digital Health & Wearable Sensor Validation</h2>
+
+    <div class="gap-section">
+      <h3>Current Evidence Status</h3>
+      <p>Wearable devices (smartwatches, rings, patches) increasingly used for health monitoring; clinical validation limited:</p>
+      <ul style="color: var(--text-secondary); margin-left: 20px; line-height: 1.7;">
+        <li><strong>Heart rate variability (HRV):</strong> Associated with cardiovascular risk; wearable HRV accuracy vs. ECG not fully validated</li>
+        <li><strong>Continuous glucose monitoring (CGM):</strong> Excellent for diabetes management; screening utility in prediabetics not established</li>
+        <li><strong>Sleep tracking:</strong> Sleep apnea associated with HTN/diabetes; smartwatch sleep algorithms not clinically validated</li>
+        <li><strong>Activity monitoring:</strong> Step count, exercise duration linked to outcomes; optimal monitoring frequency/intensity undefined</li>
+      </ul>
+
+      <div class="severity-indicator">
+        <div class="severity-dot high"></div>
+        <span><strong>Severity: HIGH</strong> — Vitalora platform emphasizes smartwatch integration; lack of rigorous validation raises accuracy/liability concerns.</span>
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Implications for Vitalora</h3>
+      <div class="gap-evidence">
+        <strong>Concern:</strong> If patient's smartwatch HR reading inaccurate, Vitalora risk score may be wrong. What if wearable falsely reassures patient with undetected HTN?
+        <br><br>
+        <strong>Opportunity:</strong> If wearable data validated for screening, Vitalora becomes unique platform combining wearable + biomarker + telemedicine risk assessment.
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Research Opportunities</h3>
+      <div class="opportunity-list">
+        <h4>✅ Priority Research Projects</h4>
+        <ul>
+          <li><strong>Wearable Accuracy Study:</strong> Compare smartwatch metrics (HR, HRV, SpO2, activity) vs. medical-grade devices (Holter monitor, ABPM, polysomnography)</li>
+          <li><strong>Screening Validation RCT:</strong> Prospective study testing wearable-integrated risk prediction vs. traditional algorithms for HTN/diabetes detection</li>
+          <li><strong>HRV-CVD Risk Study:</strong> Validate HRV cutoffs from Vitalora smartwatch for predicting cardiovascular events (n=1,000+, 2-year follow-up)</li>
+          <li><strong>Continuous Glucose Monitoring in Prediabetes:</strong> Test CGM utility for early diabetes detection beyond annual HbA1c screening</li>
+          <li><strong>Sleep Apnea Screening Algorithm:</strong> Develop Vitalora algorithm using smartwatch respiratory rate, movement, SpO2 patterns for sleep apnea detection</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAP 5 -->
+  <div class="gap-item">
+    <span class="severity-badge high">HIGH SEVERITY</span>
+    <h2 class="gap-title">🎯 Gap 5: Implementation Science & Real-World Barriers</h2>
+
+    <div class="gap-section">
+      <h3>Current Evidence Status</h3>
+      <p>Clinical efficacy of screening algorithms proven; real-world effectiveness understudied in low-resource settings:</p>
+      <ul style="color: var(--text-secondary); margin-left: 20px; line-height: 1.7;">
+        <li><strong>Screening uptake:</strong> How many eligible patients actually access Vitalora? (Adoption barrier)</li>
+        <li><strong>Adherence:</strong> Do patients complete screening questionnaires and wear smartwatch consistently? (Engagement barrier)</li>
+        <li><strong>Clinical follow-up:</strong> If risk high, do patients actually see a doctor? (Linkage barrier)</li>
+        <li><strong>Treatment initiation:</strong> Do at-risk patients accept lifestyle changes or medications? (Implementation barrier)</li>
+        <li><strong>Cost-effectiveness:</strong> Is Vitalora-based screening cost-effective vs. usual care in Indonesia? (Economic barrier)</li>
+      </ul>
+
+      <div class="severity-indicator">
+        <div class="severity-dot high"></div>
+        <span><strong>Severity: HIGH</strong> — Perfect algorithm useless if patients don't use it. Real-world implementation barriers determine Vitalora's clinical impact.</span>
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Implications for Vitalora</h3>
+      <div class="gap-evidence">
+        <strong>Challenge:</strong> Vitalora has excellent screening algorithms, but user engagement, physician integration, and patient adherence not yet tested in target population.
+        <br><br>
+        <strong>Questions:</strong> What features drive screening completion? Do patients trust AI risk scores? What's optimal frequency of risk reassessment?
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Research Opportunities</h3>
+      <div class="opportunity-list">
+        <h4>✅ Priority Research Projects</h4>
+        <ul>
+          <li><strong>Pilot Implementation Study:</strong> Deploy Vitalora to 1,000 patients in 3-5 primary care clinics (Jakarta, Bandung, Surabaya); measure screening completion, adherence, physician integration</li>
+          <li><strong>User Behavior Study:</strong> Qualitative interviews + usage analytics to identify adoption barriers (cost, complexity, trust, motivation)</li>
+          <li><strong>Physician Integration Study:</strong> Test different EHR integration approaches; measure physician acceptance and clinical impact</li>
+          <li><strong>Cost-Effectiveness Analysis:</strong> Model cost per QALY of Vitalora-based screening vs. traditional population screening vs. no screening</li>
+          <li><strong>Patient Engagement Optimization:</strong> Randomized trials of different notification strategies, feedback mechanisms, gamification to drive screening completion</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESEARCH ROADMAP -->
+  <div class="research-roadmap">
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-slr); margin: 0 0 24px;">Strategic Research Roadmap: 3-5 Year Plan</h2>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>Phase 1 (Year 1): Foundational Validation Studies</h4>
+        <p>Wearable accuracy study (n=200), ethnic-specific FIB-4/FINDRISC validation in 500 Indonesian patients, cost-effectiveness model development.</p>
+      </div>
+
+      <div class="timeline-item">
+        <h4>Phase 2 (Year 2): Vitalora Platform Pilot</h4>
+        <p>Deploy to 1,000 patients in 5 clinics; measure screening completion, adherence, physician integration. Launch herbal efficacy RCT (curcumin, green tea, cinnamon).</p>
+      </div>
+
+      <div class="timeline-item">
+        <h4>Phase 3 (Year 2-3): Ethnic-Specific Validation</h4>
+        <p>Prospective cohort (n=5,000+) to validate/recalibrate risk thresholds. GWAS study for genetic biomarkers in Indonesian population. Sleep apnea screening algorithm development.</p>
+      </div>
+
+      <div class="timeline-item">
+        <h4>Phase 4 (Year 3-4): Integrated Risk Prediction & Scaling</h4>
+        <p>Multi-biomarker risk calculator development using Vitalora longitudinal data. Scale pilot to 10,000+ patients. Health policy engagement for screening reimbursement.</p>
+      </div>
+
+      <div class="timeline-item">
+        <h4>Phase 5 (Year 4-5): Real-World Effectiveness & Innovation</h4>
+        <p>Pragmatic effectiveness trial (n=10,000+) comparing Vitalora-based screening vs. usual care on cardiovascular outcomes. Patent innovations (wearable algorithms, herbal interactions tool).</p>
+      </div>
+    </div>
+
+    <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-top: 24px; margin-bottom: 16px;">Funding & Partnership Strategy</h3>
+    <ul style="color: var(--text-secondary); line-height: 1.8;">
+      <li><strong>NIH/NSF grants:</strong> Digital health innovation, precision medicine, implementation science programs</li>
+      <li><strong>Foundation grants:</strong> Gates Foundation (global health), Wellcome Trust (digital health in LMICs)</li>
+      <li><strong>Industry partnerships:</strong> Smartwatch manufacturers (Apple, Fitbit, Garmin) for device validation; herbal companies for RCTs</li>
+      <li><strong>Government collaborations:</strong> Indonesia Ministry of Health for population studies, health policy engagement</li>
+      <li><strong>Academic partners:</strong> University of Indonesia, Universitas Gadjah Mada for clinical validation studies</li>
+    </ul>
+  </div>
+
+  <!-- IMPACT SUMMARY -->
+  <div class="research-roadmap">
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-slr); margin: 0 0 24px;">Expected Impact & Platform Differentiation</h2>
+
+    <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 16px;">How Addressing These Gaps Strengthens Vitalora</h3>
+
+    <div style="background: rgba(39, 174, 96, 0.08); border-left: 6px solid #27AE60; padding: 20px; border-radius: 8px; margin: 16px 0;">
+      <h4 style="color: #27AE60; margin-top: 0;">1. Ethnic-Specific Validation</h4>
+      <p style="color: var(--text-secondary); line-height: 1.7;">Vitalora becomes the <strong>first Indonesian-calibrated risk screening platform</strong> — more accurate than importing US/European algorithms. Competitive advantage in Southeast Asian markets.</p>
+    </div>
+
+    <div style="background: rgba(52, 152, 219, 0.08); border-left: 6px solid #3498DB; padding: 20px; border-radius: 8px; margin: 16px 0;">
+      <h4 style="color: #3498DB; margin-top: 0;">2. Wearable-Integrated Screening</h4>
+      <p style="color: var(--text-secondary); line-height: 1.7;">Validates smartwatch for clinical screening (not just fitness tracking) — enables <strong>continuous risk monitoring</strong>, not just annual checkups. Novel model with high engagement potential.</p>
+    </div>
+
+    <div style="background: rgba(243, 156, 18, 0.08); border-left: 6px solid #F39C12; padding: 20px; border-radius: 8px; margin: 16px 0;">
+      <h4 style="color: #F39C12; margin-top: 0;">3. Evidence-Based Herbal Integration</h4>
+      <p style="color: var(--text-secondary); line-height: 1.7;">Conducts rigorous RCTs for herbal remedies popular in Indonesia (jamu, traditional medicine) — <strong>bridges traditional + modern medicine</strong>. Builds trust with culturally-informed population.</p>
+    </div>
+
+    <div style="background: rgba(231, 76, 60, 0.08); border-left: 6px solid #E74C3C; padding: 20px; border-radius: 8px; margin: 16px 0;">
+      <h4 style="color: #E74C3C; margin-top: 0;">4. Implementation Research Leadership</h4>
+      <p style="color: var(--text-secondary); line-height: 1.7;">Vitalora becomes <strong>implementation science leader</strong> for digital health in LMICs — model studied by WHO, adopted by health ministries. Strong moat against competitors.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Vitalora Research Gaps & Opportunities — Strategic Roadmap for Innovation</p>
+  <p><a href="index.html" style="color: var(--primary-slr); text-decoration: none;">← Back to Evidence Portal</a></p>
+</footer>
+
+</body>
+</html>

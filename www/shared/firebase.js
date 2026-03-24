@@ -14,14 +14,16 @@
  */
 
 // ─── FIREBASE CONFIG ───────────────────────────────────────────────────────
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDnL3nDROWm7TdR99aXIcss01XnE7_d32A",
-  authDomain: "vitalora.firebaseapp.com",
-  projectId: "vitalora",
-  storageBucket: "vitalora.firebasestorage.app",
-  messagingSenderId: "521936301370",
-  appId: "1:521936301370:web:7f9aa1eeaf7caca8163403"
-};
+if (typeof FIREBASE_CONFIG === 'undefined') {
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDnL3nDROWm7TdR99aXIcss01XnE7_d32A",
+    authDomain: "vitalora.firebaseapp.com",
+    projectId: "vitalora",
+    storageBucket: "vitalora.firebasestorage.app",
+    messagingSenderId: "521936301370",
+    appId: "1:521936301370:web:7f9aa1eeaf7caca8163403"
+  };
+}
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 if (!firebase.apps || !firebase.apps.length) {

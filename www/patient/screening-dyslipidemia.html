@@ -92,6 +92,16 @@
     .symptom-icon { font-size: 1.4rem; margin-bottom: 4px; }
     .symptom-label { font-size: 0.72rem; font-weight: 700; color: var(--text-secondary); }
 
+    /* Radio grid for lifestyle */
+    .radio-group { display: grid; gap: 8px; }
+    .radio-opt {
+      background: var(--bg); box-shadow: var(--shadow-out-sm); border-radius: 12px; padding: 14px;
+      text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
+      font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);
+    }
+    .radio-opt:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(242,153,74,0.15); }
+    .radio-opt.selected { border-color: var(--primary-dys); background: linear-gradient(135deg, rgba(242,153,74,0.1), rgba(242,196,76,0.1)); color: var(--primary-dys-dark); font-weight: 700; }
+
     /* Recommendations */
     .rec-herbal { background: rgba(39, 174, 96, 0.05); border-left: 4px solid #27AE60; padding: 14px; border-radius: 12px; margin-top: 14px; }
     .rec-diet { background: rgba(47, 128, 237, 0.05); border-left: 4px solid #2F80ED; padding: 14px; border-radius: 12px; margin-top: 14px; }

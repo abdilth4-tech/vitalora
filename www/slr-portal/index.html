@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitalora — SLR Evidence Portal</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <style>
+    :root {
+      --primary-slr: #6C63FF;
+      --primary-slr-dark: #5A51D4;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
+    }
+
+    .slr-header {
+      background: linear-gradient(135deg, var(--primary-slr) 0%, #8B7FFF 100%);
+      color: #fff;
+      padding: 60px 20px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(108,99,255,0.3);
+    }
+
+    .slr-header h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin: 0 0 16px;
+    }
+
+    .slr-header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      line-height: 1.6;
+    }
+
+    .slr-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 40px 20px;
+      background: #fff;
+      margin-top: -30px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(139,127,255,0.05));
+      border: 2px solid rgba(108,99,255,0.2);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--primary-slr);
+      box-shadow: 0 8px 24px rgba(108,99,255,0.2);
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--primary-slr);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .slr-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 40px 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title ion-icon {
+      color: var(--primary-slr);
+      font-size: 2rem;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 24px 0 40px;
+    }
+
+    .nav-card {
+      background: #fff;
+      border: 2px solid var(--shadow-dark);
+      border-radius: 16px;
+      padding: 28px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .nav-card:hover {
+      border-color: var(--primary-slr);
+      box-shadow: 0 12px 32px rgba(108,99,255,0.15);
+      transform: translateY(-6px);
+    }
+
+    .nav-icon {
+      font-size: 2.4rem;
+      color: var(--primary-slr);
+    }
+
+    .nav-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .nav-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .timeline {
+      position: relative;
+      padding: 40px 0;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 40px;
+      padding-left: 40px;
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      background: var(--primary-slr);
+      border-radius: 50%;
+      border: 4px solid #fff;
+      box-shadow: 0 0 0 4px var(--primary-slr);
+    }
+
+    .timeline-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: 24px;
+      width: 2px;
+      height: calc(100% + 40px);
+      background: var(--primary-slr);
+      opacity: 0.3;
+    }
+
+    .timeline-content {
+      flex: 1;
+    }
+
+    .timeline-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .timeline-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(139,127,255,0.05));
+      border-left: 4px solid var(--primary-slr);
+      padding: 24px;
+      border-radius: 12px;
+      margin: 24px 0;
+    }
+
+    .highlight-title {
+      font-weight: 800;
+      color: var(--primary-slr);
+      margin-bottom: 12px;
+    }
+
+    .highlight-text {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    footer {
+      background: #fff;
+      border-top: 1px solid var(--shadow-dark);
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-tertiary);
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="slr-header">
+  <h1>🔬 Vitalora — SLR Evidence Portal</h1>
+  <p>Systematic Literature Review Evidence for Metabolic Disease Screening<br>PRISMA-2020 Compliant • GRADE Quality Assessment • Evidence-Based Framework</p>
+</div>
+
+<div class="slr-stats">
+  <div class="stat-card">
+    <div class="stat-number">1,020+</div>
+    <div class="stat-label">Papers Identified</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">15</div>
+    <div class="stat-label">Landmark Papers Analyzed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">13 A, 2 B</div>
+    <div class="stat-label">GRADE Quality Distribution</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">5</div>
+    <div class="stat-label">Prioritized Diseases</div>
+  </div>
+</div>
+
+<div class="slr-content">
+
+  <div class="section-title">
+    <ion-icon name="document-outline"></ion-icon>
+    SLR Documentation
+  </div>
+  <p>Complete documentation of the systematic literature review process, aligned with PRISMA-2020 standards.</p>
+
+  <div class="nav-grid">
+    <a href="protocol.html" class="nav-card">
+      <div class="nav-icon">📋</div>
+      <div class="nav-title">SLR Protocol (CLAUDE.md)</div>
+      <div class="nav-desc">Complete review protocol with PRISMA checklist, inclusion/exclusion criteria, and research questions</div>
+    </a>
+    <a href="extraction.html" class="nav-card">
+      <div class="nav-icon">📊</div>
+      <div class="nav-title">Data Extraction Tables</div>
+      <div class="nav-desc">Detailed extraction from 15 landmark papers across dyslipidemia, hypertension, NAFLD, MetS, diabetes</div>
+    </a>
+    <a href="grade.html" class="nav-card">
+      <div class="nav-icon">⭐</div>
+      <div class="nav-title">GRADE Quality Assessment</div>
+      <div class="nav-desc">Evidence quality evaluation using GRADE methodology (Risk of Bias, Consistency, Directness, Precision)</div>
+    </a>
+    <a href="gaps.html" class="nav-card">
+      <div class="nav-icon">🔍</div>
+      <div class="nav-title">Gap Analysis & Opportunities</div>
+      <div class="nav-desc">Research gaps identified, impact on Vitalora, and prioritized research opportunities</div>
+    </a>
+  </div>
+
+  <div class="highlight-box">
+    <div class="highlight-title">📈 Overall Evidence Quality: HIGH</div>
+    <div class="highlight-text">
+      All 15 landmark papers rated Grade A or B. 13 papers Grade A (High Quality) indicate strong evidence base for risk algorithms and clinical decision support. No Grade C/D papers included. Evidence ready for clinical implementation.
+    </div>
+  </div>
+
+  <div class="section-title">
+    <ion-icon name="checkmark-circle-outline"></ion-icon>
+    SLR Implementation Timeline
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-title">✅ Phase 1 — Literature Collection (Completed)</div>
+        <div class="timeline-desc">Identified 1,020+ papers across 15 metabolic diseases using PubMed, Cochrane, Web of Science, Scopus. Screening completed using PRISMA-2020 methodology. 15 landmark papers selected (Grade A-B quality).</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-title">✅ Phase 2 — Protocol Development (Completed)</div>
+        <div class="timeline-desc">Documented SLR protocol in CLAUDE.md with explicit inclusion/exclusion criteria, PRISMA checklist, search strategy, and data extraction framework. Aligned with international SLR standards.</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-title">✅ Phase 3 — Data Extraction (Completed)</div>
+        <div class="timeline-desc">Extracted structured data from 15 papers: study characteristics, biomarkers, risk factors, diagnostic cutoffs, algorithms, prevalence. Comprehensive extraction table created for 5 prioritized diseases.</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-title">✅ Phase 4 — Quality Assessment (Completed)</div>
+        <div class="timeline-desc">Assessed all papers using GRADE methodology across 5 domains (Risk of Bias, Consistency, Directness, Imprecision, Publication Bias). Result: 13 Grade A, 2 Grade B papers = High certainty evidence.</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-title">✅ Phase 5 — Synthesis & Gap Analysis (Completed)</div>
+        <div class="timeline-desc">Synthesized findings by disease, identified research gaps, and prioritized research opportunities for Vitalora innovation (ethnic-specific validation, digital health integration, herbal RCTs).</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-title">🔄 Phase 6 — Clinical Integration (In Progress)</div>
+        <div class="timeline-desc">Integrating evidence-based algorithms into Vitalora risk scoring, disease encyclopedia, patient education. Research gaps framework drives future studies and platform development.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <div class="highlight-title">🎯 Key Findings</div>
+    <div class="highlight-text">
+      <strong>Dyslipidemia:</strong> 3 Grade A papers confirm lipid disorders affect 39% of adults; dyslipidemia among top 3 modifiable CVD risk factors. Dietary factors account for 30-40% of lipid variance.<br><br>
+      <strong>Hypertension:</strong> 3 Grade A papers establish BP-CVD relationship; intensive control (SBP <120) reduces CVD 27% in high-risk groups (SPRINT trial).<br><br>
+      <strong>NAFLD:</strong> 2 Grade A + 1 Grade B papers validate FIB-4 index (AUROC 0.81) for non-invasive fibrosis assessment; insulin resistance as common driver identified.<br><br>
+      <strong>Metabolic Syndrome:</strong> 3 Grade A papers define 5-component diagnostic criteria; MetS increases CVD risk 2-4x and diabetes risk 5-9x; Mediterranean diet reduces CVD 30%.<br><br>
+      <strong>Type 2 Diabetes:</strong> 2 Grade A + 1 Grade B papers show intensive glycemic control reduces complications 54-63%; HbA1c ≥6.5% diagnostic; prediabetes reversible with lifestyle.
+    </div>
+  </div>
+
+  <div class="section-title">
+    <ion-icon name="bulb-outline"></ion-icon>
+    Research Opportunities for Vitalora
+  </div>
+
+  <p>Five major research gaps identified from SLR, with actionable opportunities for platform innovation:</p>
+
+  <div class="nav-grid" style="margin-top: 20px;">
+    <div class="nav-card" style="cursor: default; border-color: #27AE60;">
+      <div class="nav-icon">🧬</div>
+      <div class="nav-title">Ethnic-Specific Validation</div>
+      <div class="nav-desc">Validate FIB-4, FINDRISC, BP targets in Indonesian populations; current thresholds developed in Caucasian cohorts</div>
+    </div>
+    <div class="nav-card" style="cursor: default; border-color: #27AE60;">
+      <div class="nav-icon">📱</div>
+      <div class="nav-title">Wearable Sensor Integration</div>
+      <div class="nav-desc">Prospective validation of smartwatch HR, SpO2, activity data for early HTN/diabetes detection</div>
+    </div>
+    <div class="nav-card" style="cursor: default; border-color: #27AE60;">
+      <div class="nav-icon">🌿</div>
+      <div class="nav-title">Herbal Medicine RCT</div>
+      <div class="nav-desc">Conduct rigorous RCTs for curcumin, green tea, other traditional remedies; current evidence mostly observational</div>
+    </div>
+    <div class="nav-card" style="cursor: default; border-color: #27AE60;">
+      <div class="nav-icon">🎯</div>
+      <div class="nav-title">Implementation Science</div>
+      <div class="nav-desc">Study screening uptake, barriers, adherence in Indonesian context; real-world effectiveness vs. trial efficacy</div>
+    </div>
+    <div class="nav-card" style="cursor: default; border-color: #27AE60;">
+      <div class="nav-icon">💰</div>
+      <div class="nav-title">Health Economics</div>
+      <div class="nav-desc">Cost-effectiveness analysis of Vitalora-based screening vs. usual care; crucial for health policy</div>
+    </div>
+  </div>
+
+  <div class="highlight-box" style="margin-top: 40px;">
+    <div class="highlight-title">✅ Ready for Implementation</div>
+    <div class="highlight-text">
+      All evidence-based algorithms, diagnostic criteria, and risk factors are documented with high-quality (Grade A-B) evidence. Vitalora can confidently implement these findings into risk scoring, patient education, and clinical decision support. Research gaps identified will drive future innovation and platform differentiation.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Vitalora Systematic Literature Review — PRISMA-2020 Compliant | Generated 2026-03-24</p>
+  <p>Evidence documentation available at: /VITALORA/CLAUDE.md, SLR_DATA_EXTRACTION_TABLE.md, SLR_GRADE_ASSESSMENT.md, SLR_GAP_ANALYSIS.md</p>
+</footer>
+
+</body>
+</html>

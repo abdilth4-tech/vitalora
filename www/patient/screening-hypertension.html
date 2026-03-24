@@ -94,6 +94,16 @@
     .option-opt.selected { border-color: var(--primary-hyp); background: rgba(235,87,87,0.03); }
     .opt-icon { font-size: 1.2rem; }
     .opt-label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+
+    /* Radio options for different choices */
+    .radio-group { display: grid; gap: 8px; }
+    .radio-opt {
+      background: var(--bg); box-shadow: var(--shadow-out-sm); border-radius: 12px; padding: 14px;
+      text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
+      font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);
+    }
+    .radio-opt:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(235,87,87,0.15); }
+    .radio-opt.selected { border-color: var(--primary-hyp); background: linear-gradient(135deg, rgba(235,87,87,0.1), rgba(255,118,117,0.1)); color: var(--primary-hyp-dark); font-weight: 700; }
   </style>
 </head>
 <body>
@@ -392,7 +402,14 @@
     return true;
   }
 
-  function selectOption(el, key, val) {
+  function selectRadio(el, key, val) {
+    const group = el.parentElement;
+    group.querySelectorAll('.radio-opt').forEach(opt => opt.classList.remove('selected'));
+    el.classList.add('selected');
+    responses[key] = val;
+  }
+
+  function selectOpt(el, key, val) {
     const parent = el.parentElement;
     parent.querySelectorAll('.option-opt').forEach(opt => opt.classList.remove('selected'));
     el.classList.add('selected');
