@@ -434,6 +434,16 @@
     <div class="step-title">Hasil Laboratorium <span style="font-size:0.7rem;color:var(--text-tertiary);font-weight:400;">(Opsional)</span></div>
     <div class="step-sub">Data lab meningkatkan akurasi prediksi risiko secara signifikan. Kosongkan jika tidak punya.</div>
 
+    <!-- INFO BADGES -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <button class="neu-chip" style="cursor:pointer;padding:6px 12px;border:none;background:rgba(33,150,243,0.15);color:#1976D2;font-size:0.75rem;font-weight:700;border-radius:16px;" onclick="nav('kidney-info.html')">
+        💙 Pelajari ACR & CKD
+      </button>
+      <button class="neu-chip" style="cursor:pointer;padding:6px 12px;border:none;background:rgba(76,175,80,0.15);color:#388E3C;font-size:0.75rem;font-weight:700;border-radius:16px;" onclick="nav('disease-risk.html')">
+        📊 Hitung Risiko
+      </button>
+    </div>
+
     <div class="lab-field">
       <label>Gula Darah Puasa</label>
       <input class="lab-input" type="number" id="labFastingGlucose" placeholder="—" min="50" max="600">
@@ -483,6 +493,12 @@
       <label>Kreatinin</label>
       <input class="lab-input" type="number" id="labCreatinine" placeholder="—" min="0.3" max="15" step="0.1">
       <span class="lab-unit">mg/dL</span>
+    </div>
+    <div class="lab-field">
+      <label>ACR (Albumin-Creatinine Ratio) 🫘</label>
+      <input class="lab-input" type="number" id="labACR" placeholder="—" min="0" max="3000" step="0.1">
+      <span class="lab-unit">mg/g</span>
+      <div style="font-size:0.68rem;color:var(--text-tertiary);margin-top:4px;">💡 Normal: <30 mg/g | Microalbuminuria: 30-300 | Proteinuria: >300</div>
     </div>
     <div class="field-group" style="margin-top:14px;">
       <label class="field-label">Tanggal Pemeriksaan Lab</label>
@@ -589,7 +605,41 @@
     document.getElementById('dateOfBirth').max = new Date().toISOString().split('T')[0];
     document.getElementById('labDate').max    = new Date().toISOString().split('T')[0];
     loadProfile();
+    setupCheckboxHandlers();
   }).catch(() => {});
+
+  // ── Checkbox Toggle Handlers (untuk memastikan checkboxes berfungsi) ────
+  function setupCheckboxHandlers() {
+    // Step 2: Family History checkboxes
+    const familyCheckboxes = ['fhHeart', 'fhDiabetes', 'fhHypertension', 'fhStroke'];
+    familyCheckboxes.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('change', function() {
+          this.parentElement.parentElement.classList.toggle('checked', this.checked);
+          // Auto-save pada step 2
+          if (currentStep === 2) saveCurrentStep();
+        });
+        // Initial state
+        if (el.checked) el.parentElement.parentElement.classList.add('checked');
+      }
+    });
+
+    // Step 3: Known Conditions checkboxes
+    const conditionCheckboxes = ['condHypertension', 'condDiabetes', 'condHighChol', 'condHeartAttack', 'condOnBPMeds'];
+    conditionCheckboxes.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('change', function() {
+          this.parentElement.parentElement.classList.toggle('checked', this.checked);
+          // Auto-save pada step 3
+          if (currentStep === 3) saveCurrentStep();
+        });
+        // Initial state
+        if (el.checked) el.parentElement.parentElement.classList.add('checked');
+      }
+    });
+  }
 
   async function loadProfile() {
     const p = await VDB.getHealthProfile(userId);
@@ -641,6 +691,7 @@
     if (lab.dbp)             document.getElementById('labDBP').value             = lab.dbp;
     if (lab.uricAcid)        document.getElementById('labUricAcid').value        = lab.uricAcid;
     if (lab.creatinine)      document.getElementById('labCreatinine').value      = lab.creatinine;
+    if (lab.acr)             document.getElementById('labACR').value             = lab.acr; // BATCH 16
     if (lab.labDate)         document.getElementById('labDate').value            = lab.labDate;
 
     // Mental Health
@@ -786,6 +837,35 @@
   async function saveLab() {
     if (!userId) return;
     const num = id => { const v = parseFloat(document.getElementById(id).value); return isNaN(v) ? null : v; };
+    const creatinine = num('labCreatinine');
+    const acr = num('labACR');
+
+    // Calculate eGFR using MDRD formula (simplified for adults)
+    let eGFR = null;
+    if (creatinine && creatinine > 0) {
+      // eGFR = 175 × (Scr)^-1.154 × (Age)^-0.203 (simplified, assuming average age)
+      // For simplicity in this version, use: eGFR ≈ 186 / (Creatinine^1.154)
+      eGFR = Math.round(186 / Math.pow(creatinine, 1.154));
+    }
+
+    // Determine KDIGO stage from eGFR + ACR
+    let kdigoStage = null;
+    if (eGFR !== null && acr !== null) {
+      // KDIGO: G (eGFR) + A (ACR)
+      let gStage = 'G1'; // eGFR ≥90
+      if (eGFR < 90 && eGFR >= 60) gStage = 'G2';
+      else if (eGFR < 60 && eGFR >= 45) gStage = 'G3a';
+      else if (eGFR < 45 && eGFR >= 30) gStage = 'G3b';
+      else if (eGFR < 30 && eGFR >= 15) gStage = 'G4';
+      else if (eGFR < 15) gStage = 'G5';
+
+      let aStage = 'A1'; // ACR <30
+      if (acr >= 30 && acr < 300) aStage = 'A2';
+      else if (acr >= 300) aStage = 'A3';
+
+      kdigoStage = gStage + '-' + aStage;
+    }
+
     await VDB.saveLabResults(userId, {
       fastingGlucose:   num('labFastingGlucose'),
       hbA1c:            num('labHbA1c'),
@@ -796,7 +876,10 @@
       sbp:              num('labSBP'),
       dbp:              num('labDBP'),
       uricAcid:         num('labUricAcid'),
-      creatinine:       num('labCreatinine'),
+      creatinine:       creatinine,
+      acr:              acr,  // NEW: Albumin-Creatinine Ratio (BATCH 16)
+      eGFR:             eGFR, // NEW: Auto-calculated (BATCH 16)
+      kdigoStage:       kdigoStage, // NEW: Auto-derived KDIGO stage (BATCH 16)
       labDate:          document.getElementById('labDate').value || null,
     });
     flashSave(4);

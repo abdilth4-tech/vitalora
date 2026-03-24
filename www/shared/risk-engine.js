@@ -39,6 +39,7 @@ window.RiskEngine = (() => {
     hypertension: ['Hipertensi', 'Tekanan Darah Tinggi'],
     stroke:       ['Stroke', 'Hipertensi', 'Kolesterol'],
     sleep:        ['Insomnia', 'Gangguan Tidur', 'Stres'],
+    kidney:       ['Ginjal', 'Penyakit Ginjal', 'Albuminuria', 'Diabetes Melitus'], // BATCH 16
   };
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -430,6 +431,7 @@ window.RiskEngine = (() => {
       hypertension: hypertensionScore(profile),
       stroke:       strokeScore(profile),
       sleep:        sleepScore(profile),
+      kidney:       kidneyScore(profile), // BATCH 16: CKD/Albuminuria Screening
     };
 
     // If ML models loaded: blend ML score (60%) + rule-based (40%)
@@ -604,6 +606,132 @@ window.RiskEngine = (() => {
     return { mode: loaded > 0 ? 'ml-proxy' : 'rule-based', loaded, total: names.length, version };
   }
 
+  // ─── 7. KIDNEY DISEASE (CKD) RISK SCORE ──────────────────────────────────────
+  // BATCH 16: Albuminuria & CKD Screening
+  // Based on KDIGO 2012 CKD Classification (Papers #1-6)
+  function kidneyScore(profile) {
+    const factors = [];
+    let score = 0;
+
+    const acr = labVal(profile, 'acr'); // Albumin-Creatinine Ratio (mg/g)
+    const creatinine = labVal(profile, 'creatinine'); // Serum Creatinine (mg/dL)
+    const eGFR = labVal(profile, 'eGFR'); // Already calculated in health-profile.js
+    const age = getAge(profile);
+    const isMale = profile.gender !== 'female';
+
+    // Known conditions
+    const kc = profile.knownConditions || {};
+    const fh = profile.familyHistory || {};
+
+    // Baseline: No kidney disease
+    if (!acr && !creatinine && !eGFR) {
+      score = 5;
+      factors.push('Belum ada data lab ginjal');
+      return { score, category: RISK_CATEGORY(score), factors };
+    }
+
+    // ─── STEP 1: ACR Classification (Albuminuria Status) ─────────────────────────
+    if (acr !== null) {
+      if (acr < 30) {
+        score += 5;
+        factors.push('ACR normal (<30 mg/g) — tidak ada albuminuria');
+      } else if (acr < 300) {
+        score += 35;
+        factors.push('⚠️ Microalbuminuria (ACR ' + acr + ' mg/g) — tanda awal kerusakan ginjal');
+        // Microalbuminuria adalah predictor awal CKD progression
+        if (kc.diabetes) { score += 15; factors.push('+ Diabetes (high risk untuk DN)'); }
+        if (kc.hypertension) { score += 10; factors.push('+ Hipertensi (merusak pembuluh glomerulus)'); }
+      } else {
+        score += 60;
+        factors.push('⚠️ Proteinuria (ACR ' + acr + ' mg/g) — kemungkinan kerusakan ginjal signifikan');
+        if (kc.diabetes) { score += 15; factors.push('+ Diabetic nephropathy likely'); }
+      }
+    }
+
+    // ─── STEP 2: eGFR Classification (KDIGO Stage) ──────────────────────────────
+    if (eGFR !== null) {
+      if (eGFR >= 90) {
+        // G1: Normal function
+        if (acr && acr >= 30) {
+          score += 10; factors.push('G1 + albuminuria = early CKD');
+        }
+      } else if (eGFR >= 60) {
+        // G2: Mildly decreased (but normal is still ≥60)
+        score += 15; factors.push('G2: eGFR ' + eGFR + ' (fungsi ringan berkurang)');
+      } else if (eGFR >= 45) {
+        // G3a: Moderately decreased
+        score += 30; factors.push('G3a: eGFR ' + eGFR + ' (fungsi sedang berkurang — MONITOR KETAT)');
+        factors.push('→ Recommend: see nephrologist');
+      } else if (eGFR >= 30) {
+        // G3b: Moderately severely decreased
+        score += 45; factors.push('G3b: eGFR ' + eGFR + ' (fungsi sedang berkurang lanjut — URGENT REFERRAL)');
+        factors.push('→ MUST see nephrologist soon');
+      } else if (eGFR >= 15) {
+        // G4: Severely decreased
+        score += 70; factors.push('G4: eGFR ' + eGFR + ' (fungsi berat berkurang — DIALYSIS PREPARATION)');
+        factors.push('→ Start preparation for dialysis/transplant');
+      } else {
+        // G5: Kidney failure
+        score += 95; factors.push('G5: eGFR ' + eGFR + ' (GAGAL GINJAL — requires dialysis/transplant)');
+        factors.push('→ Emergency referral to nephrologist');
+      }
+    }
+
+    // ─── STEP 3: Risk Multipliers ────────────────────────────────────────────────
+    // Diabetes: multiplier 2.0-3.0 (primary cause of CKD)
+    if (kc.diabetes || labVal(profile, 'hbA1c') > 7) {
+      const mult = kc.diabetes ? 2.5 : 1.8;
+      score = Math.min(95, score * mult);
+      factors.push('Diabetes × ' + mult.toFixed(1) + ' (utama penyebab CKD)');
+    }
+
+    // Hypertension: multiplier 1.8-2.0 (damages glomerular vessels)
+    if (kc.hypertension || (labVal(profile, 'sbp') > 140 || labVal(profile, 'dbp') > 90)) {
+      score = Math.min(95, score * 1.8);
+      factors.push('Hipertensi × 1.8 (merusak pembuluh glomerulus)');
+    }
+
+    // Obesity: multiplier 1.3-1.5
+    const bmi = getBMI(profile);
+    if (bmi !== null && bmi >= 30) {
+      score = Math.min(95, score * 1.3);
+      factors.push('Obesitas × 1.3 (beban ginjal meningkat)');
+    }
+
+    // Family history of CKD: multiplier 1.2-1.4
+    if (fh.kidney) { // Assume familyHistory.kidney exists for future use
+      score = Math.min(95, score * 1.3);
+      factors.push('Riwayat keluarga CKD × 1.3');
+    }
+
+    // Age >60: slightly increased risk
+    if (age && age >= 60) {
+      score = Math.min(95, score + 8);
+      factors.push('Usia >60 (penurunan alami fungsi ginjal) +8');
+    }
+
+    // ─── STEP 4: NSAID Exposure (if available from future tracking)
+    // TODO: Track NSAID frequency when medication tracking added in Batch 24
+    // if (profile.nonsteroidal intake is high) { score += 15; }
+
+    return {
+      score: clamp(score, 0, 100),
+      category: RISK_CATEGORY(score),
+      factors,
+      kdigo_stage: eGFR ? (
+        eGFR >= 90 ? 'G1' :
+        eGFR >= 60 ? 'G2' :
+        eGFR >= 45 ? 'G3a' :
+        eGFR >= 30 ? 'G3b' :
+        eGFR >= 15 ? 'G4' : 'G5'
+      ) : null,
+      acr_stage: acr ? (
+        acr < 30 ? 'A1' :
+        acr < 300 ? 'A2' : 'A3'
+      ) : null,
+    };
+  }
+
   // ─── Personalization Adjustments ──────────────────────────────────────────
   // Calculates risk multiplier based on mental health, diet quality, and SDOH
   function getPersonalizationMultiplier(profile) {
@@ -677,6 +805,7 @@ window.RiskEngine = (() => {
     hypertensionScore,
     strokeScore,
     sleepScore,
+    kidneyScore, // BATCH 16: CKD/Albuminuria Screening
     getTopConditions,
     loadModels,
     getPersonalizationMultiplier,
