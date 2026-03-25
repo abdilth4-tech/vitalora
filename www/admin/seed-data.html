@@ -61,6 +61,10 @@
     👥 Seed Akun Tim Siswa + Super Admin Mentor
   </button>
 
+  <button class="seed-btn primary" id="seedGeminiKeysBtn" onclick="seedGeminiApiKeys()" style="background:linear-gradient(135deg,#6C63FF,#A78BFA);">
+    🔑 Seed 10 Gemini API Keys
+  </button>
+
   <button class="seed-btn secondary" onclick="clearLog()">
     Clear Log
   </button>
@@ -1512,6 +1516,148 @@
       console.error(e);
     } finally {
       btn.disabled = false;
+    }
+  }
+
+  // ===== SEED GEMINI API KEYS =====
+  async function seedGeminiApiKeys() {
+    const btn = document.getElementById('seedGeminiKeysBtn');
+    btn.disabled = true;
+    btn.textContent = 'Seeding API keys...';
+
+    if (!VFirebase.auth.currentUser) {
+      await VFirebase.auth.signInAnonymously();
+    }
+
+    // 10 dummy API keys for testing
+    const apiKeys = [
+      {
+        id: 'gemini-key-01',
+        key: 'AIzaSyD_fake_key_01_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 1,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      },
+      {
+        id: 'gemini-key-02',
+        key: 'AIzaSyD_fake_key_02_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 2,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      },
+      {
+        id: 'gemini-key-03',
+        key: 'AIzaSyD_fake_key_03_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 3,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      },
+      {
+        id: 'gemini-key-04',
+        key: 'AIzaSyD_fake_key_04_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 4,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      },
+      {
+        id: 'gemini-key-05',
+        key: 'AIzaSyD_fake_key_05_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 5,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      },
+      {
+        id: 'gemini-key-06',
+        key: 'AIzaSyD_fake_key_06_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 6,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      },
+      {
+        id: 'gemini-key-07',
+        key: 'AIzaSyD_fake_key_07_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 7,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      },
+      {
+        id: 'gemini-key-08',
+        key: 'AIzaSyD_fake_key_08_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 8,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      },
+      {
+        id: 'gemini-key-09',
+        key: 'AIzaSyD_fake_key_09_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 9,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      },
+      {
+        id: 'gemini-key-10',
+        key: 'AIzaSyD_fake_key_10_for_testing_only_do_not_use_in_production',
+        limit: 10000,
+        usage: 0,
+        active: true,
+        order: 10,
+        lastUsed: null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }
+    ];
+
+    try {
+      log('Memulai seed 10 Gemini API keys...', 'info');
+      log('', 'info');
+
+      const batch = VFirebase.db.batch();
+
+      for (const keyData of apiKeys) {
+        log('Menambah: ' + keyData.id, 'info');
+        const docRef = VFirebase.db.collection('gemini-api-keys').doc(keyData.id);
+        batch.set(docRef, keyData);
+      }
+
+      await batch.commit();
+
+      log('', 'info');
+      log('✅ Berhasil menambah 10 Gemini API keys!', 'success');
+      log('Lihat admin/gemini-keys.html untuk manage keys', 'info');
+      log('⚠️ Ganti API key dengan yang asli setelah testing!', 'warn');
+
+    } catch (e) {
+      log('Error: ' + e.message, 'error');
+      console.error(e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔑 Seed 10 Gemini API Keys';
     }
   }
 </script>

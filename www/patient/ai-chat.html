@@ -180,10 +180,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="../shared/firebase.js"></script>
 <script src="../shared/vdb.js"></script>
+<script src="../shared/gemini-key-manager.js"></script>
 <script>
   // ── Konfigurasi ─────────────────────────────────────────────────────────
-  // Isi dengan API key dari https://aistudio.google.com/app/apikey (gratis)
-  let GEMINI_KEY = 'YOUR_GEMINI_API_KEY';
+  // API key dari Gemini Key Manager (round-robin rotation dengan usage tracking)
+  let GEMINI_KEY = null; // akan diisi saat init
+  let CURRENT_KEY_ID = null;
 
   const SYSTEM_PROMPT = `Kamu adalah Vitalora AI, asisten kesehatan yang ramah dan berpengetahuan.
 Selalu jawab dalam Bahasa Indonesia yang mudah dipahami oleh masyarakat umum.
@@ -204,15 +206,28 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
       userInitials = (profile.name || 'Pengguna').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
     } catch(e) { /* guest mode ok */ }
 
-    // Load Gemini key from Firestore
+    // Load Gemini key from Key Manager (round-robin rotation)
     try {
-      const appConfig = await VDB.getAppConfig();
-      if (appConfig.geminiApiKey && appConfig.geminiApiKey.startsWith('AIza')) {
-        GEMINI_KEY = appConfig.geminiApiKey;
-      }
-    } catch(e) { /* gunakan default/placeholder */ }
+      // Wait for geminiKeyManager to initialize (loads keys from Firestore)
+      if (typeof geminiKeyManager !== 'undefined' && geminiKeyManager) {
+        const maxWait = 5000;
+        const startTime = Date.now();
+        while (geminiKeyManager.keys.length === 0 && Date.now() - startTime < maxWait) {
+          await new Promise(r => setTimeout(r, 100));
+        }
 
-    if (GEMINI_KEY === 'YOUR_GEMINI_API_KEY') {
+        if (geminiKeyManager.keys.length > 0) {
+          GEMINI_KEY = geminiKeyManager.getNextKey();
+          // Store the key ID for usage tracking after API call
+          const keyWithId = geminiKeyManager.keys.find(k => k.key === GEMINI_KEY);
+          CURRENT_KEY_ID = keyWithId ? keyWithId.id : null;
+        }
+      }
+    } catch(e) {
+      console.warn('Error loading Gemini key:', e);
+    }
+
+    if (!GEMINI_KEY || GEMINI_KEY === 'YOUR_GEMINI_API_KEY') {
       showNoKeyBanner();
       return;
     }
@@ -314,8 +329,19 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
       throw new Error(err.error?.message || `HTTP ${res.status}`);
     }
     const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text
       || 'Maaf, saya tidak dapat memproses pertanyaan tersebut saat ini.';
+
+    // Track API usage
+    if (CURRENT_KEY_ID && typeof geminiKeyManager !== 'undefined' && geminiKeyManager) {
+      try {
+        await geminiKeyManager.recordUsage(CURRENT_KEY_ID);
+      } catch (e) {
+        console.warn('Failed to record API usage:', e);
+      }
+    }
+
+    return reply;
   }
 
   // ── Render helpers ───────────────────────────────────────────────────────
