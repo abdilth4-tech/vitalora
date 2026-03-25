@@ -17,104 +17,178 @@
       background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
     }
 
-    .header-section {
-      background: linear-gradient(135deg, var(--primary-herbal) 0%, #3ED77F 100%);
-      color: #fff;
-      padding: 60px 20px;
-      text-align: center;
-      box-shadow: 0 8px 32px rgba(39, 174, 96, 0.3);
-    }
-
-    .header-section h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin: 0 0 12px;
-    }
-
-    .header-section p {
-      font-size: 1rem;
-      opacity: 0.95;
-      margin: 0;
-    }
-
-    .content-wrapper {
-      max-width: 1200px;
+    .mobile-frame {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 480px;
       margin: 0 auto;
-      padding: 40px 20px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
     }
 
-    .protocol-section {
-      background: #fff;
-      border-radius: 16px;
-      padding: 32px;
-      margin-bottom: 24px;
-      border-left: 6px solid var(--primary-herbal);
-      box-shadow: 0 4px 16px rgba(39, 174, 96, 0.1);
-    }
-
-    .protocol-section h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--primary-herbal);
-      margin: 0 0 20px;
+    .app-header {
+      background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%);
+      color: #fff;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(13, 43, 26, 0.2);
     }
 
-    .protocol-section h3 {
-      font-size: 1.1rem;
+    .app-header .header-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      flex: 1;
+      text-align: center;
+    }
+
+    .app-header .neu-icon-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+    }
+
+    .app-header .neu-icon-btn:active {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .content-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .content-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .content-scroll::-webkit-scrollbar-thumb {
+      background: rgba(39, 174, 96, 0.3);
+      border-radius: 3px;
+    }
+
+    .neu-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(39, 174, 96, 0.1);
+      border-left: 6px solid var(--primary-herbal);
+    }
+
+    .neu-card h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary-herbal);
+      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .neu-card h3 {
+      font-size: 0.85rem;
       font-weight: 700;
       color: var(--text-primary);
-      margin: 24px 0 12px;
+      margin: 16px 0 8px;
+      text-transform: uppercase;
     }
 
-    .protocol-section p, .protocol-section li {
-      font-size: 0.95rem;
-      line-height: 1.7;
+    .neu-card p, .neu-card li {
+      font-size: 0.8rem;
+      line-height: 1.6;
       color: var(--text-secondary);
-      margin-bottom: 12px;
-    }
-
-    .protocol-section ul {
-      margin-left: 20px;
-    }
-
-    .protocol-section li {
       margin-bottom: 8px;
+    }
+
+    .neu-card ul {
+      margin-left: 16px;
+      padding: 0;
+    }
+
+    .neu-card li {
+      margin-bottom: 6px;
     }
 
     .herbal-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin: 20px 0;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 12px 0;
     }
 
     .herbal-item {
       background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(61, 215, 127, 0.05));
       border: 2px solid rgba(39, 174, 96, 0.2);
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 0.95rem;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 0.75rem;
       font-weight: 600;
       color: var(--primary-herbal);
       text-align: center;
     }
 
-    .prisma-checklist {
-      background: #f9f9f9;
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(61, 215, 127, 0.05));
+      border: 2px solid rgba(39, 174, 96, 0.2);
       border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary-herbal);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .search-strategy {
+      background: #f9f9f9;
+      border-left: 4px solid var(--primary-herbal);
+      padding: 12px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: var(--primary-herbal);
+      overflow-x: auto;
+      margin: 12px 0;
+      line-height: 1.5;
     }
 
     .checklist-item {
       display: flex;
-      gap: 12px;
-      padding: 12px;
-      margin-bottom: 8px;
-      background: #fff;
+      gap: 8px;
+      padding: 10px;
+      margin-bottom: 6px;
+      background: #f9f9f9;
       border-radius: 8px;
       border-left: 4px solid var(--primary-herbal);
       align-items: flex-start;
@@ -122,328 +196,185 @@
 
     .checklist-item ion-icon {
       color: #27AE60;
-      font-size: 1.2rem;
-      margin-top: 2px;
+      font-size: 1rem;
+      margin-top: 1px;
       flex-shrink: 0;
     }
 
     .checklist-item span {
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       color: var(--text-secondary);
       line-height: 1.5;
     }
 
-    .research-questions {
-      background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(61, 215, 127, 0.02));
-      border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0;
+    [data-animate] {
+      opacity: 0;
+      animation: slideUp 0.5s ease forwards;
     }
 
-    .question-item {
-      padding: 12px;
-      margin-bottom: 12px;
-      background: #fff;
-      border-radius: 8px;
-      border-left: 4px solid var(--primary-herbal);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: var(--text-secondary);
-    }
-
-    .search-strategy {
-      background: #fff;
-      border: 2px solid rgba(39, 174, 96, 0.2);
-      border-radius: 12px;
-      padding: 16px;
-      margin: 20px 0;
-      font-family: 'Courier New', monospace;
-      font-size: 0.85rem;
-      color: var(--primary-herbal);
-      overflow-x: auto;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin: 20px 0;
-    }
-
-    .stat-card {
-      background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(61, 215, 127, 0.05));
-      border: 2px solid rgba(39, 174, 96, 0.2);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: var(--primary-herbal);
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .stat-label {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      font-weight: 600;
-    }
-
-    footer {
-      background: #fff;
-      border-top: 1px solid rgba(39, 174, 96, 0.1);
-      padding: 40px 20px;
-      text-align: center;
-      color: var(--text-tertiary);
-      margin-top: 60px;
-    }
-
-    @media (max-width: 768px) {
-      .header-section h1 {
-        font-size: 1.8rem;
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
       }
-
-      .protocol-section {
-        padding: 20px;
-      }
-
-      .herbal-list {
-        grid-template-columns: repeat(2, 1fr);
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
-    /* BREADCRUMBS */
-    .breadcrumb-nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      padding: 12px 40px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #6B7B8D;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      z-index: 1000;
-    }
-
-    .breadcrumb-nav a {
-      color: var(--primary-herbal);
-      text-decoration: none;
-    }
-
-    .breadcrumb-nav a:hover {
-      text-decoration: underline;
-    }
-
-    .breadcrumb-nav span {
-      opacity: 0.5;
-    }
-
-    body {
-      padding-top: 50px;
+    .footer-spacer {
+      height: 40px;
     }
   </style>
 </head>
 <body>
 
-<nav class="breadcrumb-nav">
-  <a href="../../index.html">Vitalora</a>
-  <span>/</span>
-  <a href="../slr-portal/index.html">Evidence Portal</a>
-  <span>/</span>
-  <a href="index.html">Material Research</a>
-  <span>/</span>
-  Herbal Protocol
-</nav>
+<div class="mobile-frame page-enter">
 
-<div class="header-section">
-  <h1>🌿 Herbal SLR Protocol Document</h1>
-  <p>Systematic Literature Review Protocol for Herbal Medicine in Metabolic Disease</p>
-</div>
+  <header class="app-header">
+    <button class="neu-icon-btn" onclick="window.history.back()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <div class="header-title">Herbal Protocol</div>
+    <div style="width:42px"></div>
+  </header>
 
-<div class="content-wrapper">
+  <div class="content-scroll">
 
-  <div class="protocol-section">
-    <h2><ion-icon name="leaf-outline"></ion-icon>Project Overview</h2>
-    <p><strong>Project Name:</strong> Evidence-Based Herbal & Traditional Medicine Review for Metabolic Disease Management</p>
-    <p><strong>Objective:</strong> Systematic evaluation of herbal remedies, traditional formulas, and phytochemical compounds for screening, prevention, and management of 5 metabolic diseases</p>
-    <p><strong>Target Application:</strong> Vitalora herbal recommendation engine with evidence transparency</p>
-    <p><strong>Review Type:</strong> Narrative systematic review with GRADE evidence quality assessment</p>
-    <p><strong>PRISMA 2020 Compliance:</strong> Yes — Full 27-item checklist applied to herbal context</p>
-  </div>
-
-  <div class="protocol-section">
-    <h2><ion-icon name="help-circle-outline"></ion-icon>Research Questions</h2>
-    <div class="research-questions">
-      <div class="question-item"><strong>Q1:</strong> What herbal remedies and traditional formulas have evidence-based efficacy for dyslipidemia, hypertension, NAFLD, metabolic syndrome, and type 2 diabetes?</div>
-      <div class="question-item"><strong>Q2:</strong> Which specific phytochemical compounds (curcumin, EGCG, allicin, etc.) show clinical benefit for metabolic disease outcomes?</div>
-      <div class="question-item"><strong>Q3:</strong> What are the optimal dosages, durations, and formulations based on RCT evidence?</div>
-      <div class="question-item"><strong>Q4:</strong> What is the quality of evidence (GRADE A-D) supporting herbal recommendations?</div>
-      <div class="question-item"><strong>Q5:</strong> What are the safety profiles, contraindications, and drug interactions?</div>
-      <div class="question-item"><strong>Q6:</strong> How do herbal remedies compare to pharmaceutical interventions in efficacy?</div>
-      <div class="question-item"><strong>Q7:</strong> What mechanisms of action are validated in human clinical trials?</div>
-      <div class="question-item"><strong>Q8:</strong> What are the research gaps for herbal medicine in metabolic disease management?</div>
-    </div>
-  </div>
-
-  <div class="protocol-section">
-    <h2><ion-icon name="checkmark-circle-outline"></ion-icon>Inclusion & Exclusion Criteria</h2>
-    <h3>Inclusion Criteria</h3>
-    <ul>
-      <li><strong>Study Design:</strong> Randomized controlled trials, controlled clinical trials, cohort studies, systematic reviews, meta-analyses</li>
-      <li><strong>Intervention:</strong> Herbal preparations, plant extracts, isolated phytochemical compounds</li>
-      <li><strong>Participant Population:</strong> Adults (≥18 years) with metabolic disease or at-risk populations</li>
-      <li><strong>Outcomes:</strong> Biomarker changes (lipids, glucose, liver enzymes), clinical endpoints, safety</li>
-      <li><strong>Publication Status:</strong> Peer-reviewed journal articles, published clinical guidelines</li>
-      <li><strong>Language:</strong> English-language publications</li>
-      <li><strong>Time Period:</strong> 2010-2026 (emphasis on recent RCT evidence)</li>
-    </ul>
-
-    <h3>Exclusion Criteria</h3>
-    <ul>
-      <li><strong>Study Design:</strong> In vitro studies only, animal studies without human translation, case reports, opinions</li>
-      <li><strong>Intervention:</strong> Untested proprietary formulas without mechanism validation</li>
-      <li><strong>Population:</strong> Pediatric populations (<18 years), pregnancy-specific formulas</li>
-      <li><strong>Outcomes:</strong> Non-standardized or unvalidated biomarkers</li>
-      <li><strong>Publication:</strong> Gray literature without peer review</li>
-    </ul>
-
-    <h3>Primary Herbals Included (50+ papers)</h3>
-    <div class="herbal-list">
-      <div class="herbal-item">1. Curcumin/Turmeric</div>
-      <div class="herbal-item">2. Green Tea/EGCG</div>
-      <div class="herbal-item">3. Garlic (Allium sativum)</div>
-      <div class="herbal-item">4. Ginger (Zingiber officinale)</div>
-      <div class="herbal-item">5. Cinnamon (C. cassia/verum)</div>
-      <div class="herbal-item">6. Olive Leaf Extract</div>
-      <div class="herbal-item">7. Traditional Jamu Formulas</div>
-    </div>
-  </div>
-
-  <div class="protocol-section">
-    <h2><ion-icon name="search-outline"></ion-icon>Search Strategy</h2>
-    <h3>Information Sources</h3>
-    <ol>
-      <li><strong>PubMed/MEDLINE</strong> — Primary medical literature database</li>
-      <li><strong>Cochrane Library</strong> — Systematic reviews and RCTs</li>
-      <li><strong>Consensus.app</strong> — AI-powered research discovery</li>
-      <li><strong>Journal of Ethnopharmacology</strong> — Specialized herbal research</li>
-      <li><strong>Clinical Guidelines</strong> — WHO, ESC, ADA (Herbal sections)</li>
-    </ol>
-
-    <h3>Example Search Strategy</h3>
-    <div class="search-strategy">
-(herbal OR phytochemical* OR plant extract* OR traditional medicine)
-AND
-(dyslipidemia OR hypercholesterol* OR hypertension OR NAFLD OR "metabolic syndrome" OR "type 2 diabetes")
-AND
-(RCT OR "randomized controlled trial" OR clinical trial OR efficacy OR outcome)
+    <div class="neu-card" data-animate="up" data-delay="0">
+      <h2><ion-icon name="leaf-outline"></ion-icon> Project Overview</h2>
+      <p><strong>Project:</strong> Herbal & Traditional Medicine Review untuk Metabolic Disease</p>
+      <p><strong>Tujuan:</strong> Systematic evaluation herbal remedies dengan GRADE quality assessment</p>
+      <p><strong>Tipe:</strong> Narrative systematic review, PRISMA 2020 Compliant</p>
     </div>
 
-    <h3>Search Parameters</h3>
-    <ul>
-      <li><strong>Time Period:</strong> 2010-2026</li>
-      <li><strong>Language:</strong> English</li>
-      <li><strong>Focus:</strong> Standardized extracts and human clinical trials</li>
-    </ul>
-  </div>
+    <div class="neu-card" data-animate="up" data-delay="100">
+      <h2><ion-icon name="help-circle-outline"></ion-icon> Research Questions</h2>
+      <h3>Q1. Efficacy</h3>
+      <p>Herbal mana yang punya evidence untuk dyslipidemia, hypertension, NAFLD, MetS, T2DM?</p>
+      <h3>Q2. Compounds</h3>
+      <p>Phytochemical compounds mana (curcumin, EGCG, allicin) yang terbukti klinis?</p>
+      <h3>Q3. Dosage</h3>
+      <p>Optimal dosages & formulations berdasarkan RCT evidence?</p>
+      <h3>Q4-8. Safety & Gaps</h3>
+      <p>Quality of evidence, safety, mechanisms, dan research gaps?</p>
+    </div>
 
-  <div class="protocol-section">
-    <h2><ion-icon name="filter-outline"></ion-icon>Study Selection Process</h2>
-    <h3>Two-Stage Screening</h3>
-    <p><strong>Stage 1 — Title & Abstract Screening:</strong> Automated and manual screening for herbal intervention + metabolic disease keywords. Priority given to RCTs and meta-analyses.</p>
-    <p><strong>Stage 2 — Full-Text Review:</strong> Retrieve full texts to assess against inclusion criteria. Extract study quality using GRADE assessment.</p>
+    <div class="neu-card" data-animate="up" data-delay="200">
+      <h2><ion-icon name="checkmark-circle-outline"></ion-icon> Inclusion Criteria</h2>
+      <h3>Study Design</h3>
+      <p>RCTs, CCTs, cohort, systematic reviews, meta-analyses</p>
+      <h3>Population</h3>
+      <p>Adults ≥18 years dengan atau at-risk metabolic disease</p>
+      <h3>Publication</h3>
+      <p>Peer-reviewed, English, 2010-2026</p>
+      <h3>Primary Herbals (7)</h3>
+      <div class="herbal-list">
+        <div class="herbal-item">Curcumin</div>
+        <div class="herbal-item">Green Tea</div>
+        <div class="herbal-item">Garlic</div>
+        <div class="herbal-item">Ginger</div>
+        <div class="herbal-item">Cinnamon</div>
+        <div class="herbal-item">Olive Leaf</div>
+        <div class="herbal-item">Jamu</div>
+      </div>
+    </div>
 
-    <h3>Quality Control</h3>
-    <ul>
-      <li>90% inter-rater agreement target</li>
-      <li>Systematic documentation of exclusion reasons</li>
-      <li>Focus on standardization of herbal interventions</li>
-    </ul>
-  </div>
+    <div class="neu-card" data-animate="up" data-delay="300">
+      <h2><ion-icon name="search-outline"></ion-icon> Search Strategy</h2>
+      <h3>Databases</h3>
+      <p>PubMed, Cochrane, Consensus.app, Journal of Ethnopharmacology, WHO/ESC/ADA Guidelines</p>
+      <h3>Search Terms</h3>
+      <div class="search-strategy">(herbal OR phytochemical* OR plant extract*)<br/>AND<br/>(dyslipidemia OR hypertension OR NAFLD OR metabolic syndrome OR diabetes)<br/>AND<br/>(RCT OR clinical trial OR efficacy)</div>
+      <h3>Filters</h3>
+      <p>2010-2026, English, Human studies, Standardized extracts</p>
+    </div>
 
-  <div class="protocol-section">
-    <h2><ion-icon name="stats-chart-outline"></ion-icon>Data Extraction Framework</h2>
-    <p>Standardized extraction form with 25+ data elements per study:</p>
-    <ul>
-      <li><strong>Study characteristics:</strong> Author, year, journal, DOI, study design, population size, duration</li>
-      <li><strong>Intervention:</strong> Herbal name (scientific), extract type, active compounds, dosage (mg/day), comparator</li>
-      <li><strong>Outcomes:</strong> Biomarker changes (LDL, HDL, BP, Glucose, ALT), effect sizes, statistical significance</li>
-      <li><strong>Safety:</strong> Adverse events documented, drug-herb interactions, contraindications</li>
-      <li><strong>Evidence Quality:</strong> GRADE rating (A-D), risk of bias assessment</li>
-    </ul>
-  </div>
+    <div class="neu-card" data-animate="up" data-delay="400">
+      <h2><ion-icon name="filter-outline"></ion-icon> Study Selection</h2>
+      <h3>Stage 1: Title & Abstract</h3>
+      <p>Automated + manual screening untuk herbal intervention keywords</p>
+      <h3>Stage 2: Full-Text Review</h3>
+      <p>Retrieve full texts, assess inclusion criteria, extract GRADE quality</p>
+      <h3>Quality Control</h3>
+      <p>90% inter-rater agreement target, dual review 10% abstracts</p>
+    </div>
 
-  <div class="protocol-section">
-    <h2><ion-icon name="shield-checkmark-outline"></ion-icon>GRADE Quality Categories</h2>
-    <ul>
-      <li><strong>Grade A (High):</strong> Multiple RCTs, consistent effects, large sample sizes (highest certainty)</li>
-      <li><strong>Grade B (Moderate):</strong> RCT with limitations OR multiple smaller trials, some inconsistency</li>
-      <li><strong>Grade C (Low):</strong> Few RCTs, small sample sizes, inconsistent results (common for herbal)</li>
-      <li><strong>Grade D (Very Low):</strong> Case series, observational only, high risk of bias</li>
-    </ul>
-  </div>
+    <div class="neu-card" data-animate="up" data-delay="500">
+      <h2><ion-icon name="stats-chart-outline"></ion-icon> Data Extraction</h2>
+      <h3>Core Elements (25+)</h3>
+      <ul>
+        <li>Study characteristics: Author, year, DOI, design, n, duration</li>
+        <li>Intervention: Herbal name, extract type, active compounds, dosage</li>
+        <li>Outcomes: Biomarker changes (LDL, HDL, BP, FPG), effect sizes</li>
+        <li>Safety: Adverse events, drug-herb interactions, contraindications</li>
+        <li>Evidence: GRADE rating (A-D), risk of bias assessment</li>
+      </ul>
+    </div>
 
-  <div class="protocol-section">
-    <h2><ion-icon name="checkmark-done-outline"></ion-icon>PRISMA 2020 Checklist Status</h2>
-    <div class="prisma-checklist">
+    <div class="neu-card" data-animate="up" data-delay="600">
+      <h2><ion-icon name="shield-checkmark-outline"></ion-icon> GRADE Categories</h2>
+      <ul>
+        <li><strong>Grade A (High):</strong> Multiple RCTs, consistent, large n</li>
+        <li><strong>Grade B (Moderate):</strong> RCTs dengan limitations atau multiple smaller trials</li>
+        <li><strong>Grade C (Low):</strong> Few RCTs, small n, inconsistent (common untuk herbal)</li>
+        <li><strong>Grade D (Very Low):</strong> Case series, observational only, high bias</li>
+      </ul>
+    </div>
+
+    <div class="neu-card" data-animate="up" data-delay="700">
+      <h2><ion-icon name="checkmark-done-outline"></ion-icon> PRISMA Compliance</h2>
       <div class="checklist-item">
         <ion-icon name="checkmark-circle"></ion-icon>
-        <span><strong>Title & Abstract:</strong> Identifies study as herbal systematic review with structured summary</span>
+        <span><strong>Title & Abstract:</strong> Systematic review study identified</span>
       </div>
       <div class="checklist-item">
         <ion-icon name="checkmark-circle"></ion-icon>
-        <span><strong>Objectives & Eligibility:</strong> 8 research questions and detailed inclusion/exclusion documented</span>
+        <span><strong>Objectives & Eligibility:</strong> 8 research questions documented</span>
       </div>
       <div class="checklist-item">
         <ion-icon name="checkmark-circle"></ion-icon>
-        <span><strong>Search Strategy:</strong> Full strategy documented across 5 major databases</span>
+        <span><strong>Search Strategy:</strong> Full strategy across 5 databases</span>
       </div>
       <div class="checklist-item">
         <ion-icon name="checkmark-circle"></ion-icon>
-        <span><strong>Selection & Extraction:</strong> 2-stage screening and 25-element extraction framework ready</span>
+        <span><strong>Selection & Extraction:</strong> 2-stage screening + 25-element framework</span>
       </div>
       <div class="checklist-item">
         <ion-icon name="checkmark-circle"></ion-icon>
-        <span><strong>Risk of Bias & Certainty:</strong> GRADE A-D methodology fully integrated</span>
+        <span><strong>Risk of Bias & Certainty:</strong> GRADE A-D methodology</span>
       </div>
     </div>
-    <p style="text-align: center; color: #27AE60; font-weight: 700; margin-top: 16px;">✅ PRISMA-2020 Compliant Protocol for Herbal SLR</p>
-  </div>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-number">50+</div>
-      <div class="stat-label">Herbal Papers</div>
+    <div class="neu-card" data-animate="up" data-delay="800">
+      <h2><ion-icon name="bar-chart-outline"></ion-icon> Key Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Papers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">7</div>
+          <div class="stat-label">Herbals</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">DOI Verified</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">GRADE B-C</div>
+          <div class="stat-label">Target</div>
+        </div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-number">7</div>
-      <div class="stat-label">Herbal Categories</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">100%</div>
-      <div class="stat-label">DOI Verified</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number">GRADE B-C</div>
-      <div class="stat-label">Target Quality</div>
-    </div>
+
+    <div class="footer-spacer"></div>
+
   </div>
 
 </div>
 
-<footer>
-  <p>Vitalora Herbal Medicine SLR Protocol — PRISMA-2020 Compliant | Evidence Documentation</p>
-  <p><a href="index.html" style="color: var(--primary-herbal); text-decoration: none;">← Back to Evidence Portal</a></p>
-</footer>
-
+<script src="../../shared/app.js"></script>
 </body>
 </html>

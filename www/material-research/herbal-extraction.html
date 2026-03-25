@@ -17,150 +17,161 @@
       background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
     }
 
-    .header-section {
-      background: linear-gradient(135deg, var(--primary-herbal) 0%, #3ED77F 100%);
-      color: #fff;
-      padding: 60px 20px;
-      text-align: center;
-      box-shadow: 0 8px 32px rgba(39, 174, 96, 0.3);
-    }
-
-    .header-section h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      margin: 0 0 12px;
-    }
-
-    .header-section p {
-      font-size: 1rem;
-      opacity: 0.95;
-      margin: 0;
-    }
-
-    .content-wrapper {
-      max-width: 1400px;
+    .mobile-frame {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 480px;
       margin: 0 auto;
-      padding: 40px 20px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
+    }
+
+    .app-header {
+      background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%);
+      color: #fff;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(13, 43, 26, 0.2);
+    }
+
+    .app-header .header-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      flex: 1;
+      text-align: center;
+    }
+
+    .app-header .neu-icon-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+    }
+
+    .app-header .neu-icon-btn:active {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .content-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .content-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .content-scroll::-webkit-scrollbar-thumb {
+      background: rgba(39, 174, 96, 0.3);
+      border-radius: 3px;
     }
 
     .filter-bar {
       background: #fff;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 16px rgba(39, 174, 96, 0.1);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(39, 174, 96, 0.1);
       display: flex;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
+      gap: 8px;
+      flex-direction: column;
     }
 
     .search-input {
-      flex: 1;
-      min-width: 250px;
-      padding: 12px 20px;
-      border-radius: 12px;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
       border: 2px solid rgba(39, 174, 96, 0.2);
-      font-size: 0.95rem;
+      font-size: 0.8rem;
       outline: none;
-      transition: all 0.3s;
+      transition: all 0.2s;
     }
 
     .search-input:focus {
       border-color: var(--primary-herbal);
-      box-shadow: 0 0 0 4px rgba(39, 174, 96, 0.1);
+      box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
     }
 
     .filter-select {
-      padding: 12px 20px;
-      border-radius: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
       border: 2px solid rgba(39, 174, 96, 0.2);
-      font-size: 0.95rem;
+      font-size: 0.8rem;
       outline: none;
       background: #fff;
       cursor: pointer;
     }
 
-    .table-container {
+    .neu-card {
       background: #fff;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 16px rgba(39, 174, 96, 0.1);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    th {
-      background: rgba(39, 174, 96, 0.05);
+      border-radius: 14px;
       padding: 16px;
-      text-align: left;
-      font-weight: 700;
-      color: var(--primary-herbal);
-      border-bottom: 2px solid rgba(39, 174, 96, 0.1);
-      cursor: pointer;
-    }
-
-    th:hover {
-      background: rgba(39, 174, 96, 0.1);
-    }
-
-    td {
-      padding: 16px;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      color: var(--text-secondary);
-    }
-
-    tr.main-row {
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    tr.main-row:hover {
-      background: rgba(39, 174, 96, 0.02);
-    }
-
-    .expanded-row {
-      display: none;
-      background: #fafafa;
-    }
-
-    .expanded-content {
-      padding: 24px;
-      border-left: 4px solid var(--primary-herbal);
-    }
-
-    .detail-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-
-    .detail-item {
       margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(39, 174, 96, 0.1);
+      border-left: 4px solid var(--primary-herbal);
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .detail-label {
+    .neu-card:active {
+      box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15);
+    }
+
+    .neu-card.expanded {
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.02), rgba(61, 215, 127, 0.01));
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 0.85rem;
       font-weight: 700;
-      color: var(--primary-herbal);
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      margin-bottom: 4px;
+      color: var(--text-primary);
     }
 
-    .detail-value {
-      font-size: 0.95rem;
-      line-height: 1.5;
+    .card-meta {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .card-meta span {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+    }
+
+    .effect-size {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary-herbal);
+      margin-top: 6px;
     }
 
     .badge {
       display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.65rem;
       font-weight: 700;
     }
 
@@ -168,530 +179,326 @@
     .badge-grade-b { background: #FFF3E0; color: #EF6C00; }
     .badge-grade-c { background: #FFEBEE; color: #C62828; }
 
+    .expanded-content {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(39, 174, 96, 0.1);
+    }
+
+    .expanded-content.show {
+      display: block;
+    }
+
+    .detail-item {
+      margin-bottom: 10px;
+    }
+
+    .detail-label {
+      font-weight: 700;
+      color: var(--primary-herbal);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .detail-value {
+      font-size: 0.75rem;
+      line-height: 1.4;
+      color: var(--text-secondary);
+    }
+
     .doi-link {
       color: var(--primary-herbal);
       text-decoration: none;
       font-weight: 600;
     }
 
-    .doi-link:hover {
-      text-decoration: underline;
+    .doi-link:visited {
+      color: var(--primary-herbal-dark);
     }
 
-    footer {
-      background: #fff;
-      border-top: 1px solid rgba(39, 174, 96, 0.1);
-      padding: 40px 20px;
-      text-align: center;
+    .expand-icon {
+      font-size: 0.9rem;
       color: var(--text-tertiary);
-      margin-top: 60px;
+      transition: transform 0.2s;
     }
 
-    @media (max-width: 768px) {
-      .filter-bar {
-        flex-direction: column;
-        align-items: stretch;
+    .expand-icon.open {
+      transform: rotate(180deg);
+    }
+
+    [data-animate] {
+      opacity: 0;
+      animation: slideUp 0.5s ease forwards;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
       }
-      
-      th:nth-child(4), td:nth-child(4),
-      th:nth-child(5), td:nth-child(5) {
-        display: none;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
-    /* BREADCRUMBS */
-    .breadcrumb-nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      padding: 12px 40px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #6B7B8D;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      z-index: 1000;
-    }
-
-    .breadcrumb-nav a {
-      color: var(--primary-herbal);
-      text-decoration: none;
-    }
-
-    .breadcrumb-nav a:hover {
-      text-decoration: underline;
-    }
-
-    .breadcrumb-nav span {
-      opacity: 0.5;
-    }
-
-    body {
-      padding-top: 50px;
+    .footer-spacer {
+      height: 40px;
     }
   </style>
 </head>
 <body>
 
-<nav class="breadcrumb-nav">
-  <a href="../../index.html">Vitalora</a>
-  <span>/</span>
-  <a href="../slr-portal/index.html">Evidence Portal</a>
-  <span>/</span>
-  <a href="index.html">Material Research</a>
-  <span>/</span>
-  Herbal Extraction
-</nav>
+<div class="mobile-frame page-enter">
 
-<div class="header-section">
-  <h1>📋 Herbal Data Extraction</h1>
-  <p>Interactive Evidence Database — 50+ Peer-Reviewed Studies</p>
-</div>
+  <header class="app-header">
+    <button class="neu-icon-btn" onclick="window.history.back()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <div class="header-title">Data Extraction</div>
+    <div style="width:42px"></div>
+  </header>
 
-<div class="content-wrapper">
+  <div class="content-scroll">
 
-  <div class="filter-bar">
-    <input type="text" id="searchInput" class="search-input" placeholder="Cari berdasarkan judul, penulis, atau hasil..." onkeyup="filterTable()">
-    
-    <select id="remedyFilter" class="filter-select" onchange="filterTable()">
-      <option value="all">Semua Herbal</option>
-      <option value="Curcumin">Curcumin / Turmeric</option>
-      <option value="Green Tea">Green Tea / EGCG</option>
-      <option value="Garlic">Garlic (Bawang Putih)</option>
-      <option value="Ginger">Ginger (Jahe)</option>
-      <option value="Cinnamon">Cinnamon (Kayu Manis)</option>
-      <option value="Olive Leaf">Olive Leaf Extract</option>
-      <option value="Traditional">Traditional / Jamu</option>
-    </select>
-  </div>
+    <div class="filter-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Cari herbal atau hasil..." onkeyup="filterTable()">
+      <select id="remedyFilter" class="filter-select" onchange="filterTable()">
+        <option value="all">Semua Herbal</option>
+        <option value="Curcumin">Curcumin</option>
+        <option value="Green Tea">Green Tea</option>
+        <option value="Garlic">Garlic</option>
+        <option value="Ginger">Ginger</option>
+        <option value="Cinnamon">Cinnamon</option>
+      </select>
+    </div>
 
-  <div class="table-container">
-    <table id="herbalTable">
-      <thead>
-        <tr>
-          <th onclick="sortTable(0)">ID <ion-icon name="swap-vertical-outline" style="font-size:0.8rem"></ion-icon></th>
-          <th onclick="sortTable(1)">Herbal <ion-icon name="swap-vertical-outline" style="font-size:0.8rem"></ion-icon></th>
-          <th onclick="sortTable(2)">Tahun <ion-icon name="swap-vertical-outline" style="font-size:0.8rem"></ion-icon></th>
-          <th onclick="sortTable(3)">Journal <ion-icon name="swap-vertical-outline" style="font-size:0.8rem"></ion-icon></th>
-          <th onclick="sortTable(4)">Design <ion-icon name="swap-vertical-outline" style="font-size:0.8rem"></ion-icon></th>
-          <th onclick="sortTable(5)">Grade <ion-icon name="swap-vertical-outline" style="font-size:0.8rem"></ion-icon></th>
-          <th>Effect Size</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-        <!-- CURCUMIN -->
-        <tr class="main-row" onclick="toggleRow('HRB-CUR-001')">
-          <td>CUR-001</td>
-          <td>Curcumin</td>
-          <td>2025</td>
-          <td>Scientific Reports</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-b">Grade B</span></td>
-          <td>FPG ↓12%, HbA1c ↓8%</td>
-        </tr>
-        <tr id="HRB-CUR-001" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Judul Penelitian</div>
-                  <div class="detail-value">Curcumin supplementation improves the clinical outcomes of patients with diabetes and atherosclerotic cardiovascular risk</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Penulis & DOI</div>
-                  <div class="detail-value">Research Team | <a href="https://doi.org/10.1038/s41598-025-xxxxx" target="_blank" class="doi-link">10.1038/s41598-025-xxxxx</a></div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Populasi & Durasi</div>
-                  <div class="detail-value">120 subjects with T2DM | 12 weeks</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Intervensi</div>
-                  <div class="detail-value">Curcumin 1000mg/day (500mg BID) vs placebo</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Mekanisme</div>
-                  <div class="detail-value">Curcumin ↑ AMPK, ↑ insulin sensitivity, ↓ inflammation</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Keamanan</div>
-                  <div class="detail-value">Safe; mild GI upset in 1.7% of subjects</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
+    <!-- CURCUMIN-001 -->
+    <div class="neu-card" data-animate="up" data-delay="0" onclick="toggleExpand(this)">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Curcumin → T2DM & Lipids</div>
+          <div class="card-meta">
+            <span>CUR-001</span>
+            <span>2025</span>
+            <span>Scientific Reports</span>
+            <span class="badge badge-grade-b">Grade B</span>
+          </div>
+          <div class="effect-size">FPG ↓12%, HbA1c ↓8%</div>
+        </div>
+        <ion-icon name="chevron-down-outline" class="expand-icon"></ion-icon>
+      </div>
+      <div class="expanded-content">
+        <div class="detail-item">
+          <div class="detail-label">Judul</div>
+          <div class="detail-value">Curcumin supplementation improves clinical outcomes of patients with diabetes and atherosclerotic cardiovascular risk</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">DOI</div>
+          <div class="detail-value"><a href="https://doi.org/10.1038/s41598-025-xxxxx" target="_blank" class="doi-link">10.1038/s41598-025-xxxxx</a></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Populasi & Durasi</div>
+          <div class="detail-value">120 subjects dengan T2DM | 12 minggu</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Intervensi</div>
+          <div class="detail-value">Curcumin 1000mg/day (500mg BID) vs placebo</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Mekanisme</div>
+          <div class="detail-value">AMPK activation, insulin sensitivity enhancement</div>
+        </div>
+      </div>
+    </div>
 
-        <tr class="main-row" onclick="toggleRow('HRB-CUR-002')">
-          <td>CUR-002</td>
-          <td>Curcumin</td>
-          <td>2024</td>
-          <td>Nutrients</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-b">Grade B</span></td>
-          <td>LDL ↓22%, ApoB ↓19%</td>
-        </tr>
-        <tr id="HRB-CUR-002" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Judul Penelitian</div>
-                  <div class="detail-value">The Effect of Curcumin on Reducing Atherogenic Risks in Obese Patients with Type 2 Diabetes</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">DOI</div>
-                  <div class="detail-value"><a href="https://doi.org/10.3390/nu13xxxxx" target="_blank" class="doi-link">10.3390/nu13xxxxx</a></div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Populasi</div>
-                  <div class="detail-value">90 obese subjects with T2DM</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Temuan Utama</div>
-                  <div class="detail-value">Significant reduction in atherogenic index (-25%) and LDL cholesterol (-22%).</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
+    <!-- CURCUMIN-002 -->
+    <div class="neu-card" data-animate="up" data-delay="100" onclick="toggleExpand(this)">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Curcumin → Dyslipidemia</div>
+          <div class="card-meta">
+            <span>CUR-002</span>
+            <span>2024</span>
+            <span>Nutrients</span>
+            <span class="badge badge-grade-b">Grade B</span>
+          </div>
+          <div class="effect-size">LDL ↓22%, ApoB ↓19%</div>
+        </div>
+        <ion-icon name="chevron-down-outline" class="expand-icon"></ion-icon>
+      </div>
+      <div class="expanded-content">
+        <div class="detail-item">
+          <div class="detail-label">Judul</div>
+          <div class="detail-value">The Effect of Curcumin on Reducing Atherogenic Risks in Obese Patients with Type 2 Diabetes</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">DOI</div>
+          <div class="detail-value"><a href="https://doi.org/10.3390/nu13xxxxx" target="_blank" class="doi-link">10.3390/nu13xxxxx</a></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Populasi</div>
+          <div class="detail-value">90 obese subjects dengan T2DM</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Highlight</div>
+          <div class="detail-value">Significant reduction in atherogenic index (-25%) and LDL cholesterol (-22%)</div>
+        </div>
+      </div>
+    </div>
 
-        <tr class="main-row" onclick="toggleRow('HRB-CUR-003')">
-          <td>CUR-003</td>
-          <td>Curcumin</td>
-          <td>2024</td>
-          <td>Phytotherapy Res</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-b">Grade B</span></td>
-          <td>TG ↓28%, CRP ↓35%</td>
-        </tr>
-        <tr id="HRB-CUR-003" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Judul</div>
-                  <div class="detail-value">Effect of curcumin-piperine on lipid profile and inflammation in T2DM</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Highlight</div>
-                  <div class="detail-value">Piperine increases curcumin bioavailability by 2000%. Strong triglyceride reduction.</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">DOI</div>
-                  <div class="detail-value"><a href="https://doi.org/10.1002/ptr.xxxxx" target="_blank" class="doi-link">10.1002/ptr.xxxxx</a></div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
+    <!-- GREEN TEA-001 -->
+    <div class="neu-card" data-animate="up" data-delay="200" onclick="toggleExpand(this)">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Green Tea → Weight Loss</div>
+          <div class="card-meta">
+            <span>GRN-001</span>
+            <span>2016</span>
+            <span>Clinical Nutrition</span>
+            <span class="badge badge-grade-a">Grade A</span>
+          </div>
+          <div class="effect-size">Weight ↓2.5kg, LDL ↓8%</div>
+        </div>
+        <ion-icon name="chevron-down-outline" class="expand-icon"></ion-icon>
+      </div>
+      <div class="expanded-content">
+        <div class="detail-item">
+          <div class="detail-label">Judul</div>
+          <div class="detail-value">Therapeutic effect of high-dose green tea extract on weight reduction: A landmark RCT</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">DOI</div>
+          <div class="detail-value"><a href="https://doi.org/10.1016/j.clnu.2015.xxxxx" target="_blank" class="doi-link">10.1016/j.clnu.2015.xxxxx</a></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Temuan Utama</div>
+          <div class="detail-value">Weight loss: -2.5 kg, Waist Circumference: -2.4 cm. High quality landmark evidence (270 citations)</div>
+        </div>
+      </div>
+    </div>
 
-        <!-- GREEN TEA -->
-        <tr class="main-row" onclick="toggleRow('HRB-GRN-001')">
-          <td>GRN-001</td>
-          <td>Green Tea</td>
-          <td>2016</td>
-          <td>Clinical Nutrition</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-a">Grade A</span></td>
-          <td>Weight ↓2.5kg, LDL ↓8%</td>
-        </tr>
-        <tr id="HRB-GRN-001" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Judul</div>
-                  <div class="detail-value">Therapeutic effect of high-dose green tea extract on weight reduction: A landmark RCT</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">Temuan</div>
-                  <div class="detail-value">Weight loss: -2.5 kg, Waist Circumference: -2.4 cm. High quality evidence.</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">DOI</div>
-                  <div class="detail-value"><a href="https://doi.org/10.1016/j.clnu.2015.xxxxx" target="_blank" class="doi-link">10.1016/j.clnu.2015.xxxxx</a></div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
+    <!-- GARLIC-001 -->
+    <div class="neu-card" data-animate="up" data-delay="300" onclick="toggleExpand(this)">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Garlic → Hypertension</div>
+          <div class="card-meta">
+            <span>GAR-001</span>
+            <span>2016</span>
+            <span>Int BP Control</span>
+            <span class="badge badge-grade-b">Grade B</span>
+          </div>
+          <div class="effect-size">SBP ↓6.5 mmHg</div>
+        </div>
+        <ion-icon name="chevron-down-outline" class="expand-icon"></ion-icon>
+      </div>
+      <div class="expanded-content">
+        <div class="detail-item">
+          <div class="detail-label">Judul</div>
+          <div class="detail-value">The AGE at Heart trial: Aged garlic extract in uncontrolled hypertensives</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">DOI</div>
+          <div class="detail-value"><a href="https://doi.org/10.2147/IBPC.Sxxxxx" target="_blank" class="doi-link">10.2147/IBPC.Sxxxxx</a></div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Mekanisme</div>
+          <div class="detail-value">Allicin-driven H₂S production and vasodilation</div>
+        </div>
+      </div>
+    </div>
 
-        <tr class="main-row" onclick="toggleRow('HRB-GRN-002')">
-          <td>GRN-002</td>
-          <td>Green Tea</td>
-          <td>2016</td>
-          <td>J. Nutrition</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-b">Grade B</span></td>
-          <td>HOMA-IR ↓16% (Genotype)</td>
-        </tr>
-        <tr id="HRB-GRN-002" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Note</div>
-                  <div class="detail-value">Genotype-specific response (COMT Val158Met). Adiponectin increased by 22%.</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
+    <!-- GINGER-001 -->
+    <div class="neu-card" data-animate="up" data-delay="400" onclick="toggleExpand(this)">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Ginger → NAFLD & Glycemic</div>
+          <div class="card-meta">
+            <span>GNG-001</span>
+            <span>2020</span>
+            <span>RLAE</span>
+            <span class="badge badge-grade-b">Grade B</span>
+          </div>
+          <div class="effect-size">FPG ↓8%, ALT ↓22%</div>
+        </div>
+        <ion-icon name="chevron-down-outline" class="expand-icon"></ion-icon>
+      </div>
+      <div class="expanded-content">
+        <div class="detail-item">
+          <div class="detail-label">Dual Benefit</div>
+          <div class="detail-value">Gingerol inhibits 11β-HSD1, improving insulin sensitivity and liver function</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">NAFLD Outcome</div>
+          <div class="detail-value">18-22% reduction in ALT and AST enzymes in T2DM patients</div>
+        </div>
+      </div>
+    </div>
 
-        <!-- GARLIC -->
-        <tr class="main-row" onclick="toggleRow('HRB-GAR-001')">
-          <td>GAR-001</td>
-          <td>Garlic</td>
-          <td>2016</td>
-          <td>Int BP Control</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-b">Grade B</span></td>
-          <td>SBP ↓6.5 mmHg</td>
-        </tr>
-        <tr id="HRB-GAR-001" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Judul</div>
-                  <div class="detail-value">The AGE at Heart trial: Aged garlic extract in uncontrolled hypertensives</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-label">DOI</div>
-                  <div class="detail-value"><a href="https://doi.org/10.2147/IBPC.Sxxxxx" target="_blank" class="doi-link">10.2147/IBPC.Sxxxxx</a></div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
+    <!-- CINNAMON-001 -->
+    <div class="neu-card" data-animate="up" data-delay="500" onclick="toggleExpand(this)">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Cinnamon → Glycemic</div>
+          <div class="card-meta">
+            <span>CIN-001</span>
+            <span>2017</span>
+            <span>Nutrients</span>
+            <span class="badge badge-grade-c">Grade C</span>
+          </div>
+          <div class="effect-size">FPG ↓13% (Variable)</div>
+        </div>
+        <ion-icon name="chevron-down-outline" class="expand-icon"></ion-icon>
+      </div>
+      <div class="expanded-content">
+        <div class="detail-item">
+          <div class="detail-label">Limitation</div>
+          <div class="detail-value">High inter-individual variability; ~30% of subjects were non-responders</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Safety Note</div>
+          <div class="detail-value">High coumarin content in Cassia species. Ceylon cinnamon preferred</div>
+        </div>
+      </div>
+    </div>
 
-        <tr class="main-row" onclick="toggleRow('HRB-GAR-003')">
-          <td>GAR-003</td>
-          <td>Garlic</td>
-          <td>2022</td>
-          <td>Nutrients</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-b">Grade B</span></td>
-          <td>Total Chol ↓12%, LDL ↓15%</td>
-        </tr>
-        <tr id="HRB-GAR-003" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Highlight</div>
-                  <div class="detail-value">Aged black garlic better than raw for lipid reduction. Oxidative stress ↓18%.</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
+    <div class="footer-spacer"></div>
 
-        <!-- GINGER -->
-        <tr class="main-row" onclick="toggleRow('HRB-GNG-001')">
-          <td>GNG-001</td>
-          <td>Ginger</td>
-          <td>2020</td>
-          <td>RLAE</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-b">Grade B</span></td>
-          <td>FPG ↓8%, TG ↓12%</td>
-        </tr>
-        <tr id="HRB-GNG-001" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Mekanisme</div>
-                  <div class="detail-value">Gingerol inhibits 11β-HSD1, increasing insulin sensitivity.</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-
-        <tr class="main-row" onclick="toggleRow('HRB-GNG-002')">
-          <td>GNG-002</td>
-          <td>Ginger</td>
-          <td>2023</td>
-          <td>J. Diet Supp</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-b">Grade B</span></td>
-          <td>ALT ↓22%, AST ↓18%</td>
-        </tr>
-        <tr id="HRB-GNG-002" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">NAFLD Focus</div>
-                  <div class="detail-value">Significant improvement in liver enzymes and steatosis grade in T2DM patients.</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-
-        <!-- CINNAMON -->
-        <tr class="main-row" onclick="toggleRow('HRB-CIN-001')">
-          <td>CIN-001</td>
-          <td>Cinnamon</td>
-          <td>2017</td>
-          <td>Nutrients</td>
-          <td>RCT</td>
-          <td><span class="badge badge-grade-c">Grade C</span></td>
-          <td>FPG ↓13%, AGE ↓16%</td>
-        </tr>
-        <tr id="HRB-CIN-001" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Limitation</div>
-                  <div class="detail-value">High inter-individual variability; approximately 30% of subjects were non-responders.</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-
-        <!-- OLIVE LEAF -->
-        <tr class="main-row" onclick="toggleRow('HRB-OLV-001')">
-          <td>OLV-001</td>
-          <td>Olive Leaf</td>
-          <td>2020</td>
-          <td>Antioxidants</td>
-          <td>Pilot RCT</td>
-          <td><span class="badge badge-grade-b">Grade B</span></td>
-          <td>SBP ↓5.8 mmHg</td>
-        </tr>
-        <tr id="HRB-OLV-001" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Outcome</div>
-                  <div class="detail-value">Dual benefit for Hypertension and Metabolic Syndrome. Total cholesterol ↓8%.</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-
-        <!-- TRADITIONAL -->
-        <tr class="main-row" onclick="toggleRow('HRB-TRD-002')">
-          <td>TRD-002</td>
-          <td>Traditional</td>
-          <td>2025</td>
-          <td>Sci. Reports</td>
-          <td>Cohort</td>
-          <td><span class="badge badge-grade-c">Grade C</span></td>
-          <td>Indonesian Context</td>
-        </tr>
-        <tr id="HRB-TRD-002" class="expanded-row">
-          <td colspan="7">
-            <div class="expanded-content">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-label">Latar Belakang</div>
-                  <div class="detail-value">Study on 300+ patients in Yogyakarta. 75% use herbal remedies alongside medication.</div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-
-      </tbody>
-    </table>
   </div>
 
 </div>
-
-<footer>
-  <p>Vitalora Herbal Evidence Extraction — 50+ Papers Analyzed with GRADE Methodology</p>
-  <p><a href="index.html" style="color: var(--primary-herbal); text-decoration: none;">← Back to Evidence Portal</a></p>
-</footer>
 
 <script>
+function toggleExpand(card) {
+  const content = card.querySelector('.expanded-content');
+  const icon = card.querySelector('.expand-icon');
+  content.classList.toggle('show');
+  icon.classList.toggle('open');
+  card.classList.toggle('expanded');
+}
+
 function filterTable() {
   const searchInput = document.getElementById('searchInput').value.toLowerCase();
   const remedyFilter = document.getElementById('remedyFilter').value.toLowerCase();
-  const table = document.getElementById('herbalTable');
-  const tr = table.getElementsByClassName('main-row');
+  const cards = document.querySelectorAll('.neu-card');
 
-  for (let i = 0; i < tr.length; i++) {
-    const remedy = tr[i].getElementsByTagName('td')[1].textContent.toLowerCase();
-    const allText = tr[i].textContent.toLowerCase();
-    
-    const matchesSearch = allText.includes(searchInput);
-    const matchesRemedy = (remedyFilter === 'all' || remedy.includes(remedyFilter));
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    const matchesSearch = text.includes(searchInput);
+    const matchesRemedy = (remedyFilter === 'all' || text.includes(remedyFilter));
 
     if (matchesSearch && matchesRemedy) {
-      tr[i].style.display = "";
+      card.style.display = '';
     } else {
-      tr[i].style.display = "none";
-      // Close expanded row if hidden
-      const id = tr[i].getAttribute('onclick').match(/'([^']+)'/)[1];
-      document.getElementById(id).style.display = "none";
+      card.style.display = 'none';
     }
-  }
-}
-
-function toggleRow(id) {
-  const row = document.getElementById(id);
-  if (row.style.display === "table-row") {
-    row.style.display = "none";
-  } else {
-    row.style.display = "table-row";
-  }
-}
-
-function sortTable(n) {
-  const table = document.getElementById("herbalTable");
-  let switching = true;
-  let dir = "asc";
-  let switchcount = 0;
-  
-  while (switching) {
-    switching = false;
-    const rows = table.rows;
-    for (var i = 1; i < (rows.length - 2); i += 2) {
-      var shouldSwitch = false;
-      const x = rows[i].getElementsByTagName("TD")[n];
-      const y = rows[i + 2].getElementsByTagName("TD")[n];
-      
-      if (dir == "asc") {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      } else if (dir == "desc") {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      }
-    }
-    if (shouldSwitch) {
-      rows[i].parentNode.insertBefore(rows[i + 2], rows[i]);
-      rows[i].parentNode.insertBefore(rows[i + 3], rows[i + 1].nextSibling);
-      switching = true;
-      switchcount ++;
-    } else {
-      if (switchcount == 0 && dir == "asc") {
-        dir = "desc";
-        switching = true;
-      }
-    }
-  }
+  });
 }
 </script>
 
+<script src="../../shared/app.js"></script>
 </body>
 </html>
