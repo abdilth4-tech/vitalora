@@ -327,6 +327,15 @@
 
     const accounts = [
       {
+        email: 'mentor@vitalora.id',
+        password: 'mentor2024',
+        name: 'Mentor Vitalora',
+        role: 'super_admin',
+        roleStatus: 'approved',
+        isActive: true,
+        extra: {}
+      },
+      {
         email: 'admin@vitalora.id',
         password: 'admin123',
         name: 'Admin Vitalora',
@@ -431,9 +440,10 @@
       log('', 'info');
       log('=== SELESAI ===', 'success');
       log('Akun demo siap digunakan untuk demo!', 'success');
-      log('Admin  : admin@vitalora.id / admin123', 'info');
-      log('Dokter : sarah.wijaya@vitalora.id / dokter123', 'info');
-      log('Pasien : budi.santoso@vitalora.id / pasien123', 'info');
+      log('Super Admin : mentor@vitalora.id / mentor2024', 'info');
+      log('Admin       : admin@vitalora.id / admin123', 'info');
+      log('Dokter      : sarah.wijaya@vitalora.id / dokter123', 'info');
+      log('Pasien      : budi.santoso@vitalora.id / pasien123', 'info');
 
     } catch (e) {
       log('Error: ' + e.message, 'error');
