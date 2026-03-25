@@ -3,11 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Pengaturan</title>
-  <link rel="stylesheet" href="../../shared/neumorphic.css">
+  <title>Vitalora — Pengaturan Administrasi</title>
+  <link rel="stylesheet" href="../shared/neumorphic.css">
+  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
   <style>
-    body { background: var(--bg-light); padding: 2rem; font-family: var(--font-family); }
-    .container { max-width: 1000px; margin: 0 auto; }
+    .admin-sidebar { background: linear-gradient(180deg, #040E07 0%, #0D2B1A 100%); border-right: 1px solid rgba(111,207,151,0.1); }
+    .sidebar-logo { color: #fff !important; }
+    .sidebar-logo span { color: #6FCF97 !important; }
+    .sidebar-item { color: rgba(255,255,255,0.6); }
+    .sidebar-item:hover { color: #6FCF97; background: rgba(111,207,151,0.08); }
+    .sidebar-item.active { color: #6FCF97 !important; background: rgba(111,207,151,0.15); border-left: 3px solid #6FCF97; }
+    .admin-topbar h1 { border-left: 4px solid var(--primary-dark); padding-left: 12px; }
+
+    .admin-main { padding: 24px; }
+    .container { max-width: 100%; margin: 0; }
 
     .header { margin-bottom: 2rem; }
     .header h1 { color: var(--text-primary); margin: 0; }
@@ -277,8 +287,31 @@
     }
   </style>
 </head>
-<body onload="initSettings()">
-  <div class="container">
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">Vital<span>ora</span></div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="home.html"><ion-icon name="grid-outline"></ion-icon>Dashboard</a>
+      <a class="sidebar-item" href="users.html"><ion-icon name="people-outline"></ion-icon>Users</a>
+      <a class="sidebar-item" href="doctor-verification.html"><ion-icon name="checkmark-circle-outline"></ion-icon>Verifikasi Role</a>
+      <a class="sidebar-item" href="notifications.html"><ion-icon name="notifications-outline"></ion-icon>Notifikasi</a>
+      <a class="sidebar-item" href="consultations.html"><ion-icon name="chatbubbles-outline"></ion-icon>Konsultasi</a>
+      <a class="sidebar-item" href="news.html"><ion-icon name="newspaper-outline"></ion-icon>News</a>
+      <a class="sidebar-item" href="advertise.html"><ion-icon name="megaphone-outline"></ion-icon>Iklan</a>
+      <a class="sidebar-item" href="herbal-submit.html"><ion-icon name="leaf-outline"></ion-icon>Tambah Herbal</a>
+      <a class="sidebar-item" id="nav-verify-herbal" href="herbal-verify.html" style="display:none"><ion-icon name="shield-checkmark-outline"></ion-icon>Verifikasi Herbal</a>
+      <a class="sidebar-item" href="herbals.html"><ion-icon name="leaf-outline"></ion-icon>Kelola Herbal</a>
+      <a class="sidebar-item" href="formulas.html"><ion-icon name="flask-outline"></ion-icon>Kelola Formula</a>
+      <a class="sidebar-item" href="reports.html"><ion-icon name="bar-chart-outline"></ion-icon>Laporan & Ekspor</a>
+      <a class="sidebar-item" href="ml-models.html"><ion-icon name="analytics-outline"></ion-icon>Model Risiko</a>
+      <a class="sidebar-item active" href="settings.html"><ion-icon name="settings-outline"></ion-icon>Pengaturan</a>
+    </nav>
+    <a class="sidebar-item" href="../index.html" style="margin-top:auto;"><ion-icon name="log-out-outline"></ion-icon>Logout</a>
+  </aside>
+  <main class="admin-main">
+    <div class="admin-topbar"><h1>⚙️ Pengaturan Administrasi</h1></div>
+    <div class="container">
     <div class="header">
       <h1>⚙️ Pengaturan Administrasi</h1>
     </div>
@@ -483,7 +516,9 @@
         </div>
       </div>
     </div>
-  </div>
+    </div>
+  </main>
+</div>
 
   <!-- Confirmation Modal -->
   <div class="modal" id="confirmModal">
@@ -497,9 +532,11 @@
     </div>
   </div>
 
-  <script src="../../shared/vauth.js"></script>
-  <script src="../../shared/vdb.js"></script>
-  <script src="../../shared/vitals.js"></script>
+  <script src="../shared/app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="../shared/firebase.js"></script>
 
   <script>
     let settings = {};
@@ -761,6 +798,9 @@
     function nav(url) {
       window.location.href = url;
     }
+
+    // Auto-init on page load
+    document.addEventListener('DOMContentLoaded', initSettings);
   </script>
 </body>
 </html>
