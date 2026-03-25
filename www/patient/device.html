@@ -8,6 +8,8 @@
   <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
   <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
   <style>
+    body { background: var(--bg); }
+    .mobile-frame { max-width: 480px; margin: 0 auto; }
     .app-header { background: linear-gradient(135deg, #0D2B1A 0%, #1A5C38 100%); box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
     .app-header .logo { color: #fff; }
     .app-header .logo span { color: #6FCF97; }
@@ -18,6 +20,17 @@
     .nav-item.active { color: var(--primary-dark); font-weight: 700; position: relative; }
     .nav-item.active::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--primary-dark); }
     .nav-item.active ion-icon { color: var(--primary-dark); filter: drop-shadow(0 0 4px rgba(39,174,96,0.5)); }
+
+    /* Fix section spacing */
+    .section { padding: 20px; margin-bottom: 8px; }
+    .section-header { margin-bottom: 12px; }
+    .mt-24 { margin-top: 24px; }
+
+    /* Responsive improvements */
+    @media (max-width: 480px) {
+      .section { padding: 16px; }
+      .mobile-frame { max-width: 100%; }
+    }
   </style>
 </head>
 <body>

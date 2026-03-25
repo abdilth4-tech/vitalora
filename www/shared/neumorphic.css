@@ -12,6 +12,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
+/* ── IONICONS FIX (CORS Workaround) ── */
+ion-icon {
+  display: inline-block;
+  min-width: 1em;
+  min-height: 1em;
+  font-size: inherit;
+}
+
 /* ── CSS Variables ── */
 :root {
   /* Neumorphic Base */

@@ -36,11 +36,17 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(111,207,151,0.4); }
-    .nav-mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.6rem; cursor: pointer; margin-left: auto; }
+    .nav-mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; margin-left: auto; padding: 8px 12px; }
+    .mobile-menu { display: none; position: fixed; top: 68px; left: 0; right: 0; background: rgba(7,26,15,0.95); backdrop-filter: blur(20px); flex-direction: column; gap: 0; z-index: 999; }
+    .mobile-menu.active { display: flex; }
+    .mobile-menu a { padding: 16px 32px; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.95rem; border-bottom: 1px solid rgba(111,207,151,0.1); transition: color 0.2s; }
+    .mobile-menu a:hover { color: #6FCF97; }
+    .mobile-menu .nav-cta { margin: 12px 32px; width: auto; }
     @media (max-width: 800px) {
       .nav-links { display: none; }
       .nav-cta { display: none; }
-      .nav-mobile-toggle { display: block; }
+      .nav-mobile-toggle { display: flex; align-items: center; justify-content: center; }
+      .nav-inner { padding: 0 20px; }
     }
 
     /* ── HERO ── */
@@ -299,9 +305,18 @@
       <a href="company/contact.html">Kontak</a>
     </div>
     <a href="auth/login.html" class="nav-cta"><ion-icon name="rocket-outline"></ion-icon> Try Vitalora</a>
-    <button class="nav-mobile-toggle" onclick="this.parentElement.parentElement.querySelector('.nav-links').style.display='flex'">
+    <button class="nav-mobile-toggle" onclick="document.querySelector('.mobile-menu').classList.toggle('active')">
       <ion-icon name="menu-outline"></ion-icon>
     </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Beranda</a>
+    <a href="company/about.html">Tentang</a>
+    <a href="company/features.html">Fitur</a>
+    <a href="material-research/index.html">📚 Material Research</a>
+    <a href="company/how-it-works.html">Cara Kerja</a>
+    <a href="company/contact.html">Kontak</a>
+    <a href="auth/login.html" class="nav-cta"><ion-icon name="rocket-outline"></ion-icon> Try Vitalora</a>
   </div>
 </nav>
 
@@ -540,5 +555,32 @@
 </footer>
 
 <script src="shared/app.js"></script>
+<script>
+// Close mobile menu when link clicked
+document.querySelectorAll('.mobile-menu a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelector('.mobile-menu').classList.remove('active');
+  });
+});
+
+// Ensure ionicons load properly
+document.addEventListener('DOMContentLoaded', () => {
+  const icons = document.querySelectorAll('ion-icon');
+  icons.forEach(icon => {
+    if (!icon.getAttribute('name')) return;
+    // Force icon render
+    icon.forceUpdate?.();
+  });
+});
+
+// Fix responsive viewport
+function updateViewport() {
+  const width = window.innerWidth;
+  const isMobile = width <= 768;
+  document.body.style.minHeight = '100vh';
+}
+window.addEventListener('resize', updateViewport);
+updateViewport();
+</script>
 </body>
 </html>
