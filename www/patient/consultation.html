@@ -333,9 +333,17 @@ function renderDoctors(doctors) {
     const reviewCount = doctor.reviewCount || 0;
     const specialty = doctor.specialty || 'Dokter Umum';
     const isOnline = doctor.isOnline;
-    const price = doctor.pricing?.chat || 50000;
+    const price = doctor.consultationFee?.chat || doctor.pricing?.chat || 50000;
     const priceFormatted = 'Rp ' + (price / 1000) + 'K';
     const gradient = gradients[idx % gradients.length];
+
+    // Create avatar HTML (photo or gradient with initials)
+    let avatarHTML = '';
+    if (doctor.photoURL) {
+      avatarHTML = `<img src="${doctor.photoURL}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;box-shadow:var(--shadow-out-sm);" alt="${doctor.name}">`;
+    } else {
+      avatarHTML = `<div class="neu-avatar-lg" style="background:${gradient}">${initials}</div>`;
+    }
 
     // Consultation type badges
     const types = doctor.consultTypes || ['chat'];
@@ -351,7 +359,7 @@ function renderDoctors(doctors) {
     card.style.cursor = 'pointer';
     card.innerHTML = `
       <div style="display:flex;gap:14px;">
-        <div class="neu-avatar-lg" style="background:${gradient}">${initials}</div>
+        ${avatarHTML}
         <div style="flex:1">
           <div style="font-weight:700;font-size:0.9rem;">${doctor.name}</div>
           <div style="font-size:0.72rem;color:var(--text-tertiary);">${specialty}</div>

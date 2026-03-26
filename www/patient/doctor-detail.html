@@ -271,7 +271,8 @@
 
   <!-- HERO -->
   <div class="doctor-hero">
-    <div class="neu-avatar-xl" data-animate="scale">SW</div>
+    <img id="doctorPhoto" style="display:none;width:90px;height:90px;border-radius:50%;object-fit:cover;box-shadow:0 8px 24px rgba(0,0,0,0.3);margin:0 auto 14px;" data-animate="scale">
+    <div id="doctorAvatarGradient" class="neu-avatar-xl" data-animate="scale">SW</div>
     <div class="doc-name" data-animate="up" data-delay="80">dr. Sarah Wijaya, Sp.PD</div>
     <div data-animate="up" data-delay="120">
       <span class="specialty-badge"><ion-icon name="medical-outline"></ion-icon> Spesialis Penyakit Dalam</span>
@@ -444,10 +445,18 @@
       const docNameEl = document.querySelector('.doc-name');
       if (docNameEl) docNameEl.textContent = doctor.name || 'Dokter';
 
-      // Avatar initials
-      const avatarEl = document.querySelector('.neu-avatar-xl');
-      if (avatarEl) {
-        avatarEl.textContent = (doctor.name || 'D').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+      // Avatar photo or initials
+      const photoEl = document.getElementById('doctorPhoto');
+      const avatarGradientEl = document.getElementById('doctorAvatarGradient');
+      if (doctor.photoURL) {
+        photoEl.src = doctor.photoURL;
+        photoEl.style.display = 'block';
+        avatarGradientEl.style.display = 'none';
+      } else {
+        avatarGradientEl.style.display = 'block';
+        photoEl.style.display = 'none';
+        const initials = (doctor.name || 'D').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+        avatarGradientEl.textContent = initials;
       }
 
       // Specialty badge
@@ -462,6 +471,30 @@
         const rating = doctor.rating || '4.9';
         const hospital = doctor.hospital || '';
         starsEl.textContent = '★★★★★ ' + rating + (hospital ? ' · ' + hospital : '');
+      }
+
+      // Update stats row
+      const statMinis = document.querySelectorAll('.stat-mini');
+      if (statMinis.length >= 3) {
+        const yearsExp = doctor.yearsExperience || '8';
+        const patientCount = doctor.patientCount || '238';
+        const ratingVal = doctor.rating || '4.9';
+        statMinis[0].querySelector('.s-val').textContent = yearsExp;
+        statMinis[1].querySelector('.s-val').textContent = patientCount;
+        statMinis[2].querySelector('.s-val').textContent = '⭐' + ratingVal;
+      }
+
+      // Update bio (tentang tab)
+      const bioCard = document.querySelector('#tab-tentang .neu-card p');
+      if (bioCard && doctor.bio) {
+        bioCard.textContent = doctor.bio;
+      }
+
+      // Update price
+      const priceVal = document.querySelector('.price-value');
+      if (priceVal && doctor.consultationFee) {
+        const chatFee = doctor.consultationFee.chat || 150000;
+        priceVal.innerHTML = 'Rp ' + (chatFee / 1000) + '.000<small style="font-size:0.7rem;font-weight:500;color:var(--text-tertiary);"> / sesi</small>';
       }
 
     } catch (e) {

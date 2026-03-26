@@ -133,135 +133,17 @@
       <div class="section-title">Ulasan Terbaru</div>
     </div>
 
-    <!-- Review 1 -->
-    <div class="review-card" data-animate="up" data-delay="120">
-      <div class="review-header">
-        <div class="neu-avatar" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);flex-shrink:0;">AF</div>
-        <div class="review-info">
-          <div class="reviewer-name">Ahmad Fauzi</div>
-          <div class="review-stars">
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-          </div>
-          <div class="review-date">18 Mar 2026</div>
-        </div>
-        <span class="badge-type badge-video">Video</span>
-      </div>
-      <div class="review-comment">
-        "Dokter Sarah sangat sabar dan teliti dalam menjelaskan kondisi saya. Diagnosis tepat dan solusi yang diberikan sangat membantu. Sangat direkomendasikan!"
-      </div>
-      <button class="reply-btn" onclick="toggleReply('r1')">
-        <ion-icon name="chatbubble-outline"></ion-icon> Balas
-      </button>
-      <div class="reply-form" id="r1">
-        <textarea rows="3" placeholder="Tulis balasan untuk ulasan ini..."></textarea>
-        <div class="reply-actions">
-          <button class="neu-btn neu-btn-sm" onclick="toggleReply('r1')">Batal</button>
-          <button class="neu-btn neu-btn-sm" style="background:var(--info-gradient,linear-gradient(135deg,#2F80ED,#56CCF2));color:#fff;" onclick="sendReply('r1')">Kirim</button>
-        </div>
-      </div>
+    <!-- Reviews Container -->
+    <div id="reviewsContainer"></div>
+
+    <!-- Empty State -->
+    <div id="emptyState" style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+      <ion-icon name="chatbubbles-outline" style="font-size:2rem;display:block;margin-bottom:8px;"></ion-icon>
+      <div style="font-size:0.85rem;">Belum ada ulasan dari pasien</div>
     </div>
 
-    <!-- Review 2 -->
-    <div class="review-card" data-animate="up" data-delay="160">
-      <div class="review-header">
-        <div class="neu-avatar" style="background:linear-gradient(135deg,#EB5757,#FF8E8E);flex-shrink:0;">SR</div>
-        <div class="review-info">
-          <div class="reviewer-name">Siti Rahayu</div>
-          <div class="review-stars">
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-          </div>
-          <div class="review-date">16 Mar 2026</div>
-        </div>
-        <span class="badge-type badge-integratif">Integratif</span>
-      </div>
-      <div class="review-comment">
-        "Pendekatan holistik dr. Sarah luar biasa. Kombinasi pengobatan modern dan herbal yang direkomendasikan sangat efektif. Sudah 3 kali konsultasi dan selalu puas!"
-      </div>
-      <button class="reply-btn" onclick="toggleReply('r2')">
-        <ion-icon name="chatbubble-outline"></ion-icon> Balas
-      </button>
-      <div class="reply-form" id="r2">
-        <textarea rows="3" placeholder="Tulis balasan untuk ulasan ini..."></textarea>
-        <div class="reply-actions">
-          <button class="neu-btn neu-btn-sm" onclick="toggleReply('r2')">Batal</button>
-          <button class="neu-btn neu-btn-sm" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);color:#fff;" onclick="sendReply('r2')">Kirim</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Review 3 -->
-    <div class="review-card" data-animate="up" data-delay="200">
-      <div class="review-header">
-        <div class="neu-avatar" style="background:linear-gradient(135deg,#F2994A,#F2C94C);flex-shrink:0;">DK</div>
-        <div class="review-info">
-          <div class="reviewer-name">Dewi Kusuma</div>
-          <div class="review-stars">
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star-outline" style="color:#ccc;"></ion-icon>
-          </div>
-          <div class="review-date">15 Mar 2026</div>
-        </div>
-        <span class="badge-type badge-chat">Chat</span>
-      </div>
-      <div class="review-comment">
-        "Responsif dan penjelasannya mudah dipahami. Sedikit menunggu di awal sesi chat, tapi secara keseluruhan pelayanan sangat baik."
-      </div>
-      <button class="reply-btn" onclick="toggleReply('r3')">
-        <ion-icon name="chatbubble-outline"></ion-icon> Balas
-      </button>
-      <div class="reply-form" id="r3">
-        <textarea rows="3" placeholder="Tulis balasan untuk ulasan ini..."></textarea>
-        <div class="reply-actions">
-          <button class="neu-btn neu-btn-sm" onclick="toggleReply('r3')">Batal</button>
-          <button class="neu-btn neu-btn-sm" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);color:#fff;" onclick="sendReply('r3')">Kirim</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Review 4 -->
-    <div class="review-card" data-animate="up" data-delay="240">
-      <div class="review-header">
-        <div class="neu-avatar" style="background:linear-gradient(135deg,#6C63FF,#9C8FFF);flex-shrink:0;">RP</div>
-        <div class="review-info">
-          <div class="reviewer-name">Rizki Pratama</div>
-          <div class="review-stars">
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-            <ion-icon name="star" style="color:#FFD54F;"></ion-icon>
-          </div>
-          <div class="review-date">13 Mar 2026</div>
-        </div>
-        <span class="badge-type badge-video">Video</span>
-      </div>
-      <div class="review-comment">
-        "Dokter terbaik yang pernah saya konsultasi secara online! Beliau sangat memahami kondisi penyakit dalam saya dan menjelaskan dengan sangat detail. Terima kasih banyak!"
-      </div>
-      <button class="reply-btn" onclick="toggleReply('r4')">
-        <ion-icon name="chatbubble-outline"></ion-icon> Balas
-      </button>
-      <div class="reply-form" id="r4">
-        <textarea rows="3" placeholder="Tulis balasan untuk ulasan ini..."></textarea>
-        <div class="reply-actions">
-          <button class="neu-btn neu-btn-sm" onclick="toggleReply('r4')">Batal</button>
-          <button class="neu-btn neu-btn-sm" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);color:#fff;" onclick="sendReply('r4')">Kirim</button>
-        </div>
-      </div>
-    </div>
-
-    <button class="neu-btn neu-btn-block mt-8 mb-24" data-animate="up" data-delay="260" onclick="showToast('Memuat lebih banyak ulasan...', 'info')">
+    <!-- Load More Button -->
+    <button class="neu-btn neu-btn-block mt-8 mb-24" id="loadMoreBtn" data-animate="up" data-delay="260" onclick="loadMoreReviews()" style="display:none;">
       <ion-icon name="chevron-down-outline"></ion-icon> Lihat Semua Ulasan
     </button>
 
@@ -270,119 +152,242 @@
 
 <script src="../shared/app.js"></script>
 <script>
-  function toggleReply(id) {
-    const form = document.getElementById(id);
-    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+let currentDoctorId, reviewsLoaded = 0, allReviews = [];
+const REVIEWS_PER_PAGE = 5;
+
+const GRADIENTS = [
+  'linear-gradient(135deg,#2F80ED,#56CCF2)',
+  'linear-gradient(135deg,#EB5757,#FF8E8E)',
+  'linear-gradient(135deg,#F2994A,#F2C94C)',
+  'linear-gradient(135deg,#6C63FF,#9C8FFF)',
+  'linear-gradient(135deg,#27AE60,#52C76F)',
+  'linear-gradient(135deg,#FF6B6B,#FF8E53)',
+];
+
+const BADGE_TYPES = {
+  'chat': { class: 'badge-chat', label: 'Chat' },
+  'video': { class: 'badge-video', label: 'Video' },
+  'integrative': { class: 'badge-integratif', label: 'Integratif' },
+};
+
+function getInitials(name) {
+  return (name || 'DR').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+}
+
+function renderStars(rating) {
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5;
+  let s = '';
+  for (let i = 0; i < full; i++) s += '<ion-icon name="star" style="color:#FFD54F;"></ion-icon>';
+  if (half) s += '<ion-icon name="star-half" style="color:#FFD54F;"></ion-icon>';
+  for (let i = full + (half ? 1 : 0); i < 5; i++) s += '<ion-icon name="star-outline" style="color:#ccc;"></ion-icon>';
+  return s;
+}
+
+function toggleReply(id) {
+  const form = document.getElementById(id);
+  form.style.display = form.style.display === 'block' ? 'none' : 'block';
+}
+
+async function sendReply(id, reviewId) {
+  const form = document.getElementById(id);
+  const textarea = form.querySelector('textarea');
+  const reply = textarea.value.trim();
+
+  if (!reply) {
+    showToast('Balasan tidak boleh kosong', 'warning');
+    return;
   }
-  function sendReply(id) {
-    const form = document.getElementById(id);
-    form.style.display = 'none';
+
+  form.querySelector('button:last-child').disabled = true;
+  form.querySelector('button:last-child').textContent = 'Mengirim...';
+
+  try {
+    await firebase.firestore().collection('reviews').doc(reviewId).update({
+      doctorReply: reply,
+      doctorReplyDate: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
     showToast('Balasan berhasil dikirim', 'success');
+    form.style.display = 'none';
+    textarea.value = '';
+
+    // Reload reviews
+    await loadReviews(currentDoctorId);
+  } catch (e) {
+    console.error('Error sending reply:', e);
+    showToast('Gagal mengirim balasan', 'error');
+  } finally {
+    form.querySelector('button:last-child').disabled = false;
+    form.querySelector('button:last-child').textContent = 'Kirim';
   }
+}
 
-  // Helper: render star icons
-  function renderStars(rating) {
-    const full = Math.floor(rating);
-    const half = rating % 1 >= 0.5;
-    let s = '';
-    for (let i = 0; i < full; i++) s += '<ion-icon name="star" style="color:#FFD54F;"></ion-icon>';
-    if (half) s += '<ion-icon name="star-half" style="color:#FFD54F;"></ion-icon>';
-    for (let i = full + (half ? 1 : 0); i < 5; i++) s += '<ion-icon name="star-outline" style="color:#ccc;"></ion-icon>';
-    return s;
-  }
+function getConsultationType(type) {
+  return BADGE_TYPES[type] || BADGE_TYPES['chat'];
+}
 
-  // ── Firebase Auth Guard + Load Reviews ───────────────────────────────────
-  (async () => {
-    const { user } = await VAuth.guard('doctor', 1);
+function createReviewCard(review, index) {
+  const gradient = GRADIENTS[index % GRADIENTS.length];
+  const initials = getInitials(review.patientName);
+  const badgeType = getConsultationType(review.consultType);
+  const reviewDate = review.createdAt ? new Date(review.createdAt.toDate()).toLocaleDateString('id-ID') : 'Baru-baru ini';
+  const replySection = review.doctorReply ? `
+    <div style="margin-top:10px;padding:10px;background:rgba(47,128,237,0.08);border-radius:8px;border-left:3px solid var(--info);">
+      <div style="font-size:0.72rem;font-weight:600;color:var(--info);margin-bottom:4px;">Balasan Anda:</div>
+      <div style="font-size:0.75rem;color:var(--text-secondary);">${review.doctorReply}</div>
+    </div>
+  ` : '';
 
-    try {
-      const consultations = await VDB.getDoctorConsultations(user.uid);
-      const withRating    = consultations.filter(c => c.rating != null);
+  return `
+    <div class="review-card" data-animate="up" data-delay="${100 + index * 40}">
+      <div class="review-header">
+        <div class="neu-avatar" style="background:${gradient};flex-shrink:0;">${initials}</div>
+        <div class="review-info">
+          <div class="reviewer-name">${review.patientName}</div>
+          <div class="review-stars">${renderStars(review.rating)}</div>
+          <div class="review-date">${reviewDate}</div>
+        </div>
+        <span class="badge-type ${badgeType.class}">${badgeType.label}</span>
+      </div>
+      <div class="review-comment">"${review.comment}"</div>
+      ${!review.doctorReply ? `
+        <button class="reply-btn" onclick="toggleReply('r${review.id}')">
+          <ion-icon name="chatbubble-outline"></ion-icon> Balas
+        </button>
+        <div class="reply-form" id="r${review.id}">
+          <textarea rows="3" placeholder="Tulis balasan untuk ulasan ini..."></textarea>
+          <div class="reply-actions">
+            <button class="neu-btn neu-btn-sm" onclick="toggleReply('r${review.id}')">Batal</button>
+            <button class="neu-btn neu-btn-sm" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);color:#fff;" onclick="sendReply('r${review.id}', '${review.id}')">Kirim</button>
+          </div>
+        </div>
+      ` : ''}
+      ${replySection}
+    </div>
+  `;
+}
 
-      if (withRating.length === 0) {
-        // Show empty state if no reviews
-        const listHeader = document.querySelector('.section-header.mt-20[data-delay="100"]');
-        if (listHeader) {
-          const emptyState = document.createElement('div');
-          emptyState.className = 'neu-card';
-          emptyState.style.cssText = 'text-align:center;padding:32px 20px;';
-          emptyState.innerHTML = `
-            <ion-icon name="star-outline" style="font-size:2.5rem;color:var(--text-muted);"></ion-icon>
-            <p style="font-size:0.85rem;color:var(--text-tertiary);margin-top:10px;">Belum ada ulasan</p>
-            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Ulasan dari pasien akan muncul di sini</p>
-          `;
-          // Insert after section header, hide existing mock reviews
-          listHeader.insertAdjacentElement('afterend', emptyState);
-          document.querySelectorAll('.review-card').forEach(el => el.style.display = 'none');
-        }
-        return;
+async function loadReviews(doctorId) {
+  const container = document.getElementById('reviewsContainer');
+  const emptyState = document.getElementById('emptyState');
+
+  try {
+    // Get all consultations for doctor with ratings
+    const consultations = await firebase.firestore()
+      .collection('consultations')
+      .where('doctorId', '==', doctorId)
+      .where('rating', '>', 0)
+      .orderBy('rating', 'desc')
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    allReviews = [];
+
+    for (const doc of consultations.docs) {
+      const consult = doc.data();
+      if (consult.rating > 0 && consult.comment) {
+        const patientDoc = await firebase.firestore().collection('users').doc(consult.patientId).get();
+        allReviews.push({
+          id: doc.id,
+          rating: consult.rating,
+          comment: consult.comment,
+          createdAt: consult.createdAt,
+          patientName: patientDoc.data().name,
+          consultType: consult.consultType || 'chat',
+          doctorReply: consult.doctorReply || null,
+          doctorReplyDate: consult.doctorReplyDate || null
+        });
       }
-
-      // Calculate average rating
-      const avgRating = withRating.reduce((sum, c) => sum + c.rating, 0) / withRating.length;
-      const ratingNumberEl = document.querySelector('.rating-number');
-      if (ratingNumberEl) ratingNumberEl.textContent = avgRating.toFixed(1);
-
-      const ratingCountEl = document.querySelector('.rating-count');
-      if (ratingCountEl) ratingCountEl.textContent = withRating.length + ' ulasan total';
-
-      // Update star display
-      const starsRow = document.querySelector('.stars-row');
-      if (starsRow) starsRow.innerHTML = renderStars(avgRating);
-
-      // Render real review cards, replacing mock ones
-      const reviewSection = document.querySelector('.section');
-      const existingCards = document.querySelectorAll('.review-card');
-
-      // Build new cards from real data
-      const newCardsHtml = withRating.slice(0, 10).map((c, i) => {
-        const name = c.patientName || c.patientId || 'Pasien';
-        const initials = name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-        const date = c.startTime
-          ? (c.startTime.toDate ? c.startTime.toDate() : new Date(c.startTime)).toLocaleDateString('id-ID', {day:'numeric',month:'short',year:'numeric'})
-          : '—';
-        const comment  = c.review || c.comment || '(Tanpa komentar)';
-        const rId      = 'rv' + i;
-        const colors   = ['#2F80ED,#56CCF2','#EB5757,#FF8E8E','#F2994A,#F2C94C','#6C63FF,#9C8FFF','#27AE60,#6FCF97'];
-        const color    = colors[i % colors.length];
-
-        return `
-          <div class="review-card" data-animate="up" data-delay="${120 + i * 40}">
-            <div class="review-header">
-              <div class="neu-avatar" style="background:linear-gradient(135deg,${color});flex-shrink:0;">${initials}</div>
-              <div class="review-info">
-                <div class="reviewer-name">${name}</div>
-                <div class="review-stars">${renderStars(c.rating)}</div>
-                <div class="review-date">${date}</div>
-              </div>
-            </div>
-            <div class="review-comment">"${comment}"</div>
-            <button class="reply-btn" onclick="toggleReply('${rId}')">
-              <ion-icon name="chatbubble-outline"></ion-icon> Balas
-            </button>
-            <div class="reply-form" id="${rId}">
-              <textarea rows="3" placeholder="Tulis balasan untuk ulasan ini..."></textarea>
-              <div class="reply-actions">
-                <button class="neu-btn neu-btn-sm" onclick="toggleReply('${rId}')">Batal</button>
-                <button class="neu-btn neu-btn-sm" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);color:#fff;" onclick="sendReply('${rId}')">Kirim</button>
-              </div>
-            </div>
-          </div>`;
-      }).join('');
-
-      // Replace mock cards
-      existingCards.forEach(el => el.remove());
-
-      const loadMoreBtn = document.querySelector('.neu-btn.neu-btn-block.mt-8');
-      if (loadMoreBtn) {
-        loadMoreBtn.insertAdjacentHTML('beforebegin', newCardsHtml);
-      }
-
-    } catch (err) {
-      // Keep mock data on error
-      console.warn('[Reviews] Using mock data:', err.message);
     }
-  })();
+
+    // Display reviews
+    if (allReviews.length === 0) {
+      emptyState.style.display = 'block';
+      container.innerHTML = '';
+    } else {
+      emptyState.style.display = 'none';
+      displayReviews(0, REVIEWS_PER_PAGE);
+    }
+
+    // Update rating stats
+    updateRatingStats(allReviews);
+
+  } catch (e) {
+    console.error('Error loading reviews:', e);
+    showToast('Gagal memuat ulasan', 'error');
+  }
+}
+
+function displayReviews(start, count) {
+  const container = document.getElementById('reviewsContainer');
+
+  for (let i = start; i < Math.min(start + count, allReviews.length); i++) {
+    container.innerHTML += createReviewCard(allReviews[i], i);
+  }
+
+  reviewsLoaded += count;
+
+  // Show load more button if there are more reviews
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+  if (reviewsLoaded < allReviews.length) {
+    loadMoreBtn.style.display = 'block';
+  } else {
+    loadMoreBtn.style.display = 'none';
+  }
+}
+
+function loadMoreReviews() {
+  displayReviews(reviewsLoaded, REVIEWS_PER_PAGE);
+}
+
+function updateRatingStats(reviews) {
+  if (reviews.length === 0) return;
+
+  const avgRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
+  const totalReviews = reviews.length;
+
+  // Count by rating
+  const counts = [0, 0, 0, 0, 0];
+  reviews.forEach(r => counts[Math.floor(r.rating) - 1]++);
+
+  // Update UI
+  const ratingCard = document.querySelector('.rating-overview');
+  if (ratingCard) {
+    // Update rating number
+    const ratingNum = ratingCard.querySelector('.rating-number');
+    if (ratingNum) ratingNum.textContent = avgRating;
+
+    // Update rating count
+    const ratingCount = ratingCard.querySelector('.rating-count');
+    if (ratingCount) ratingCount.textContent = `${totalReviews} ulasan total`;
+
+    // Update rating bars
+    const bars = ratingCard.querySelectorAll('.rating-bar-row');
+    for (let i = 0; i < 5; i++) {
+      if (bars[i]) {
+        const pct = Math.round((counts[4 - i] / totalReviews) * 100);
+        const fill = bars[i].querySelector('.rating-bar-fill');
+        const pctEl = bars[i].querySelector('.rating-bar-pct');
+        if (fill) fill.style.width = pct + '%';
+        if (pctEl) pctEl.textContent = pct + '%';
+      }
+    }
+  }
+}
+
+// ── Firebase Auth Guard + Load Reviews ───────────────────────────────────
+(async () => {
+  const { user } = await VAuth.guard('doctor', 1);
+  currentDoctorId = user.uid;
+
+  try {
+    await loadReviews(currentDoctorId);
+  } catch (err) {
+    console.error('[Reviews] Error loading reviews:', err.message);
+    showToast('Gagal memuat ulasan', 'error');
+  }
+})();
 </script>
 </body>
 </html>

@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <script src="../shared/firebase.js"></script>
   <style>
     .app-header { background: linear-gradient(135deg, #0C2352 0%, #1D5DB5 100%); box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
@@ -102,13 +103,15 @@
 
     <!-- Avatar -->
     <div class="avatar-section" data-animate="up">
+      <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoSelect(event)">
       <div class="avatar-wrapper">
-        <div class="neu-avatar-xl" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);font-size:1.4rem;">SW</div>
-        <div class="avatar-edit-badge" onclick="showToast('Pilih foto baru', 'info')">
+        <img id="avatarImg" style="display:none;width:88px;height:88px;border-radius:50%;object-fit:cover;box-shadow:var(--shadow-out-sm);">
+        <div id="avatarGradient" class="neu-avatar-xl" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);font-size:1.4rem;">SW</div>
+        <div class="avatar-edit-badge" onclick="document.getElementById('photoInput').click()">
           <ion-icon name="camera-outline"></ion-icon>
         </div>
       </div>
-      <span class="avatar-btn-text" onclick="showToast('Pilih foto baru', 'info')">Ganti Foto</span>
+      <span class="avatar-btn-text" onclick="document.getElementById('photoInput').click()">Ganti Foto</span>
     </div>
 
     <!-- Basic Info -->
@@ -223,6 +226,39 @@
 <script src="../shared/app.js"></script>
 <script>
   let _currentUser = null;
+  let _photoFile = null;
+
+  // ── Photo Selection & Preview ──────────────────────────────────────────────
+  function handlePhotoSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Pilih file gambar yang valid', 'warning');
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      showToast('Ukuran foto terlalu besar (max 5MB)', 'warning');
+      return;
+    }
+
+    _photoFile = file;
+
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imgEl = document.getElementById('avatarImg');
+      const gradientEl = document.getElementById('avatarGradient');
+      imgEl.src = e.target.result;
+      imgEl.style.display = 'block';
+      gradientEl.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+
+    showToast('Foto siap diunggah — tekan Simpan untuk mengonfirmasi', 'info');
+  }
 
   // ── Firebase Auth Guard + Pre-fill ──────────────────────────────────────
   (async () => {
@@ -244,11 +280,22 @@
         if (fees.video)      document.getElementById('input-fee-video').value = fees.video;
         if (fees.integratif) document.getElementById('input-fee-integratif').value = fees.integratif;
 
+        // Display photo or initials
+        const imgEl = document.getElementById('avatarImg');
+        const gradientEl = document.getElementById('avatarGradient');
+        if (userData.photoURL) {
+          imgEl.src = userData.photoURL;
+          imgEl.style.display = 'block';
+          gradientEl.style.display = 'none';
+        } else {
+          gradientEl.style.display = 'block';
+          imgEl.style.display = 'none';
+        }
+
         // Avatar initials
-        const avatarEl = document.querySelector('.neu-avatar-xl');
-        if (avatarEl && userData.name) {
+        if (userData.name) {
           const parts = userData.name.split(' ');
-          avatarEl.textContent = parts.length >= 2
+          gradientEl.textContent = parts.length >= 2
             ? parts[0][0] + parts[parts.length - 1][0]
             : userData.name.substring(0, 2).toUpperCase();
         }
@@ -307,6 +354,27 @@
         updateData.consultationFee = { chat: feeChat, video: feeVideo, integratif: feeInt };
       }
       if (eduEntries.length) updateData.education = eduEntries;
+
+      // Upload photo if selected
+      if (_photoFile) {
+        showToast('Mengunggah foto...', 'info');
+        const storage = firebase.storage();
+        const storageRef = storage.ref(`doctor-photos/${_currentUser.uid}`);
+        const uploadTask = storageRef.put(_photoFile);
+
+        await new Promise((resolve, reject) => {
+          uploadTask.on(
+            'state_changed',
+            null,
+            (error) => reject(error),
+            async () => {
+              const downloadURL = await storageRef.getDownloadURL();
+              updateData.photoURL = downloadURL;
+              resolve();
+            }
+          );
+        });
+      }
 
       await VDB.updateUser(_currentUser.uid, updateData);
       showToast('Profil berhasil disimpan', 'success');
