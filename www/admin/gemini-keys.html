@@ -88,7 +88,7 @@
       <a class="sidebar-item" href="news.html"><ion-icon name="newspaper-outline"></ion-icon>News</a>
       <a class="sidebar-item" href="advertise.html"><ion-icon name="megaphone-outline"></ion-icon>Iklan</a>
       <a class="sidebar-item" href="herbal-submit.html"><ion-icon name="leaf-outline"></ion-icon>Tambah Herbal</a>
-      <a class="sidebar-item" id="nav-verify-herbal" href="herbal-verify.html" style="display:none"><ion-icon name="shield-checkmark-outline"></ion-icon>Verifikasi Herbal</a>
+      <a class="sidebar-item" id="nav-verify-herbal" href="herbal-verify.html"><ion-icon name="shield-checkmark-outline"></ion-icon>Verifikasi Herbal</a>
       <a class="sidebar-item" href="herbals.html"><ion-icon name="leaf-outline"></ion-icon>Kelola Herbal</a>
       <a class="sidebar-item" href="formulas.html"><ion-icon name="flask-outline"></ion-icon>Kelola Formula</a>
       <a class="sidebar-item" href="reports.html"><ion-icon name="bar-chart-outline"></ion-icon>Laporan & Ekspor</a>
@@ -186,7 +186,8 @@ let editingKeyId = null;
 
 // Load keys on page load
 document.addEventListener('DOMContentLoaded', async () => {
-  const { user } = await VAuth.guard('admin', 1);
+  const { user, profile: _vp } = await VAuth.guard('admin', 1);
+  if (_vp && _vp.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
   await loadKeysTable();
   setInterval(loadKeysTable, 5000); // Refresh every 5s
 });

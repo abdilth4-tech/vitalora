@@ -296,7 +296,7 @@
       <a class="sidebar-item" href="news.html"><ion-icon name="newspaper-outline"></ion-icon>News</a>
       <a class="sidebar-item" href="advertise.html"><ion-icon name="megaphone-outline"></ion-icon>Iklan</a>
       <a class="sidebar-item" href="herbal-submit.html"><ion-icon name="leaf-outline"></ion-icon>Tambah Herbal</a>
-      <a class="sidebar-item" id="nav-verify-herbal" href="herbal-verify.html" style="display:none"><ion-icon name="shield-checkmark-outline"></ion-icon>Verifikasi Herbal</a>
+      <a class="sidebar-item" id="nav-verify-herbal" href="herbal-verify.html"><ion-icon name="shield-checkmark-outline"></ion-icon>Verifikasi Herbal</a>
       <a class="sidebar-item" href="herbals.html"><ion-icon name="leaf-outline"></ion-icon>Kelola Herbal</a>
       <a class="sidebar-item" href="formulas.html"><ion-icon name="flask-outline"></ion-icon>Kelola Formula</a>
       <a class="sidebar-item active" href="reports.html"><ion-icon name="bar-chart-outline"></ion-icon>Laporan & Ekspor</a>
@@ -414,6 +414,7 @@
 
     async function initReports() {
       const profile = await VAuth.guard();
+      if (profile.profile && profile.profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
       if (profile.role !== 'admin' && profile.role !== 'super_admin') {
         showToast('Akses ditolak', 'error');
         setTimeout(() => nav('home.html'), 2000);
