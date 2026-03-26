@@ -66,6 +66,9 @@
 3. **Google Scholar** — Citation tracking of landmark herbal studies
 4. **Consensus.app** — High-quality peer-reviewed herbal research
 5. **Journal of Ethnopharmacology** — Traditional medicine research
+6. **WHO Monographs on Selected Medicinal Plants** (Vol. 1-5) — Official WHO safety & efficacy assessments
+7. **WHO Guidelines on Safety Monitoring of Herbal Medicines** (2004) — Pharmacovigilance standards
+8. **WHO Traditional Medicine Strategy 2014-2023** — Evidence frameworks for herbal evaluation
 
 ### Search Terms Strategy
 ```
