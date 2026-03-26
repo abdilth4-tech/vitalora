@@ -154,7 +154,7 @@
   <div class="section section-scroll">
 
     <!-- Intro Card -->
-    <div class="intro-card" data-animate="up">
+    <div class="intro-card" data-animate="up" id="introCard">
       <div class="ai-avatar-sm">
         <ion-icon name="hardware-chip-outline" style="color:#fff;font-size:1rem;"></ion-icon>
       </div>
@@ -163,106 +163,50 @@
       </div>
     </div>
 
+    <!-- Mode Selector (Initial) -->
+    <div id="modeSelector" data-animate="up" data-delay="60" style="display:none;margin-bottom:16px;">
+      <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:8px;font-weight:500;">Pilih mode konsultasi:</div>
+      <button class="neu-btn neu-btn-primary neu-btn-block" onclick="startQuickCheck()" style="margin-bottom:8px;">
+        <ion-icon name="flash-outline"></ion-icon> Quick Symptom Check (2-3 menit)
+      </button>
+      <button class="neu-btn neu-btn-accent neu-btn-block" onclick="startDetailedAssessment()" style="background:linear-gradient(135deg,#1E1350,#4A43CC);color:#fff;">
+        <ion-icon name="clipboard-outline"></ion-icon> Detailed Assessment (5-7 menit)
+      </button>
+    </div>
+
     <!-- Current Vitals Mini -->
-    <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:8px;font-weight:500;" data-animate="up" data-delay="60">
+    <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:8px;font-weight:500;" data-animate="up" data-delay="80" id="vitalsLabel">
       <ion-icon name="pulse-outline" style="vertical-align:-2px;color:var(--accent);"></ion-icon> Data sensor Anda
     </div>
-    <div class="vitals-mini" data-animate="up" data-delay="80">
+    <div class="vitals-mini" data-animate="up" data-delay="100" id="vitalsMini">
       <div class="vital-mini-card">
         <div class="vital-mini-icon" style="color:var(--danger);">❤️</div>
-        <div class="vital-mini-val" id="hrVal">88</div>
+        <div class="vital-mini-val" id="hrVal">--</div>
         <div class="vital-mini-label">HR bpm</div>
       </div>
       <div class="vital-mini-card">
         <div class="vital-mini-icon" style="color:var(--info);">💧</div>
-        <div class="vital-mini-val">97%</div>
+        <div class="vital-mini-val" id="spo2Val">--</div>
         <div class="vital-mini-label">SpO2</div>
       </div>
       <div class="vital-mini-card">
         <div class="vital-mini-icon" style="color:var(--warning);">🌡️</div>
-        <div class="vital-mini-val">36.8°</div>
+        <div class="vital-mini-val" id="tempVal">--</div>
         <div class="vital-mini-label">Suhu C</div>
       </div>
     </div>
 
     <!-- Chat Area -->
-    <div class="chat-area" data-animate="up" data-delay="100">
+    <div class="chat-area" id="chatArea" data-animate="up" data-delay="120"></div>
 
-      <!-- AI Message 1 -->
-      <div class="chat-bubble-ai">
-        <div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;">
-          <ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon>
-        </div>
-        <div>
-          <div class="bubble-ai">Halo <span id="userName">Ahmad</span>! Saya mendeteksi beberapa anomali ringan pada HRV Anda. Apa keluhan utama Anda hari ini?</div>
-          <div class="chat-timestamp" style="margin-left:4px;">10:32</div>
-        </div>
-      </div>
-
-      <!-- User Message 1 -->
-      <div style="display:flex;flex-direction:column;align-items:flex-end;">
-        <div class="bubble-user">Saya sering pusing dan lelah belakangan ini</div>
-        <div class="chat-timestamp">10:33</div>
-      </div>
-
-      <!-- AI Message 2 -->
-      <div class="chat-bubble-ai">
-        <div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;">
-          <ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon>
-        </div>
-        <div>
-          <div class="bubble-ai">Berdasarkan data HRV dan pola tidur Anda 7 hari terakhir, saya mengidentifikasi potensi kelelahan kronis. Sudah berapa lama Anda merasakan gejala ini?</div>
-          <div class="chat-timestamp" style="margin-left:4px;">10:33</div>
-        </div>
-      </div>
-
-      <!-- User Message 2 -->
-      <div style="display:flex;flex-direction:column;align-items:flex-end;">
-        <div class="bubble-user">Sekitar 2 minggu</div>
-        <div class="chat-timestamp">10:34</div>
-      </div>
-
-      <!-- AI Assessment Card -->
-      <div class="chat-bubble-ai">
-        <div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;flex-shrink:0;">
-          <ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon>
-        </div>
-        <div style="flex:1;">
-          <div class="ai-assessment-card">
-            <div class="assessment-title">
-              <ion-icon name="analytics-outline"></ion-icon> Analisis AI
-            </div>
-            <div class="assessment-row">
-              <div class="assessment-diagnosis">
-                <span style="font-weight:700;color:var(--text-primary);">Tension-Type Headache</span>
-                <span style="font-size:0.72rem;color:var(--accent);font-weight:600;"> 68%</span>
-              </div>
-              <div class="confidence-bar-track">
-                <div class="confidence-bar-fill" style="width:68%;background:linear-gradient(90deg,#4A43CC,#6C63FF);"></div>
-              </div>
-            </div>
-            <div class="assessment-row">
-              <div class="assessment-diagnosis">
-                <span style="font-weight:700;color:var(--text-primary);">Kelelahan Kronis</span>
-                <span style="font-size:0.72rem;color:var(--warning);font-weight:600;"> 24%</span>
-              </div>
-              <div class="confidence-bar-track">
-                <div class="confidence-bar-fill" style="width:24%;background:linear-gradient(90deg,#F2994A,#F2C94C);"></div>
-              </div>
-            </div>
-            <div class="assessment-rec">
-              <ion-icon name="information-circle-outline" style="vertical-align:-2px;color:var(--info);"></ion-icon>
-              <strong>Rekomendasi:</strong> Konsultasi dengan dokter spesialis untuk konfirmasi diagnosis dan rencana pengobatan yang tepat.
-            </div>
-          </div>
-          <div class="chat-timestamp" style="margin-top:4px;">10:34</div>
-        </div>
-      </div>
-
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" style="display:none;margin-top:12px;padding:12px;background:rgba(108,99,255,0.1);border-radius:12px;border:1px solid rgba(108,99,255,0.2);text-align:center;">
+      <ion-icon name="hourglass-outline" style="color:var(--accent);animation:spin 2s linear infinite;"></ion-icon>
+      <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;">Analisis AI sedang berjalan...</div>
     </div>
 
     <!-- Refer Button -->
-    <button class="neu-btn neu-btn-accent neu-btn-block" data-animate="up" data-delay="180" onclick="nav('consultation.html')" style="background:linear-gradient(135deg,#1E1350,#4A43CC);">
+    <button class="neu-btn neu-btn-accent neu-btn-block" id="referBtn" data-animate="up" data-delay="200" onclick="nav('consultation.html')" style="background:linear-gradient(135deg,#1E1350,#4A43CC);display:none;">
       <ion-icon name="person-outline"></ion-icon> Rujuk ke Dokter Manusia
     </button>
 
@@ -284,6 +228,13 @@
 
 </div>
 
+<style>
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+</style>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -291,58 +242,276 @@
 <script src="../shared/app.js"></script>
 <script src="../shared/gemini-key-manager.js"></script>
 <script>
+let currentUser, currentProfile, geminiKeyManager;
+let conversationHistory = [];
+let currentMode = null;
+let vitalsData = { hr: 0, spo2: 0, temp: 0 };
+
 (async () => {
-  const { user, profile } = await VAuth.guard('patient', 1);
-  const nameEl = document.getElementById('userName') || document.querySelector('[data-user-name]');
-  if (nameEl) nameEl.textContent = profile.name;
+  const auth = await VAuth.guard('patient', 1);
+  currentUser = auth.user;
+  currentProfile = auth.profile;
+
+  // Load Gemini key manager
+  geminiKeyManager = new GeminiKeyManager();
+  await geminiKeyManager.loadKeys();
+
+  // Load patient vitals from VitalsManager or Firestore
+  loadPatientVitals();
+
+  // Show mode selector
+  document.getElementById('modeSelector').style.display = 'block';
+  document.getElementById('introCard').style.display = 'block';
+
+  // Initialize with greeting message
+  setTimeout(() => {
+    addAIMessage(`Halo ${currentProfile.name}! 👋 Saya siap membantu Anda menganalisis kesehatan berdasarkan data sensor real-time Anda.`);
+  }, 500);
 })();
 
-  simulateVital('hrVal', 88, 4, 0, 4000);
+async function loadPatientVitals() {
+  try {
+    // Try to get latest vitals from VitalsManager if available
+    if (window.VitalsManager) {
+      const latest = VitalsManager.getLatest();
+      if (latest) {
+        vitalsData = { hr: latest.hr || 0, spo2: latest.spo2 || 0, temp: latest.temp || 0 };
+      }
+    }
 
-  async function sendChat() {
-    const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-    const area = document.querySelector('.chat-area');
+    // Get from Firestore as fallback
+    const vitalsRef = await firebase.firestore().collection('vitals').doc(currentUser.uid).get();
+    if (vitalsRef.exists) {
+      const data = vitalsRef.data();
+      vitalsData.hr = data.hr || 88;
+      vitalsData.spo2 = data.spo2 || 97;
+      vitalsData.temp = data.temp || 36.8;
+    } else {
+      vitalsData = { hr: 88, spo2: 97, temp: 36.8 };
+    }
 
-    const userDiv = document.createElement('div');
-    userDiv.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;';
-    userDiv.innerHTML = `<div class="bubble-user">${msg}</div><div class="chat-timestamp">Sekarang</div>`;
-    area.appendChild(userDiv);
-    input.value = '';
-
-    // TODO: Integrate Gemini API call with key rotation
-    // Example usage:
-    // const apiKey = geminiKeyManager.getNextKey();
-    // if (!apiKey) {
-    //   showToast('Semua API key sedang digunakan. Tunggu reset harian.', 'error');
-    //   return;
-    // }
-    // try {
-    //   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({
-    //       contents: [{ parts: [{ text: msg }] }],
-    //       generationConfig: { temperature: 0.7, topK: 40, topP: 0.95 }
-    //     })
-    //   });
-    //   const result = await response.json();
-    //   await geminiKeyManager.recordUsage(geminiKeyManager.keys[geminiKeyManager.currentIndex - 1].id);
-    //   // ... display AI response
-    // } catch (e) {
-    //   console.error('API Error:', e);
-    // }
-
-    setTimeout(() => {
-      const aiDiv = document.createElement('div');
-      aiDiv.className = 'chat-bubble-ai';
-      aiDiv.innerHTML = `<div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;"><ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon></div>
-        <div><div class="bubble-ai">Terima kasih atas informasinya. Apakah Anda mengalami gejala lain seperti mual atau gangguan penglihatan?</div><div class="chat-timestamp" style="margin-left:4px;">Sekarang</div></div>`;
-      area.appendChild(aiDiv);
-      area.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 900);
+    // Update UI
+    document.getElementById('hrVal').textContent = vitalsData.hr.toFixed(0);
+    document.getElementById('spo2Val').textContent = vitalsData.spo2.toFixed(0) + '%';
+    document.getElementById('tempVal').textContent = vitalsData.temp.toFixed(1) + '°';
+  } catch (e) {
+    console.error('Error loading vitals:', e);
+    vitalsData = { hr: 88, spo2: 97, temp: 36.8 };
   }
+}
+
+function addUserMessage(msg) {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;';
+  div.innerHTML = `<div class="bubble-user">${msg}</div><div class="chat-timestamp">${new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</div>`;
+  area.appendChild(div);
+  area.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function addAIMessage(msg) {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble-ai';
+  div.innerHTML = `<div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;"><ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon></div>
+    <div><div class="bubble-ai">${msg}</div><div class="chat-timestamp" style="margin-left:4px;">${new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</div></div>`;
+  area.appendChild(div);
+  area.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function callGeminiAPI(prompt) {
+  const apiKey = geminiKeyManager.getNextKey();
+  if (!apiKey) {
+    showToast('Semua API key sedang digunakan. Tunggu reset harian.', 'error');
+    return null;
+  }
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 500 }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    geminiKeyManager.recordUsage(apiKey.id);
+
+    if (result.candidates && result.candidates[0] && result.candidates[0].content && result.candidates[0].content.parts[0]) {
+      return result.candidates[0].content.parts[0].text;
+    }
+    return null;
+  } catch (e) {
+    console.error('Gemini API Error:', e);
+    showToast('Gagal menghubungi AI. Silakan coba lagi.', 'error');
+    return null;
+  }
+}
+
+async function startQuickCheck() {
+  currentMode = 'quick';
+  document.getElementById('modeSelector').style.display = 'none';
+  document.getElementById('introCard').style.display = 'none';
+  conversationHistory = [];
+
+  addAIMessage('Mari kita lakukan pemeriksaan cepat. Berapa gejala utama Anda hari ini?');
+}
+
+async function startDetailedAssessment() {
+  currentMode = 'detailed';
+  document.getElementById('modeSelector').style.display = 'none';
+  document.getElementById('introCard').style.display = 'none';
+  conversationHistory = [];
+
+  addAIMessage(`Kami akan melakukan penilaian kesehatan yang lebih menyeluruh. Saya telah melihat data sensor Anda:\n\n❤️ HR: ${vitalsData.hr} bpm\n💧 SpO2: ${vitalsData.spo2}%\n🌡️ Suhu: ${vitalsData.temp}°C\n\nBerdasarkan data ini, apakah ada yang terasa tidak normal?`);
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  addUserMessage(msg);
+  conversationHistory.push({ role: 'user', content: msg });
+  input.value = '';
+
+  // Show loading
+  document.getElementById('loadingIndicator').style.display = 'block';
+  document.getElementById('chatInput').disabled = true;
+  document.querySelector('.send-btn').disabled = true;
+
+  // Build context
+  const context = `Anda adalah asisten kesehatan AI profesional untuk platform telemedisin Vitalora. Anda berbicara dalam bahasa Indonesia.
+
+Data Pasien:
+- Nama: ${currentProfile.name}
+- Vital Signs Terkini: HR ${vitalsData.hr} bpm, SpO2 ${vitalsData.spo2}%, Suhu ${vitalsData.temp}°C
+- Mode Konsultasi: ${currentMode === 'quick' ? 'Quick Symptom Check (2-3 pertanyaan)' : 'Detailed Assessment (5-7 pertanyaan)'}
+
+Instruksi:
+${currentMode === 'quick' ? `1. Tanya maksimal 2-3 gejala lainnya secara singkat
+2. Setelah cukup info, berikan assessment ringkas dengan diagnosis awal
+3. Saran: "Ini sebaiknya dikonsultasikan dengan dokter untuk diagnosis pasti"` : `1. Tanya detail tentang gejala, durasi, faktor pemicu, riwayat medis
+2. Hubungkan dengan vital signs yang abnormal jika ada
+3. Setelah percakapan cukup, buat assessment komprehensif dengan differential diagnosis
+4. Berikan rekomendasi tindakan`}
+
+Riwayat Percakapan:`;
+
+  // Add conversation history
+  conversationHistory.forEach((msg, idx) => {
+    context += `\n${idx + 1}. ${msg.role === 'user' ? 'Pasien' : 'AI'}: ${msg.content}`;
+  });
+
+  const aiResponse = await callGeminiAPI(context + `\n\nBalas pesan pasien dengan natural dan supportif. Jangan terlalu formal.`);
+
+  document.getElementById('loadingIndicator').style.display = 'none';
+  document.getElementById('chatInput').disabled = false;
+  document.querySelector('.send-btn').disabled = false;
+
+  if (aiResponse) {
+    addAIMessage(aiResponse);
+    conversationHistory.push({ role: 'assistant', content: aiResponse });
+
+    // Check if assessment should be generated
+    if (conversationHistory.length >= (currentMode === 'quick' ? 6 : 10)) {
+      setTimeout(() => generateAssessment(), 1500);
+    }
+  }
+
+  document.getElementById('chatInput').focus();
+}
+
+async function generateAssessment() {
+  document.getElementById('loadingIndicator').style.display = 'block';
+  document.getElementById('chatInput').style.display = 'none';
+  document.querySelector('.send-btn').style.display = 'none';
+
+  const context = `Berdasarkan percakapan berikut, buatkan assessment kesehatan dalam format JSON yang valid:
+
+Percakapan:
+${conversationHistory.map(m => `${m.role === 'user' ? 'Pasien' : 'AI'}: ${m.content}`).join('\n')}
+
+Vital Signs: HR ${vitalsData.hr}, SpO2 ${vitalsData.spo2}%, Suhu ${vitalsData.temp}°C
+
+Buatkan response dalam JSON HANYA (tanpa markdown code block):
+{
+  "diagnosis": "Diagnosis utama berdasarkan gejala",
+  "confidence": 75,
+  "differential": [
+    {"name": "Diagnosis alternatif 1", "probability": 20},
+    {"name": "Diagnosis alternatif 2", "probability": 5}
+  ],
+  "recommendation": "Rekomendasi tindakan lanjutan",
+  "urgency": "rendah|sedang|tinggi"
+}`;
+
+  const response = await callGeminiAPI(context);
+
+  if (response) {
+    try {
+      const assessment = JSON.parse(response);
+      displayAssessmentCard(assessment);
+    } catch (e) {
+      console.error('JSON parse error:', e);
+      addAIMessage(response);
+    }
+  }
+
+  document.getElementById('loadingIndicator').style.display = 'none';
+  document.getElementById('referBtn').style.display = 'block';
+}
+
+function displayAssessmentCard(assessment) {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble-ai';
+
+  const urgencyColor = assessment.urgency === 'tinggi' ? '#EB5757' : assessment.urgency === 'sedang' ? '#F2994A' : '#6FCF97';
+  const urgencyBg = assessment.urgency === 'tinggi' ? 'rgba(235,87,87,0.1)' : assessment.urgency === 'sedang' ? 'rgba(242,153,74,0.1)' : 'rgba(111,207,151,0.1)';
+
+  let differentialHTML = '';
+  if (assessment.differential && assessment.differential.length > 0) {
+    differentialHTML = '<div style="margin-top:8px;border-top:1px solid rgba(108,99,255,0.15);padding-top:8px;"><strong style="font-size:0.78rem;">Diagnosis Alternatif:</strong>';
+    assessment.differential.forEach(d => {
+      differentialHTML += `<div style="font-size:0.75rem;color:var(--text-tertiary);margin-top:4px;">${d.name} (${d.probability}%)</div>`;
+    });
+    differentialHTML += '</div>';
+  }
+
+  div.innerHTML = `<div class="ai-avatar-sm" style="width:28px;height:28px;border-radius:8px;min-width:28px;flex-shrink:0;"><ion-icon name="hardware-chip-outline" style="color:#fff;font-size:0.75rem;"></ion-icon></div>
+    <div style="flex:1;">
+      <div class="ai-assessment-card">
+        <div class="assessment-title">
+          <ion-icon name="analytics-outline"></ion-icon> Analisis AI Anda
+        </div>
+        <div class="assessment-row">
+          <div class="assessment-diagnosis">
+            <span style="font-weight:700;color:var(--text-primary);">${assessment.diagnosis}</span>
+            <span style="font-size:0.72rem;color:${urgencyColor};font-weight:600;"> ${assessment.confidence}%</span>
+          </div>
+          <div class="confidence-bar-track">
+            <div class="confidence-bar-fill" style="width:${assessment.confidence}%;background:linear-gradient(90deg,${urgencyColor},${urgencyColor}66);"></div>
+          </div>
+        </div>
+        ${differentialHTML}
+        <div class="assessment-rec" style="background:${urgencyBg};padding:8px;border-radius:8px;border:none;margin-top:10px;">
+          <ion-icon name="information-circle-outline" style="vertical-align:-2px;color:${urgencyColor};"></ion-icon>
+          <strong>Rekomendasi:</strong> ${assessment.recommendation}
+        </div>
+      </div>
+      <div class="chat-timestamp" style="margin-top:4px;">${new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</div>
+    </div>`;
+
+  area.appendChild(div);
+  area.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 </script>
 </body>
 </html>
