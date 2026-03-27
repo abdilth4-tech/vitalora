@@ -30,7 +30,7 @@
   <header class="app-header">
     <button class="neu-icon-btn" onclick="nav('home.html')"><ion-icon name="arrow-back-outline"></ion-icon></button>
     <div style="font-size:1.05rem;font-weight:700;">Monitoring Vital</div>
-    <button class="neu-icon-btn" onclick="showToast('Export data berhasil')"><ion-icon name="download-outline"></ion-icon></button>
+    <button class="neu-icon-btn" id="export-btn" onclick="exportVitals()"><ion-icon name="download-outline"></ion-icon></button>
   </header>
 
   <!-- Tabs -->
@@ -45,8 +45,22 @@
 
   <!-- Real-time Panel -->
   <div id="realtime" class="tab-panel">
+    <!-- BLE Connection Alert -->
+    <div id="ble-alert-card" class="section" style="display:none;padding-bottom:0;">
+      <div class="neu-card" style="background:linear-gradient(135deg,rgba(235,87,87,0.1),rgba(255,107,107,0.05));border-left:4px solid #EB5757;padding:16px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <ion-icon name="alert-circle-outline" style="font-size:1.4rem;color:#EB5757;flex-shrink:0;"></ion-icon>
+          <div style="flex:1;">
+            <div style="font-weight:600;color:var(--danger);font-size:0.88rem;">Perangkat Belum Terhubung</div>
+            <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:2px;">Hubungkan smartwatch untuk monitoring real-time</div>
+          </div>
+          <button class="neu-btn neu-btn-sm" style="padding:6px 12px;font-size:0.7rem;white-space:nowrap;flex-shrink:0;" onclick="toggleBLEConnection()">Hubungkan</button>
+        </div>
+      </div>
+    </div>
+
     <div class="section">
-      <div class="vital-grid" data-animate="up">
+      <div class="vital-grid" id="vital-grid-monitoring" data-animate="up" style="transition:all 0.3s ease;">
         <div class="vital-card" style="grid-column:1/-1;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div>
@@ -192,46 +206,307 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="../shared/firebase.js"></script>
+<script src="../shared/ble-manager.js"></script>
 <script>
 (async () => {
   const { user } = await VAuth.guard('patient', 1);
 
-  // Start VitalsManager (shared across pages — check if already started)
+  // Start VitalsManager
   VitalsManager.start(user.uid);
 
-  // Subscribe for real-time display (1-second updates)
-  VitalsManager.subscribe(v => {
-    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
-    set('hr-live',   v.hr);
-    set('spo2-live', v.spo2);
-    set('temp-live', v.temperature);
-    set('rr-live',   v.respirationRate);
-    // Update gauge dynamically
-    const g = document.getElementById('hr-gauge');
-    if (g && g.children.length === 0) createGauge(g, v.hr, 120, '#EB5757');
-  });
+  // ========== TAB SWITCHING ==========
+  document.querySelectorAll('.neu-tab[data-tab]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Deactivate all main tabs
+      document.querySelectorAll('.neu-tabs:not(:has(.neu-tabs .neu-tabs)) .neu-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
 
-  // Static sparklines on first render
-  setTimeout(() => {
-    createGauge(document.getElementById('hr-gauge'), 78, 120, '#EB5757');
-    sparkline(document.getElementById('hr-chart'), [72,75,78,74,80,77,78,82,79,78,76,80,78,75,77,82,80,78], '#EB5757', 50);
-    sparkline(document.getElementById('hist-chart'), [68,72,76,80,74,78,82,76,73,79,81,77,75,78], '#27AE60', 80);
-  }, 200);
+      // Hide all panels
+      document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
 
-  // Tab: Riwayat — load historical vitals from Firestore when active
-  document.querySelectorAll('.neu-tab[data-tab="history"]').forEach(tab => {
-    tab.addEventListener('click', async () => {
-      const histChart = document.getElementById('hist-chart');
-      if (!histChart) return;
-      try {
-        const readings = await VitalsManager.getHistory(user.uid, 7);
-        if (readings.length > 0) {
-          const hrData = readings.map(r => r.hr || 78);
-          sparkline(histChart, hrData.slice(-14), '#27AE60', 80);
-        }
-      } catch (e) { /* use static fallback */ }
+      // Show selected panel
+      const panelId = tab.getAttribute('data-tab');
+      const panel = document.getElementById(panelId);
+      if (panel) panel.style.display = 'block';
     });
   });
+
+  // ========== REAL-TIME TAB ==========
+  // Load last vitals from Firestore as defaults
+  let lastVitals = { hr: '--', spo2: '--', temperature: '--', respirationRate: '--', stress: '--', steps: '--' };
+  try {
+    const history = await VDB.getVitalsHistory(user.uid, 1);
+    if (history && history.length > 0) {
+      const last = history[history.length - 1];
+      lastVitals = {
+        hr: last.hr ?? '--',
+        spo2: last.spo2 ?? '--',
+        temperature: last.temperature ?? '--',
+        respirationRate: last.respirationRate ?? '--',
+        stress: last.stress ?? '--',
+        steps: last.steps ?? '--'
+      };
+    }
+  } catch (e) {
+    console.warn('Could not load last vitals:', e);
+  }
+
+  // Display initial values
+  const displayVitals = (v) => {
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = typeof val === 'number' ? val.toFixed?.(1) || val : val;
+    };
+    set('hr-live', v.hr);
+    set('spo2-live', v.spo2);
+    set('temp-live', v.temperature);
+    set('rr-live', v.respirationRate || v.rr);
+
+    const stressEl = document.querySelector('[class*="stress"]');
+    if (stressEl) stressEl.textContent = v.stress || 42;
+
+    const stepsEl = document.querySelector('[style*="6,842"]');
+    if (stepsEl && v.steps && v.steps !== '--') {
+      stepsEl.parentElement.textContent = (v.steps || 0).toLocaleString();
+      const kcal = Math.round(v.steps * 0.04);
+      const km = (v.steps * 0.0008).toFixed(1);
+      stepsEl.parentElement.parentElement.querySelectorAll('div')[1].textContent = kcal;
+      stepsEl.parentElement.parentElement.querySelectorAll('div')[2].textContent = km;
+    }
+
+    const g = document.getElementById('hr-gauge');
+    if (g) {
+      g.innerHTML = '';
+      if (v.hr && v.hr !== '--') createGauge(g, v.hr, 120, '#EB5757');
+    }
+  };
+
+  // Display initial/last values
+  displayVitals(lastVitals);
+
+  // Subscribe to live vitals (only update when BLE connected)
+  VitalsManager.subscribe(v => {
+    const bleStatus = BLEManager.getStatus();
+    if (bleStatus.connected) {
+      displayVitals(v);
+    }
+  });
+
+  // Initial charts
+  setTimeout(() => {
+    if (!document.getElementById('hr-gauge').children.length) {
+      createGauge(document.getElementById('hr-gauge'), 78, 120, '#EB5757');
+    }
+    sparkline(document.getElementById('hr-chart'), [72,75,78,74,80,77,78,82,79,78,76,80,78,75,77,82,80,78], '#EB5757', 50);
+  }, 200);
+
+  // ========== HISTORY TAB ==========
+  const historySubTabs = document.querySelectorAll('#history .neu-tabs .neu-tab');
+  historySubTabs.forEach((tab, idx) => {
+    tab.addEventListener('click', async () => {
+      // Update sub-tab active state
+      historySubTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      // Determine date range
+      const ranges = [
+        { label: '24 Jam', days: 1 },
+        { label: '7 Hari', days: 7 },
+        { label: '30 Hari', days: 30 },
+        { label: '1 Tahun', days: 365 }
+      ];
+      const range = ranges[idx];
+
+      // Load from Firestore
+      try {
+        const readings = await VDB.getVitalsHistory(user.uid, range.days);
+        if (readings && readings.length > 0) {
+          const hrData = readings.map(r => r.hr || 78);
+          const spo2Data = readings.map(r => r.spo2 || 98);
+
+          // Update title and chart
+          document.querySelector('#history .section-title').textContent = `Detak Jantung (${range.label})`;
+
+          // Calculate stats
+          const min = Math.min(...hrData);
+          const max = Math.max(...hrData);
+          const avg = Math.round(hrData.reduce((a, b) => a + b) / hrData.length);
+
+          const statEls = document.querySelectorAll('#history .neu-card strong');
+          if (statEls[0]) statEls[0].textContent = min;
+          if (statEls[1]) statEls[1].textContent = avg;
+          if (statEls[2]) statEls[2].textContent = max;
+
+          // Draw chart
+          sparkline(document.getElementById('hist-chart'), hrData.slice(-20), '#27AE60', 80);
+        }
+      } catch (e) {
+        console.warn('History load failed:', e);
+        sparkline(document.getElementById('hist-chart'), [68,72,76,80,74,78,82,76,73,79,81,77,75,78], '#27AE60', 80);
+      }
+    });
+  });
+
+  // Trigger first history tab on load
+  if (historySubTabs[1]) historySubTabs[1].click();
+
+  // ========== HRV TAB ==========
+  const hrvTab = document.querySelector('.neu-tab[data-tab="hrv"]');
+  if (hrvTab) {
+    hrvTab.addEventListener('click', async () => {
+      try {
+        const readings = await VDB.getVitalsHistory(user.uid, 7);
+        if (readings && readings.length > 0) {
+          // Calculate HRV metrics from 7-day window
+          const sdnns = readings.map(r => r.sdnn || 40).slice(-100);
+          const rmssds = readings.map(r => r.rmssd || 38).slice(-100);
+          const pnn50s = readings.map(r => r.pnn50 || 18).slice(-100);
+
+          const avgSdnn = Math.round(sdnns.reduce((a, b) => a + b) / sdnns.length);
+          const avgRmssd = Math.round(rmssds.reduce((a, b) => a + b) / rmssds.length);
+          const avgPnn50 = Math.round(pnn50s.reduce((a, b) => a + b) / pnn50s.length);
+          const lfhf = (avgSdnn / avgRmssd * 0.9).toFixed(1);
+
+          // Update display
+          const insets = document.querySelectorAll('#hrv .neu-inset');
+          if (insets[0]) insets[0].innerHTML = `<span style="font-size:0.65rem;color:var(--text-muted);">SDNN</span><br><strong style="font-size:1.2rem;">${avgSdnn}</strong><span style="font-size:0.7rem;color:var(--text-muted);"> ms</span>`;
+          if (insets[1]) insets[1].innerHTML = `<span style="font-size:0.65rem;color:var(--text-muted);">RMSSD</span><br><strong style="font-size:1.2rem;">${avgRmssd}</strong><span style="font-size:0.7rem;color:var(--text-muted);"> ms</span>`;
+          if (insets[2]) insets[2].innerHTML = `<span style="font-size:0.65rem;color:var(--text-muted);">pNN50</span><br><strong style="font-size:1.2rem;">${avgPnn50}</strong><span style="font-size:0.7rem;color:var(--text-muted);"> %</span>`;
+          if (insets[3]) insets[3].innerHTML = `<span style="font-size:0.65rem;color:var(--text-muted);">LF/HF</span><br><strong style="font-size:1.2rem;">${lfhf}</strong>`;
+        }
+      } catch (e) {
+        console.warn('HRV load failed:', e);
+      }
+    });
+  }
+
+  // ========== SLEEP TAB ==========
+  const sleepTab = document.querySelector('.neu-tab[data-tab="sleep"]');
+  if (sleepTab) {
+    sleepTab.addEventListener('click', async () => {
+      try {
+        const readings = await VDB.getVitalsHistory(user.uid, 1);
+        if (readings && readings.length > 0) {
+          // Calculate sleep from movement data (IMU variance)
+          let awakeCount = 0, lightCount = 0, deepCount = 0, remCount = 0;
+          const now = new Date();
+          const nightReadings = readings.filter(r => {
+            const hour = new Date(r.timestamp?.toDate?.() || r.timestamp).getHours();
+            return hour >= 22 || hour <= 8;  // 22:00 - 08:00
+          });
+
+          nightReadings.forEach(r => {
+            const movement = r.movement || 0.12;
+            const hour = new Date(r.timestamp?.toDate?.() || r.timestamp).getHours();
+
+            if (movement > 0.3) awakeCount++;
+            else if (movement > 0.05) lightCount++;
+            else if (hour >= 3 && hour <= 7 && movement >= 0.02) remCount++;
+            else deepCount++;
+          });
+
+          const total = awakeCount + lightCount + deepCount + remCount || 1;
+          const deepPct = Math.round((deepCount / total) * 100);
+          const lightPct = Math.round((lightCount / total) * 100);
+          const remPct = Math.round((remCount / total) * 100);
+          const awakePct = 100 - deepPct - lightPct - remPct;
+          const totalHours = Math.floor(nightReadings.length / 60);
+          const totalMins = nightReadings.length % 60;
+
+          // Update display
+          const card = document.querySelector('#sleep .neu-card');
+          if (card) {
+            card.innerHTML = `
+              <div style="text-align:center;margin-bottom:16px;">
+                <p style="font-size:0.75rem;color:var(--text-muted);">Kualitas Tidur Semalam</p>
+                <p style="font-size:2.5rem;font-weight:800;color:var(--primary-dark);">${totalHours}h ${totalMins}m</p>
+                <span style="background:var(--success-bg);color:var(--success);padding:3px 12px;border-radius:20px;font-size:0.7rem;font-weight:600;">Baik</span>
+              </div>
+              <div style="display:flex;gap:4px;height:24px;border-radius:12px;overflow:hidden;">
+                <div style="flex:${deepPct};background:#6C63FF;" title="Deep Sleep ${deepPct}%"></div>
+                <div style="flex:${lightPct};background:#8B83FF;" title="Light Sleep ${lightPct}%"></div>
+                <div style="flex:${remPct};background:#FFD54F;" title="REM ${remPct}%"></div>
+                <div style="flex:${awakePct};background:#EB5757;" title="Awake ${awakePct}%"></div>
+              </div>
+              <div style="display:flex;justify-content:space-around;margin-top:12px;font-size:0.65rem;">
+                <span style="color:#6C63FF;">● Deep ${deepPct}%</span>
+                <span style="color:#8B83FF;">● Light ${lightPct}%</span>
+                <span style="color:#FFD54F;">● REM ${remPct}%</span>
+                <span style="color:#EB5757;">● Awake ${awakePct}%</span>
+              </div>
+            `;
+          }
+        }
+      } catch (e) {
+        console.warn('Sleep load failed:', e);
+      }
+    });
+  }
+
+  // ========== BLE STATUS - ALERT CARD & DISABLED STATE ==========
+  setInterval(() => {
+    const status = BLEManager.getStatus();
+    const vitalGrid = document.getElementById('vital-grid-monitoring');
+    const alertCard = document.getElementById('ble-alert-card');
+
+    if (vitalGrid) {
+      if (status.connected) {
+        vitalGrid.style.opacity = '1';
+        vitalGrid.style.filter = 'none';
+        vitalGrid.style.pointerEvents = 'auto';
+      } else {
+        vitalGrid.style.opacity = '0.5';
+        vitalGrid.style.filter = 'grayscale(100%)';
+        vitalGrid.style.pointerEvents = 'none';
+      }
+    }
+
+    if (alertCard) {
+      alertCard.style.display = status.connected ? 'none' : 'block';
+    }
+  }, 2000);
+
+  // ========== CSV EXPORT ==========
+  window.exportVitals = async function() {
+    try {
+      const readings = await VDB.getVitalsHistory(user.uid, 7);
+      let csv = 'Timestamp,HR,SpO2,Temp,RR,HRV,Steps,Battery,Source\n';
+
+      readings.forEach(r => {
+        const date = r.timestamp?.toDate?.() || new Date(r.timestamp);
+        const dateStr = date.toLocaleString('id-ID');
+        csv += `${dateStr},${r.hr},${r.spo2},${r.temperature},${r.respirationRate},${r.hrv},${r.steps},${r.batteryLevel || 87},${r.source || 'unknown'}\n`;
+      });
+
+      // Download
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vitalora_export_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+
+      showToast('Export berhasil: ' + readings.length + ' data points', 'success');
+    } catch (e) {
+      showToast('Export gagal: ' + e.message, 'error');
+    }
+  };
+
+  // ========== TOGGLE BLE CONNECTION ==========
+  window.toggleBLEConnection = async function() {
+    const status = BLEManager.getStatus();
+    if (status.connected) {
+      await BLEManager.disconnect();
+      showToast('Smartwatch disconnected', 'success');
+    } else {
+      const success = await BLEManager.connect();
+      if (success) {
+        showToast('Smartwatch connected!', 'success');
+      } else {
+        showToast('Failed to connect smartwatch', 'error');
+      }
+    }
+  };
 
   window.addEventListener('beforeunload', () => VitalsManager.forceUpload());
 })();

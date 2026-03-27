@@ -243,39 +243,34 @@
       </div>
     </div>
 
-    <!-- MENTAL HEALTH SECTION -->
+    <!-- HERBAL MEDICINE CONSULTATION SECTION -->
     <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border-light);">
-      <div style="font-weight:700;color:var(--text-primary);margin-bottom:14px;">🧠 Kesehatan Mental</div>
+      <div style="font-weight:700;color:var(--text-primary);margin-bottom:14px;">🌿 Konsultasi Herbal Medicine</div>
 
       <div class="field-group">
-        <label class="field-label">Tingkat Kecemasan</label>
-        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Dalam minggu terakhir, seberapa sering Anda merasa cemas atau gelisah?</div>
+        <label class="field-label">Pengalaman dengan Herbal</label>
+        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Apakah Anda pernah menggunakan herbal atau jamu tradisional?</div>
         <div class="radio-group">
-          <div class="radio-opt selected" data-group="anxietyLevel" data-val="none" onclick="pickRadio(this)">Tidak sama sekali</div>
-          <div class="radio-opt" data-group="anxietyLevel" data-val="mild" onclick="pickRadio(this)">Beberapa hari</div>
-          <div class="radio-opt" data-group="anxietyLevel" data-val="moderate" onclick="pickRadio(this)">Lebih dari setengah hari</div>
-          <div class="radio-opt" data-group="anxietyLevel" data-val="severe" onclick="pickRadio(this)">Hampir setiap hari</div>
+          <div class="radio-opt selected" data-group="herbalExperience" data-val="yes" onclick="pickRadio(this)">Ya, sering</div>
+          <div class="radio-opt" data-group="herbalExperience" data-val="sometimes" onclick="pickRadio(this)">Kadang-kadang</div>
+          <div class="radio-opt" data-group="herbalExperience" data-val="no" onclick="pickRadio(this)">Belum pernah</div>
         </div>
       </div>
 
       <div class="field-group">
-        <label class="field-label">Tingkat Depresi / Kesedihan</label>
-        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Merasa sedih, kosong, atau putus asa?</div>
-        <div class="radio-group">
-          <div class="radio-opt selected" data-group="depressionLevel" data-val="none" onclick="pickRadio(this)">Tidak sama sekali</div>
-          <div class="radio-opt" data-group="depressionLevel" data-val="mild" onclick="pickRadio(this)">Beberapa hari</div>
-          <div class="radio-opt" data-group="depressionLevel" data-val="moderate" onclick="pickRadio(this)">Lebih dari setengah hari</div>
-          <div class="radio-opt" data-group="depressionLevel" data-val="severe" onclick="pickRadio(this)">Hampir setiap hari</div>
-        </div>
+        <label class="field-label">Alergi Herbal</label>
+        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Apakah Anda memiliki alergi terhadap herbal atau tanaman tertentu?</div>
+        <input type="text" class="neu-input" id="herbalAllergy" placeholder="Contoh: kunyit, jahe, dll (kosongkan jika tidak ada)" value="">
       </div>
 
       <div class="field-group">
-        <label class="field-label">Tingkat Stress Pekerjaan</label>
-        <div class="slider-wrap">
-          <input type="range" id="workStressLevel" min="1" max="10" value="5" oninput="updateSliderRaw('workStressLevel','workStressVal')">
-          <span class="slider-value" id="workStressVal">5 / 10</span>
+        <label class="field-label">Minat Konsultasi Herbal</label>
+        <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:10px;">Seberapa tertarik Anda untuk konsultasi dengan ahli herbal?</div>
+        <div class="radio-group">
+          <div class="radio-opt" data-group="herbalInterest" data-val="very" onclick="pickRadio(this)">Sangat tertarik</div>
+          <div class="radio-opt selected" data-group="herbalInterest" data-val="moderate" onclick="pickRadio(this)">Cukup tertarik</div>
+          <div class="radio-opt" data-group="herbalInterest" data-val="low" onclick="pickRadio(this)">Kurang tertarik</div>
         </div>
-        <div class="field-hint">1 = tidak ada stress, 10 = stress ekstrem</div>
       </div>
     </div>
 

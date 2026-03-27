@@ -367,19 +367,19 @@
   <div class="container">
     <div class="stats-grid">
       <div class="stat-box" data-animate="up" data-delay="100">
-        <div class="stat-number" id="stat1">1000+</div>
+        <div class="stat-number" id="stat-patients">-</div>
         <div class="stat-label">Pasien Terdaftar</div>
       </div>
       <div class="stat-box" data-animate="up" data-delay="180">
-        <div class="stat-number" id="stat2">50+</div>
+        <div class="stat-number" id="stat-doctors">-</div>
         <div class="stat-label">Dokter Spesialis</div>
       </div>
       <div class="stat-box" data-animate="up" data-delay="260">
-        <div class="stat-number">7</div>
+        <div class="stat-number" id="stat-diseases">7</div>
         <div class="stat-label">Target Penyakit Kronis</div>
       </div>
       <div class="stat-box" data-animate="up" data-delay="340">
-        <div class="stat-number">3</div>
+        <div class="stat-number" id="stat-sensors">3</div>
         <div class="stat-label">Sensor AIoT Terintegrasi</div>
       </div>
     </div>
@@ -581,6 +581,46 @@ function updateViewport() {
 }
 window.addEventListener('resize', updateViewport);
 updateViewport();
+
+// Load stats from Firestore
+async function loadStats() {
+  try {
+    // Import Firebase modules dynamically if not available
+    if (typeof firebase === 'undefined') {
+      const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js');
+      const { getFirestore, collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js');
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDU2OqVAzQ0DAF_gFCVeRBGRSgTEBV8VQE",
+        authDomain: "vitalora-c89d3.firebaseapp.com",
+        projectId: "vitalora-c89d3",
+        storageBucket: "vitalora-c89d3.appspot.com",
+        messagingSenderId: "651316487852",
+        appId: "1:651316487852:web:53d56aa6b9f4f98ba4fbee"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // Get patient count
+      const patientSnap = await getDocs(collection(db, 'users'));
+      const patientCount = patientSnap.docs.filter(doc => doc.data().role === 'patient').length;
+      const doctorCount = patientSnap.docs.filter(doc => doc.data().role === 'doctor').length;
+
+      // Update UI
+      document.getElementById('stat-patients').textContent = patientCount > 0 ? patientCount + '+' : '0';
+      document.getElementById('stat-doctors').textContent = doctorCount > 0 ? doctorCount + '+' : '0';
+    }
+  } catch (error) {
+    console.warn('Could not load stats from Firestore:', error);
+    // Keep default placeholder values
+    document.getElementById('stat-patients').textContent = '1000+';
+    document.getElementById('stat-doctors').textContent = '50+';
+  }
+}
+
+// Load stats when page loads
+window.addEventListener('DOMContentLoaded', loadStats);
 </script>
 </body>
 </html>

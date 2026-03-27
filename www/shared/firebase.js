@@ -25,6 +25,24 @@ if (typeof FIREBASE_CONFIG === 'undefined') {
   };
 }
 
+// ─── CLOUD FUNCTIONS CONFIG ────────────────────────────────────────────────
+// Auto-detect project ID from FIREBASE_CONFIG
+const PROJECT_ID = FIREBASE_CONFIG.projectId || 'vitalora';
+const CF_REGION = 'us-central1';
+const CF_BASE = `https://${CF_REGION}-${PROJECT_ID}.cloudfunctions.net`;
+
+if (typeof window.CLOUD_FUNCTIONS === 'undefined') {
+  window.CLOUD_FUNCTIONS = {
+    symptomChecker: `${CF_BASE}/symptomChecker`,
+    drugInteractions: `${CF_BASE}/drugInteractions`,
+    nutritionAdvisor: `${CF_BASE}/nutritionAdvisor`,
+    mentalHealthSupport: `${CF_BASE}/mentalHealthSupport`,
+    herbalAdvisor: `${CF_BASE}/herbalAdvisor`,
+    healthInsight: `${CF_BASE}/healthInsight`,
+    riskAssessment: `${CF_BASE}/riskAssessment`
+  };
+}
+
 // ─── INIT ───────────────────────────────────────────────────────────────────
 if (!firebase.apps || !firebase.apps.length) {
   firebase.initializeApp(FIREBASE_CONFIG);
@@ -34,6 +52,37 @@ const _db   = firebase.firestore();
 
 // ─── EXPOSED INSTANCES ─────────────────────────────────────────────────────
 window.VFirebase = { auth: _auth, db: _db };
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  VCache — In-memory cache with 5-minute TTL
+// ═══════════════════════════════════════════════════════════════════════════
+window.VCache = (() => {
+  const _store = {};
+  const TTL = 5 * 60 * 1000; // 5 minutes
+
+  return {
+    get(key) {
+      const item = _store[key];
+      if (!item) return null;
+      if (Date.now() - item.ts > TTL) {
+        delete _store[key];
+        return null;
+      }
+      return item.data;
+    },
+    set(key, data) {
+      _store[key] = { data, ts: Date.now() };
+    },
+    clear(prefix) {
+      Object.keys(_store)
+        .filter(k => k.startsWith(prefix))
+        .forEach(k => delete _store[k]);
+    },
+    clearAll() {
+      Object.keys(_store).forEach(k => delete _store[k]);
+    }
+  };
+})();
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  VAuth — Authentication helpers
@@ -209,13 +258,19 @@ window.VDB = {
     });
   },
   async getVitalsHistory(patientId, limitDays = 7) {
+    const cacheKey = `vitals:${patientId}:${limitDays}`;
+    const cached = VCache.get(cacheKey);
+    if (cached) return cached;
+
     const since = new Date();
     since.setDate(since.getDate() - limitDays);
     const snap = await _db.collection('vitals').doc(patientId).collection('readings')
       .where('timestamp', '>=', since)
       .orderBy('timestamp', 'asc')
       .get();
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    VCache.set(cacheKey, data);
+    return data;
   },
 
   async createConsultation(data) {
@@ -475,10 +530,16 @@ window.VDB = {
   },
 
   async getScreeningHistory(userId, disease, limitN = 20) {
+    const cacheKey = `screening:${userId}:${disease}:${limitN}`;
+    const cached = VCache.get(cacheKey);
+    if (cached) return cached;
+
     const snap = await _db.collection('screeningResults').doc(userId)
       .collection(disease)
       .orderBy('timestamp', 'desc').limit(limitN).get();
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    VCache.set(cacheKey, data);
+    return data;
   },
 
   // ── HEALTH PROFILE (ML Tasks Batch 1.A) ──────────────────────────────
@@ -496,8 +557,14 @@ window.VDB = {
   },
 
   async getHealthProfile(userId) {
+    const cacheKey = `profile:${userId}`;
+    const cached = VCache.get(cacheKey);
+    if (cached !== null) return cached;
+
     const doc = await _db.collection('userHealthProfile').doc(userId).get();
-    return doc.exists ? doc.data() : null;
+    const data = doc.exists ? doc.data() : null;
+    VCache.set(cacheKey, data);
+    return data;
   },
 
   async updateHealthSection(userId, sectionData) {
@@ -614,8 +681,49 @@ window.VitalsManager = (() => {
     getCurrent() { return { ..._buffer }; },
     subscribe(callback) {
       _subscribers.push(callback);
-      if (_buffer.hr) callback({ ..._buffer }); 
+      if (_buffer.hr) callback({ ..._buffer });
       return () => { _subscribers = _subscribers.filter(c => c !== callback); };
+    },
+    /**
+     * Inject BLE data into vitals buffer
+     * BLE data takes priority over simulated data
+     */
+    injectBLE(bleData) {
+      if (!bleData) return;
+
+      // Map BLE field names to buffer field names
+      const mapping = {
+        hr: 'hr',
+        spo2: 'spo2',
+        temp: 'temperature',
+        temperature: 'temperature',
+        rr: 'respirationRate',
+        respirationRate: 'respirationRate',
+        hrv: 'hrv',
+        sdnn: 'sdnn',
+        rmssd: 'rmssd',
+        pnn50: 'pnn50',
+        steps: 'steps',
+        battery: 'batteryLevel',
+        batteryLevel: 'batteryLevel',
+        stress: 'stress',
+        movement: 'movement',
+        gsr: 'gsr'
+      };
+
+      // Merge BLE data into buffer (overrides simulation)
+      Object.entries(mapping).forEach(([bleKey, bufferKey]) => {
+        if (bleKey in bleData && bleData[bleKey] !== undefined) {
+          _buffer[bufferKey] = bleData[bleKey];
+        }
+      });
+
+      // Always mark source as BLE
+      _buffer.source = bleData.source || 'ble';
+      _buffer.bleTimestamp = bleData.timestamp || new Date().toISOString();
+
+      // Notify subscribers immediately of BLE data
+      _subscribers.forEach(cb => cb({ ..._buffer }));
     },
     async getHistory(patientId, days = 7) {
       return await VDB.getVitalsHistory(patientId, days);
