@@ -517,18 +517,79 @@ async function loadAIInsight(uid, vitals7, profile) {
       return;
     }
 
-    if (!profile) { p.innerHTML = '<strong style="color:var(--accent);">📝 Lengkapi Profil</strong><br><span style="font-size:0.75rem;">Isi profil kesehatan Anda untuk mendapatkan insight yang lebih akurat.</span>'; return; }
-    const scores = RiskEngine.calculateAll(profile);
-    const entries = Object.entries(scores).filter(e => e[1] && e[1].score !== undefined).sort((a,b) => b[1].score - a[1].score);
-    const top = entries[0];
-    if (top && top[1].score > 40) {
-      const diseaseNames = { diabetes: 'Diabetes', heart: 'Jantung', hypertension: 'Hipertensi', stroke: 'Stroke', metabolic: 'Metabolik', sleep: 'Tidur' };
-      const name = diseaseNames[top[0]] || top[0];
-      const factor = top[1].factors[0] || 'faktor gaya hidup';
-      p.innerHTML = `<strong style="color:var(--accent);">Risiko ${name} diperhatikan</strong> karena ${factor}. Segera cek detail di Dashboard.`;
-    } else {
-      p.innerHTML = 'Kondisi kesehatan Anda terpantau stabil. Pertahankan pola hidup sehat Anda.';
+    if (!profile) {
+      p.innerHTML = '<strong style="color:var(--accent);">📝 Lengkapi Profil</strong><br><span style="font-size:0.75rem;">Isi profil kesehatan Anda untuk mendapatkan insight yang lebih akurat.</span>';
+      return;
     }
+
+    // Enhanced XAI: Show top 3 diseases with factors and recommendations
+    const scores = RiskEngine.calculateAll(profile);
+    const entries = Object.entries(scores)
+      .filter(e => e[1] && e[1].score !== undefined)
+      .sort((a,b) => b[1].score - a[1].score);
+
+    const diseaseNames = {
+      diabetes: 'Diabetes',
+      heart: 'Jantung',
+      hypertension: 'Hipertensi',
+      stroke: 'Stroke',
+      metabolic: 'Metabolik',
+      sleep: 'Tidur'
+    };
+
+    // Show top 3 diseases
+    const top3 = entries.slice(0, 3).filter(e => e[1].score > 25);
+
+    if (top3.length === 0) {
+      p.innerHTML = 'Kondisi kesehatan Anda terpantau stabil. Pertahankan pola hidup sehat Anda.';
+      return;
+    }
+
+    // Build top diseases display with factors
+    const topDiseasesList = top3.map(([key, data]) => {
+      const name = diseaseNames[key] || key;
+      const score = data.score;
+      const factor1 = data.factors[0] || 'faktor risiko';
+      const factor2 = data.factors[1];
+      let badge = '';
+      if (score > 75) badge = '🔴 Tinggi';
+      else if (score > 50) badge = '🟡 Sedang';
+      else badge = '🟢 Rendah';
+
+      return `
+        <div style="margin-bottom:10px;padding:10px;background:var(--bg);border-radius:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-weight:700;font-size:0.82rem;">${name}</span>
+            <span style="font-size:0.9rem;font-weight:800;color:#F2994A;">${score}/100</span>
+            <span style="font-size:0.6rem;background:#F2994A12;color:#F2994A;padding:2px 6px;border-radius:6px;font-weight:600;">${badge}</span>
+          </div>
+          <div style="font-size:0.7rem;color:var(--text-tertiary);">
+            ${factor1}${factor2 ? ' · ' + factor2 : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Build actionable recommendations
+    const allFactors = top3.flatMap(([_, data]) => data.factors).slice(0, 3);
+    const recommendations = [
+      allFactors[0] ? `• Kurangi ${allFactors[0]?.toLowerCase()}` : '• Lakukan screening berkala',
+      'Olahraga 30 menit/hari',
+      'Konsultasi dengan dokter untuk rencana intervensi'
+    ];
+
+    p.innerHTML = `
+      <div style="margin-bottom:12px;">
+        <strong style="color:var(--accent);display:block;margin-bottom:8px;">🧠 3 Risiko Utama Anda:</strong>
+        ${topDiseasesList}
+      </div>
+      <div style="padding-top:12px;border-top:1px solid var(--shadow-dark);margin-top:12px;">
+        <strong style="color:var(--accent);display:block;margin-bottom:8px;font-size:0.8rem;">💡 3 Hal yang Bisa Dilakukan:</strong>
+        <div style="font-size:0.72rem;color:var(--text-secondary);line-height:1.5;">
+          ${recommendations.map(r => `${r}<br>`).join('')}
+        </div>
+      </div>
+    `;
   } catch(e) { console.warn('[home] AI insight error:', e); }
 }
 
