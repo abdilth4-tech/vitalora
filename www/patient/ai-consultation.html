@@ -241,11 +241,14 @@
 <script src="../shared/firebase.js"></script>
 <script src="../shared/app.js"></script>
 <script src="../shared/gemini-key-manager.js"></script>
+<script src="../shared/risk-engine.js"></script>
 <script>
 let currentUser, currentProfile, geminiKeyManager;
 let conversationHistory = [];
 let currentMode = null;
 let vitalsData = { hr: 0, spo2: 0, temp: 0 };
+let healthProfile = null;
+let riskScores = null;
 
 (async () => {
   const auth = await VAuth.guard('patient', 1);
@@ -258,6 +261,16 @@ let vitalsData = { hr: 0, spo2: 0, temp: 0 };
 
   // Load patient vitals from VitalsManager or Firestore
   loadPatientVitals();
+
+  // Load health profile for risk context (cached via VCache)
+  try {
+    healthProfile = await VDB.getHealthProfile(currentUser.uid);
+    if (healthProfile) {
+      riskScores = RiskEngine.calculateAll(healthProfile);
+    }
+  } catch (e) {
+    console.warn('Could not load health profile for risk context:', e);
+  }
 
   // Show mode selector
   document.getElementById('modeSelector').style.display = 'block';
@@ -386,13 +399,43 @@ async function sendChat() {
   document.getElementById('chatInput').disabled = true;
   document.querySelector('.send-btn').disabled = true;
 
+  // Build risk summary if available
+  let riskSummary = '';
+  if (riskScores && healthProfile) {
+    const diseaseMap = {
+      metabolic: 'Sindrom Metabolik',
+      diabetes: 'Diabetes Mellitus',
+      heart: 'Penyakit Jantung',
+      hypertension: 'Hipertensi',
+      stroke: 'Stroke',
+      sleep: 'Gangguan Tidur'
+    };
+
+    const topRisks = Object.entries(riskScores)
+      .filter(([k, v]) => k !== 'calculatedAt' && k !== 'calculatedWith' && v && v.score !== undefined)
+      .sort((a, b) => (b[1]?.score || 0) - (a[1]?.score || 0))
+      .slice(0, 3)
+      .map(([k, v]) => {
+        const topFactors = v.factors ? v.factors.slice(0, 2).join(', ') : 'Data tidak lengkap';
+        return `${diseaseMap[k] || k}: ${v.score}/100 (Faktor: ${topFactors})`;
+      })
+      .join('\n');
+
+    if (topRisks) {
+      riskSummary = `\nProfil Risiko Kesehatan Pasien (Top 3):
+${topRisks}
+
+Catatan: Jelaskan skor risiko dengan bahasa sederhana jika pasien bertanya. Hubungkan gejala yang dilaporkan dengan faktor risiko yang teridentifikasi.`;
+    }
+  }
+
   // Build context
   const context = `Anda adalah asisten kesehatan AI profesional untuk platform telemedisin Vitalora. Anda berbicara dalam bahasa Indonesia.
 
 Data Pasien:
 - Nama: ${currentProfile.name}
 - Vital Signs Terkini: HR ${vitalsData.hr} bpm, SpO2 ${vitalsData.spo2}%, Suhu ${vitalsData.temp}°C
-- Mode Konsultasi: ${currentMode === 'quick' ? 'Quick Symptom Check (2-3 pertanyaan)' : 'Detailed Assessment (5-7 pertanyaan)'}
+- Mode Konsultasi: ${currentMode === 'quick' ? 'Quick Symptom Check (2-3 pertanyaan)' : 'Detailed Assessment (5-7 pertanyaan)'}${riskSummary}
 
 Instruksi:
 ${currentMode === 'quick' ? `1. Tanya maksimal 2-3 gejala lainnya secara singkat

@@ -76,3 +76,4 @@ __pycache__/
 *.pyc
 *.pkl
 serviceAccountKey.json
+firebase-key.json
