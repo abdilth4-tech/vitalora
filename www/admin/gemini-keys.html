@@ -183,20 +183,25 @@
 
 <script>
 let editingKeyId = null;
+let keysUnsubscribe = null;
 
 // Load keys on page load
 document.addEventListener('DOMContentLoaded', async () => {
   const { user, profile: _vp } = await VAuth.guard('admin', 1);
   if (_vp && _vp.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
-  await loadKeysTable();
-  setInterval(loadKeysTable, 5000); // Refresh every 5s
+  // Use real-time listener instead of polling (eliminates 12 reads/minute)
+  keysUnsubscribe = VFirebase.db.collection('gemini-api-keys')
+    .orderBy('order', 'asc')
+    .onSnapshot(snap => {
+      const keys = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      updateKeysUI(keys);
+    }, err => {
+      console.error('Error listening to keys:', err);
+    });
 });
 
-async function loadKeysTable() {
+function updateKeysUI(keys) {
   try {
-    const snap = await VFirebase.db.collection('gemini-api-keys').orderBy('order', 'asc').get();
-    const keys = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
     // Update stats
     const totalKeys = keys.length;
     const activeKeys = keys.filter(k => k.active).length;
@@ -237,7 +242,7 @@ async function loadKeysTable() {
       `;
     }).join('');
   } catch (e) {
-    console.error('Error loading keys:', e);
+    console.error('Error updating keys UI:', e);
   }
 }
 
@@ -329,6 +334,11 @@ async function deleteKey(keyId) {
 // Close modal on outside click
 document.getElementById('keyModal').addEventListener('click', (e) => {
   if (e.target.id === 'keyModal') closeKeyModal();
+});
+
+// Cleanup listener on page unload
+window.addEventListener('beforeunload', () => {
+  if (keysUnsubscribe) keysUnsubscribe();
 });
 </script>
 
