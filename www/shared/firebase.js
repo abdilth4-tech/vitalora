@@ -26,10 +26,15 @@ if (typeof FIREBASE_CONFIG === 'undefined') {
 }
 
 // ─── CLOUD FUNCTIONS CONFIG ────────────────────────────────────────────────
-// Auto-detect project ID from FIREBASE_CONFIG
-const PROJECT_ID = FIREBASE_CONFIG.projectId || 'vitalora';
-const CF_REGION = 'us-central1';
-const CF_BASE = `https://${CF_REGION}-${PROJECT_ID}.cloudfunctions.net`;
+// Auto-detect project ID from FIREBASE_CONFIG (safe for multiple includes)
+if (typeof window.PROJECT_ID === 'undefined') {
+  window.PROJECT_ID = FIREBASE_CONFIG.projectId || 'vitalora';
+  window.CF_REGION = 'us-central1';
+  window.CF_BASE = `https://${window.CF_REGION}-${window.PROJECT_ID}.cloudfunctions.net`;
+}
+const PROJECT_ID = window.PROJECT_ID;
+const CF_REGION = window.CF_REGION;
+const CF_BASE = window.CF_BASE;
 
 if (typeof window.CLOUD_FUNCTIONS === 'undefined') {
   window.CLOUD_FUNCTIONS = {
@@ -47,8 +52,12 @@ if (typeof window.CLOUD_FUNCTIONS === 'undefined') {
 if (!firebase.apps || !firebase.apps.length) {
   firebase.initializeApp(FIREBASE_CONFIG);
 }
-const _auth = firebase.auth();
-const _db   = firebase.firestore();
+if (typeof window._auth === 'undefined') {
+  window._auth = firebase.auth();
+  window._db   = firebase.firestore();
+}
+const _auth = window._auth;
+const _db   = window._db;
 
 // ─── EXPOSED INSTANCES ─────────────────────────────────────────────────────
 window.VFirebase = { auth: _auth, db: _db };

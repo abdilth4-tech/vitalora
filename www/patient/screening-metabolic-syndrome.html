@@ -77,6 +77,19 @@
     }
     .criteria-tag.met { background: rgba(235, 87, 87, 0.1); color: #EB5757; border: 1px solid rgba(235,87,87,0.2); }
     .criteria-tag.not-met { background: rgba(39, 174, 96, 0.1); color: #27AE60; border: 1px solid rgba(39,174,96,0.2); }
+
+    .radio-opt {
+      padding: 12px 16px; border-radius: 12px; border: 2px solid var(--shadow-dark);
+      background: var(--bg); color: var(--text-secondary); font-weight: 700;
+      text-align: center; cursor: pointer; transition: all 0.3s;
+      box-shadow: var(--shadow-out-sm); font-size: 0.9rem;
+    }
+    .radio-opt:active { transform: scale(0.98); }
+    .radio-opt.selected {
+      background: linear-gradient(135deg, var(--primary-mets), #A29BFE);
+      color: #fff; border-color: var(--primary-mets);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+    }
   </style>
 </head>
 <body>
