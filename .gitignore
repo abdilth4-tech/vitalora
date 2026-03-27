@@ -77,3 +77,4 @@ __pycache__/
 *.pkl
 serviceAccountKey.json
 firebase-key.json
+vitalora-firebase-adminsdk-fbsvc-f5d5e39256.json
