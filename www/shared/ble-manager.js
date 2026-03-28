@@ -2,14 +2,16 @@
  * BLEManager — Web Bluetooth API Singleton
  * Manages connection to ESP32 GATT server and provides real-time vital data
  *
- * Service UUID: 12345678-1234-5678-1234-56789abc0000
- * Characteristic UUID: 12345678-1234-5678-1234-56789abc0001
+ * Service UUID: 12345678-1234-1234-1234-123456789abc
+ * Characteristic UUID: abcd1234-ab12-cd34-ef56-123456789abc
+ * Device Name Prefix: vitalora
  */
 
 const BLEManager = (() => {
   // Configuration
-  const SERVICE_UUID = '12345678-1234-5678-1234-56789abc0000';
-  const CHAR_UUID = '12345678-1234-5678-1234-56789abc0001';
+  const SERVICE_UUID = '12345678-1234-1234-1234-123456789abc';
+  const CHAR_UUID = 'abcd1234-ab12-cd34-ef56-123456789abc';
+  const DEVICE_NAME_PREFIX = 'vitalora';
 
   // State
   let _device = null;
@@ -32,10 +34,12 @@ const BLEManager = (() => {
       _connectionStartTime = Date.now();
       console.log('🔍 Scanning for Vitalora Watch...');
 
-      // Scan for device
+      // Scan for device with name prefix filter
       const device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: [SERVICE_UUID] }],
-        optionalServices: []
+        filters: [
+          { namePrefix: DEVICE_NAME_PREFIX }
+        ],
+        optionalServices: [SERVICE_UUID]
       });
 
       _device = device;
