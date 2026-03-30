@@ -142,10 +142,10 @@
   <header class="app-header">
     <button class="neu-icon-btn" onclick="nav('home.html')"><ion-icon name="arrow-back-outline"></ion-icon></button>
     <div class="ai-header-info">
-      <div class="ai-avatar">🧠</div>
+      <div class="ai-avatar">&#129504;</div>
       <div>
         <div class="ai-name">Vitalora AI</div>
-        <div class="ai-status">● Online 24/7</div>
+        <div class="ai-status">&#9679; Online 24/7</div>
       </div>
     </div>
     <button class="neu-icon-btn" onclick="clearChat()"><ion-icon name="trash-outline"></ion-icon></button>
@@ -156,12 +156,12 @@
 
   <!-- QUICK CHIPS -->
   <div class="chips-bar" id="chipsBar">
-    <div class="chip" onclick="sendChip(this)">💊 Sakit kepala</div>
-    <div class="chip" onclick="sendChip(this)">🌿 Herbal diabetes</div>
-    <div class="chip" onclick="sendChip(this)">😴 Susah tidur</div>
-    <div class="chip" onclick="sendChip(this)">🫀 Gejala maag</div>
-    <div class="chip" onclick="sendChip(this)">🩸 Tekanan darah tinggi</div>
-    <div class="chip" onclick="sendChip(this)">🏃 Tips olahraga</div>
+    <div class="chip" onclick="sendChip(this)">&#128138; Sakit kepala</div>
+    <div class="chip" onclick="sendChip(this)">&#127807; Herbal diabetes</div>
+    <div class="chip" onclick="sendChip(this)">&#128564; Susah tidur</div>
+    <div class="chip" onclick="sendChip(this)">&#129728; Gejala maag</div>
+    <div class="chip" onclick="sendChip(this)">&#129656; Tekanan darah tinggi</div>
+    <div class="chip" onclick="sendChip(this)">&#127939; Tips olahraga</div>
   </div>
 
   <!-- INPUT -->
@@ -176,16 +176,11 @@
 </div>
 
 <script src="../shared/app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="../shared/firebase.js"></script>
-<script src="../shared/vdb.js"></script>
-<script src="../shared/gemini-key-manager.js"></script>
+<script src="../shared/gemini-keys.js"></script>
 <script>
   // ── Konfigurasi ─────────────────────────────────────────────────────────
-  // API key dari Gemini Key Manager (round-robin rotation dengan usage tracking)
-  let GEMINI_KEY = null; // akan diisi saat init
-  let CURRENT_KEY_ID = null;
+  const API_KEYS = window.GEMINI_API_KEYS || [];
+  let currentKeyIndex = 0;
 
   const SYSTEM_PROMPT = `Kamu adalah Vitalora AI, asisten kesehatan yang ramah dan berpengetahuan.
 Selalu jawab dalam Bahasa Indonesia yang mudah dipahami oleh masyarakat umum.
@@ -195,7 +190,7 @@ Jangan memberikan diagnosis pasti atau meresepkan obat. Jawaban maksimal 3-4 kal
 Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesadaran), segera sarankan panggil darurat.`;
 
   // ── State ────────────────────────────────────────────────────────────────
-  let chatHistory = []; // { role: 'user'|'ai', text: string }
+  let chatHistory = [];
   let userInitials = 'P';
   let isLoading = false;
 
@@ -206,28 +201,7 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
       userInitials = (profile.name || 'Pengguna').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
     } catch(e) { /* guest mode ok */ }
 
-    // Load Gemini key from Key Manager (round-robin rotation)
-    try {
-      // Wait for geminiKeyManager to initialize (loads keys from Firestore)
-      if (typeof geminiKeyManager !== 'undefined' && geminiKeyManager) {
-        const maxWait = 5000;
-        const startTime = Date.now();
-        while (geminiKeyManager.keys.length === 0 && Date.now() - startTime < maxWait) {
-          await new Promise(r => setTimeout(r, 100));
-        }
-
-        if (geminiKeyManager.keys.length > 0) {
-          GEMINI_KEY = geminiKeyManager.getNextKey();
-          // Store the key ID for usage tracking after API call
-          const keyWithId = geminiKeyManager.keys.find(k => k.key === GEMINI_KEY);
-          CURRENT_KEY_ID = keyWithId ? keyWithId.id : null;
-        }
-      }
-    } catch(e) {
-      console.warn('Error loading Gemini key:', e);
-    }
-
-    if (!GEMINI_KEY || GEMINI_KEY === 'YOUR_GEMINI_API_KEY') {
+    if (API_KEYS.length === 0) {
       showNoKeyBanner();
       return;
     }
@@ -241,13 +215,13 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
     document.querySelector('.chat-input-bar').style.display = 'none';
     chatArea.innerHTML = `
       <div class="no-key-card" data-animate="up">
-        <div style="font-size:2rem;margin-bottom:10px;">🤖</div>
+        <div style="font-size:2rem;margin-bottom:10px;">&#129302;</div>
         <div style="font-weight:700;font-size:0.95rem;margin-bottom:8px;">Fitur AI Chat Belum Aktif</div>
         <p style="font-size:0.78rem;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;">
           Untuk mengaktifkan, admin perlu menambahkan Gemini API Key di konfigurasi aplikasi.
           Sementara itu, Anda bisa berkonsultasi langsung dengan dokter.
         </p>
-        <button class="neu-btn-primary" style="width:100%;" onclick="nav('find-doctor.html')">
+        <button class="neu-btn-primary" style="width:100%;" onclick="nav('consultation.html')">
           <ion-icon name="person-outline" style="vertical-align:-2px;margin-right:6px;"></ion-icon>
           Cari Dokter
         </button>
@@ -269,7 +243,7 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
 
   // ── Send ─────────────────────────────────────────────────────────────────
   function sendChip(el) {
-    const text = el.textContent.replace(/^[^\s]+\s/, ''); // strip emoji prefix
+    const text = el.textContent.replace(/^[^\s]+\s/, '');
     document.getElementById('msgInput').value = text;
     sendMessage();
   }
@@ -289,15 +263,14 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
     const thinkingId = appendThinking();
 
     try {
-      const reply = await askGemini(text, chatHistory.slice(0, -1));
+      const reply = await askGeminiWithFailover(text, chatHistory.slice(0, -1));
       removeThinking(thinkingId);
       appendAIBubble(reply);
       chatHistory.push({ role: 'ai', text: reply });
-      // Keep history compact (last 10 messages)
       if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
     } catch (e) {
       removeThinking(thinkingId);
-      appendAIBubble('Maaf, terjadi gangguan koneksi. Silakan coba lagi dalam beberapa saat.');
+      appendAIBubble('Maaf, semua layanan AI sedang sibuk. Silakan coba lagi dalam beberapa saat.');
       console.error('[AI chat]', e);
     } finally {
       isLoading = false;
@@ -305,7 +278,42 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
     }
   }
 
-  async function askGemini(userMessage, history) {
+  /**
+   * Try calling Gemini API with automatic key rotation on failure.
+   * If a key returns 429 (rate limit) or 403, rotate to the next key and retry.
+   */
+  async function askGeminiWithFailover(userMessage, history) {
+    let lastError = null;
+
+    for (let attempt = 0; attempt < API_KEYS.length; attempt++) {
+      const keyIndex = (currentKeyIndex + attempt) % API_KEYS.length;
+      const apiKey = API_KEYS[keyIndex];
+
+      try {
+        const reply = await callGeminiAPI(userMessage, history, apiKey);
+        // Success — update currentKeyIndex to this working key for next call
+        currentKeyIndex = keyIndex;
+        return reply;
+      } catch (e) {
+        lastError = e;
+        const status = e.status || 0;
+        // Only retry on rate limit (429) or quota/auth errors (403)
+        if (status === 429 || status === 403) {
+          console.warn(`Key #${keyIndex + 1} hit limit (HTTP ${status}), trying next key...`);
+          continue;
+        }
+        // For other errors (network, 500, etc.), don't burn through all keys
+        throw e;
+      }
+    }
+
+    // All keys exhausted
+    // Advance to the next key for the next user attempt
+    currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+    throw lastError || new Error('Semua API key telah mencapai batas.');
+  }
+
+  async function callGeminiAPI(userMessage, history, apiKey) {
     const contents = [];
     history.forEach(m => {
       contents.push({ role: m.role === 'ai' ? 'model' : 'user', parts: [{ text: m.text }] });
@@ -313,35 +321,28 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
     contents.push({ role: 'user', parts: [{ text: userMessage }] });
 
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
           contents,
-          generationConfig: { maxOutputTokens: 350, temperature: 0.7 }
+          generationConfig: { maxOutputTokens: 512, temperature: 0.7 }
         })
       }
     );
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
+      const error = new Error(err.error?.message || `HTTP ${res.status}`);
+      error.status = res.status;
+      throw error;
     }
+
     const data = await res.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text
+    return data.candidates?.[0]?.content?.parts?.[0]?.text
       || 'Maaf, saya tidak dapat memproses pertanyaan tersebut saat ini.';
-
-    // Track API usage
-    if (CURRENT_KEY_ID && typeof geminiKeyManager !== 'undefined' && geminiKeyManager) {
-      try {
-        await geminiKeyManager.recordUsage(CURRENT_KEY_ID);
-      } catch (e) {
-        console.warn('Failed to record API usage:', e);
-      }
-    }
-
-    return reply;
   }
 
   // ── Render helpers ───────────────────────────────────────────────────────
@@ -367,13 +368,12 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
     const now = new Date();
     const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     const div = document.createElement('div');
-    // Convert markdown-ish bold to html, newlines to <br>
     const formatted = escHtml(text)
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\n/g, '<br>');
     div.innerHTML = `
       <div class="bubble-wrap ai">
-        <div class="bubble-avatar-sm" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);font-size:0.9rem;">🧠</div>
+        <div class="bubble-avatar-sm" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);font-size:0.9rem;">&#129504;</div>
         <div>
           <div class="bubble ai">${formatted}</div>
           <div class="bubble-time">${timeStr}</div>
@@ -391,7 +391,7 @@ Jika pengguna terlihat darurat (nyeri dada, sesak napas berat, kehilangan kesada
     div.id = id;
     div.innerHTML = `
       <div class="bubble-wrap ai">
-        <div class="bubble-avatar-sm" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);font-size:0.9rem;">🧠</div>
+        <div class="bubble-avatar-sm" style="background:linear-gradient(135deg,#2F80ED,#56CCF2);font-size:0.9rem;">&#129504;</div>
         <div class="bubble ai" style="padding:4px 6px;">
           <div class="thinking-dots"><span></span><span></span><span></span></div>
         </div>

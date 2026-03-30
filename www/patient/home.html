@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vitalora — Beranda</title>
   <link rel="stylesheet" href="../shared/neumorphic.css">
-  <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
-  <script nomodule src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+  <!-- Ionicons 7: sparkles-outline (AI Health) tidak ada di paket v5 — v6+ menyertakan ikon ini -->
+  <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
   <style>
     /* === HEADER: dark green gradient === */
     .app-header {
@@ -37,6 +38,12 @@
       border-radius: 14px;
       padding: 10px;
       margin-bottom: 2px;
+    }
+    /* Pastikan glyph terukur di dalam pill (ion-icon v7 kadang butuh ukuran eksplisit) */
+    .qi-icon ion-icon {
+      font-size: 1.4rem;
+      width: 1.4rem;
+      height: 1.4rem;
     }
 
     /* === VITAL CARDS: accent top border per type === */

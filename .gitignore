@@ -77,3 +77,6 @@ __pycache__/
 *.pkl
 serviceAccountKey.json
 firebase-key.json
+
+# Gemini API keys
+www/shared/gemini-keys.js
