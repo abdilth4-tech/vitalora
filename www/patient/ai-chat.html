@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
   <title>Vitalora — AI Health Assistant</title>
   <link rel="stylesheet" href="../shared/neumorphic.css">
   <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
@@ -32,14 +33,28 @@
     .ai-name { font-size: 0.88rem; font-weight: 700; color: #fff; line-height: 1.2; }
     .ai-status { font-size: 0.65rem; color: #56CCF2; font-weight: 600; }
 
+    /* Layout — override mobile-frame untuk fullscreen chat */
+    .mobile-frame {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh; /* dynamic viewport: handles mobile keyboard */
+      overflow: hidden;
+      padding-bottom: 0 !important; /* hapus padding bottom-nav default */
+    }
+
     /* Chat area */
     .chat-area {
-      flex: 1; overflow-y: auto;
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       padding: 16px 16px 10px;
-      display: flex; flex-direction: column; gap: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       background: var(--bg);
+      overscroll-behavior: contain;
     }
-    .mobile-frame { display: flex; flex-direction: column; }
 
     /* Bubbles */
     .bubble-wrap { display: flex; align-items: flex-end; gap: 8px; }
@@ -102,10 +117,19 @@
 
     /* Input bar */
     .chat-input-bar {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
       background: var(--bg);
       border-top: 1px solid var(--shadow-dark);
+      flex-shrink: 0;
+    }
+
+    /* Chips bar */
+    .chips-bar {
+      flex-shrink: 0;
     }
     .chat-text-input {
       flex: 1; border: none; background: var(--bg);

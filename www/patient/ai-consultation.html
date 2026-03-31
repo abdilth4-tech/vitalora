@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
   <title>Vitalora — AI Health Assistant</title>
   <link rel="stylesheet" href="../shared/neumorphic.css">
   <script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
@@ -105,10 +106,28 @@
     .confidence-bar-fill { height: 100%; border-radius: 3px; }
     .assessment-rec { font-size: 0.75rem; color: var(--text-tertiary); line-height: 1.6; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(108,99,255,0.15); }
 
+    /* Layout — fullscreen chat, no bottom nav */
+    .mobile-frame {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      padding-bottom: 0 !important;
+    }
+
+    .section-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
     .chat-input-bar {
-      position: sticky; bottom: 0; left: 0; right: 0;
+      flex-shrink: 0;
       background: var(--bg);
-      padding: 10px 16px 14px;
+      padding: 10px 16px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
       border-top: 1px solid rgba(200,208,231,0.4);
       display: flex; gap: 8px; align-items: center;
     }
@@ -138,7 +157,7 @@
     .send-btn:active { transform: scale(0.94); }
     .send-btn:disabled { opacity: 0.5; pointer-events: none; }
 
-    .section-scroll { padding-bottom: 70px; }
+    .section-scroll { padding-bottom: 16px; }
 
     @keyframes spin {
       from { transform: rotate(0deg); }
