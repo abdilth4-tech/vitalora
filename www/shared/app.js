@@ -194,8 +194,42 @@ function animateNumber(el, target, duration = 1200) {
 function nav(url) { window.location.href = url; }
 
 // ── Init ──
+// Admin mobile sidebar toggle
+function initAdminMobileMenu() {
+  const sidebar = document.querySelector('.admin-sidebar');
+  if (!sidebar) return;
+
+  // Create hamburger button
+  const topbar = document.querySelector('.admin-topbar');
+  if (topbar && !topbar.querySelector('.admin-menu-toggle')) {
+    const btn = document.createElement('button');
+    btn.className = 'admin-menu-toggle';
+    btn.innerHTML = '<ion-icon name="menu-outline"></ion-icon>';
+    btn.onclick = () => toggleAdminSidebar();
+    topbar.insertBefore(btn, topbar.firstChild);
+  }
+
+  // Create overlay
+  if (!document.querySelector('.admin-sidebar-overlay')) {
+    const overlay = document.createElement('div');
+    overlay.className = 'admin-sidebar-overlay';
+    overlay.onclick = () => toggleAdminSidebar(false);
+    document.body.appendChild(overlay);
+  }
+}
+
+function toggleAdminSidebar(forceOpen) {
+  const sidebar = document.querySelector('.admin-sidebar');
+  const overlay = document.querySelector('.admin-sidebar-overlay');
+  if (!sidebar) return;
+  const isOpen = typeof forceOpen === 'boolean' ? forceOpen : !sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', isOpen);
+  if (overlay) overlay.classList.toggle('show', isOpen);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initScrollAnimations();
   initCarousels();
   initTabs('.neu-tabs');
+  initAdminMobileMenu();
 });

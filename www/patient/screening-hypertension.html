@@ -186,7 +186,7 @@
     </div>
 
     <!-- STEP 3: Nutrisi (Garam) -->
-    <div id="step-4" class="step-pane"> <!-- Indexing skipped step 3 for salted consistency -->
+    <div id="step-3" class="step-pane">
       <div class="section">
         <h3 style="font-size:1rem;font-weight:800;margin-bottom:6px;">Asupan Garam</h3>
         <p style="font-size:0.78rem;color:var(--text-tertiary);margin-bottom:20px;">Natrium/Garam adalah pemicu utama kenaikan tekanan darah.</p>
@@ -204,7 +204,7 @@
     </div>
 
     <!-- STEP 4: Fisik & Berat -->
-    <div id="step-3" class="step-pane">
+    <div id="step-4" class="step-pane">
       <div class="section">
         <h3 style="font-size:1rem;font-weight:800;margin-bottom:6px;">Aktivitas & Berat Badan</h3>
         <p style="font-size:0.78rem;color:var(--text-tertiary);margin-bottom:20px;">Obesitas meningkatkan beban kerja jantung.</p>
@@ -301,8 +301,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="../shared/firebase.js"></script>
 <script src="../shared/app.js"></script>
-<script src="../shared/firebase.js"></script>
-<script src="../shared/app.js"></script>
 <script>
   let _geUser = null;
   let currentStep = 1;
@@ -337,9 +335,9 @@
 
     const stepTitles = [
       'Step 1 — Tekanan Darah',
-      'Step 2 — Data Pribadi',
-      'Step 3 — Riwayat Kesehatan',
-      'Step 4 — Hasil & Rekomendasi'
+      'Step 2 — Riwayat & Demografis',
+      'Step 3 — Asupan Garam',
+      'Step 4 — Aktivitas & Berat Badan'
     ];
 
     document.getElementById('stepTitleText').textContent = stepTitles[currentStep - 1] || 'Step ' + currentStep;
@@ -372,8 +370,11 @@
     }
     if (currentStep === 2) {
       const age = document.getElementById('in-age').value;
+      return age && parseInt(age) > 0;
+    }
+    if (currentStep === 4) {
       const weight = document.getElementById('in-weight').value;
-      return age && weight && parseInt(age) > 0 && parseFloat(weight) > 0;
+      return weight && parseFloat(weight) > 0;
     }
     return true;
   }
@@ -427,9 +428,9 @@
       }
 
       // Add risk factors
-      if (responses['fam-hyp']) score += 10;
-      if (responses['smoking']) score += 15;
-      if (responses['activity'] === 0) score += 15;
+      if (responses['fam-ht']) score += 10;
+      if (responses['salt'] >= 2) score += 10;
+      if (responses['exercise'] >= 2) score += 15;
       if (age > 60) score += 10;
 
       score = Math.min(100, Math.max(0, score));

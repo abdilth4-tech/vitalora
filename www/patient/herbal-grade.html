@@ -26,6 +26,13 @@
     .adjunctive-badge { background: rgba(245,166,35,0.12); color: #F2994A; padding: 6px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
     .insufficient-badge { background: rgba(235,87,87,0.12); color: #EB5757; padding: 6px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
     .overview-card { background: linear-gradient(135deg, rgba(39,174,96,0.08) 0%, rgba(111,207,151,0.04) 100%); border-left: 4px solid #27AE60; padding: 16px; border-radius: 12px; margin-bottom: 20px; }
+
+    @media (max-width: 480px) {
+      .domain-item { grid-template-columns: 1fr; gap: 4px; }
+      .domain-label { font-size: 0.7rem; }
+      [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+      [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -421,6 +428,10 @@
 </div>
 
 <script src="../shared/app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
 <script>
   (async () => {
     await VAuth.guard('patient', 1);

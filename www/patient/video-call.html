@@ -195,7 +195,7 @@
       align-items: center;
       justify-content: center;
       gap: 16px;
-      padding: 20px 20px 32px;
+      padding: 20px 20px calc(32px + env(safe-area-inset-bottom, 0px));
       background: linear-gradient(0deg, rgba(7,26,15,0.95) 0%, rgba(7,26,15,0.7) 60%, transparent 100%);
       position: absolute;
       bottom: 0;
@@ -542,7 +542,7 @@
     } else {
       // Pasien menunggu — listen Firestore untuk incoming call dari dokter
       document.getElementById('connectingLabel').textContent = 'Menunggu dokter...';
-      const unsubIncoming = VWebRTCManager.listenForIncomingCall(user.uid, async incoming => {
+      const unsubIncoming = VWebRTC.listenForIncomingCall(user.uid, async incoming => {
         document.getElementById('connectingLabel').textContent = 'Dokter menghubungi...';
         unsubIncoming(); // stop listening setelah call ditemukan
         try {

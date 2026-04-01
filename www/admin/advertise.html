@@ -104,7 +104,7 @@
 <script src="../shared/app.js"></script>
 <script>
 (async () => {
-  const profile = await VAuth.guard('admin', 1);
+  const { profile } = await VAuth.guard('admin', 1);
   if (profile && profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
   loadBanners();
 })();

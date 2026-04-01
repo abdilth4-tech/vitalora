@@ -378,10 +378,12 @@
     const cards = document.querySelectorAll('.consult-card');
     cards.forEach((c, i) => {
       c.classList.remove('selected');
-      c.querySelector('ion-icon').setAttribute('name','ellipse-outline');
+      const icons = c.querySelectorAll('ion-icon');
+      icons[icons.length - 1].setAttribute('name','ellipse-outline');
     });
     el.classList.add('selected');
-    el.querySelector('ion-icon').setAttribute('name','checkmark-circle');
+    const elIcons = el.querySelectorAll('ion-icon');
+    elIcons[elIcons.length - 1].setAttribute('name','checkmark-circle');
     const idx = Array.from(cards).indexOf(el);
     document.getElementById('selected-type').textContent = typeMap[idx];
     document.getElementById('selected-price').textContent = priceMap[idx];

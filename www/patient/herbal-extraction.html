@@ -66,14 +66,14 @@
     <div style="margin-bottom:16px;">
       <div style="font-weight:700;font-size:0.85rem;margin-bottom:10px;">🔍 Filter by Herbal Category</div>
       <div class="filter-chips">
-        <button class="chip-btn active" onclick="filterHerbal('all')">📊 Semua</button>
-        <button class="chip-btn" onclick="filterHerbal('curcumin')">🟡 Curcumin</button>
-        <button class="chip-btn" onclick="filterHerbal('green-tea')">🟢 Green Tea</button>
-        <button class="chip-btn" onclick="filterHerbal('garlic')">⚪ Garlic</button>
-        <button class="chip-btn" onclick="filterHerbal('ginger')">🟠 Ginger</button>
-        <button class="chip-btn" onclick="filterHerbal('cinnamon')">🟤 Cinnamon</button>
-        <button class="chip-btn" onclick="filterHerbal('olive')">🫒 Olive Leaf</button>
-        <button class="chip-btn" onclick="filterHerbal('jamu')">🌾 Jamu</button>
+        <button class="chip-btn active" onclick="filterHerbal('all', this)">📊 Semua</button>
+        <button class="chip-btn" onclick="filterHerbal('curcumin', this)">🟡 Curcumin</button>
+        <button class="chip-btn" onclick="filterHerbal('green-tea', this)">🟢 Green Tea</button>
+        <button class="chip-btn" onclick="filterHerbal('garlic', this)">⚪ Garlic</button>
+        <button class="chip-btn" onclick="filterHerbal('ginger', this)">🟠 Ginger</button>
+        <button class="chip-btn" onclick="filterHerbal('cinnamon', this)">🟤 Cinnamon</button>
+        <button class="chip-btn" onclick="filterHerbal('olive', this)">🫒 Olive Leaf</button>
+        <button class="chip-btn" onclick="filterHerbal('jamu', this)">🌾 Jamu</button>
       </div>
     </div>
 
@@ -328,15 +328,19 @@
 </div>
 
 <script src="../shared/app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
 <script>
   (async () => {
     await VAuth.guard('patient', 1);
   })();
 
-  function filterHerbal(category) {
+  function filterHerbal(category, btn) {
     const chips = document.querySelectorAll('.chip-btn');
     chips.forEach(c => c.classList.remove('active'));
-    event.target.classList.add('active');
+    btn.classList.add('active');
 
     const rows = document.querySelectorAll('.herb-table tbody tr');
     rows.forEach(row => {

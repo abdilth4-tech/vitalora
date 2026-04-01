@@ -555,8 +555,9 @@
     // Collect assessment form data
     const icdInput   = document.getElementById('icd-input');
     const diagnosis  = icdInput ? icdInput.value.trim() : '';
-    const severityEl = document.querySelector('.severity-chip.active, [id^="sev-"]');
-    const notesEl    = document.querySelector('#panel-8 .doc-note');
+    const severityEl = document.querySelector('#panel-8 .neu-select');
+    const notesEls   = document.querySelectorAll('#panel-8 .doc-note');
+    const notesEl    = notesEls.length > 1 ? notesEls[1] : notesEls[0];
 
     try {
       await VDB.createMedicalRecord({
@@ -565,7 +566,7 @@
         type:      'examination',
         results: {
           diagnosis,
-          severity:    severityEl ? severityEl.textContent.trim() : '',
+          severity:    severityEl ? severityEl.value : '',
           clinicalNotes: notesEl ? notesEl.value.trim() : ''
         }
       });

@@ -193,31 +193,31 @@
       <p class="step-subtitle">Pilih kondisi yang ingin Anda pantau (opsional)</p>
 
       <div class="checkbox-group">
-        <div class="checkbox-item" onclick="this.querySelector('input').click()">
+        <div class="checkbox-item" onclick="if(event.target.tagName!=='INPUT'){this.querySelector('input').click()}">
           <input type="checkbox" id="cond-diabetes" value="Diabetes">
           <label for="cond-diabetes">Diabetes / Gula Darah</label>
         </div>
-        <div class="checkbox-item" onclick="this.querySelector('input').click()">
+        <div class="checkbox-item" onclick="if(event.target.tagName!=='INPUT'){this.querySelector('input').click()}">
           <input type="checkbox" id="cond-hypertension" value="Hipertensi">
           <label for="cond-hypertension">Hipertensi / Tekanan Darah</label>
         </div>
-        <div class="checkbox-item" onclick="this.querySelector('input').click()">
+        <div class="checkbox-item" onclick="if(event.target.tagName!=='INPUT'){this.querySelector('input').click()}">
           <input type="checkbox" id="cond-cholesterol" value="Kolesterol">
           <label for="cond-cholesterol">Kolesterol Tinggi</label>
         </div>
-        <div class="checkbox-item" onclick="this.querySelector('input').click()">
+        <div class="checkbox-item" onclick="if(event.target.tagName!=='INPUT'){this.querySelector('input').click()}">
           <input type="checkbox" id="cond-gout" value="Asam Urat">
           <label for="cond-gout">Asam Urat</label>
         </div>
-        <div class="checkbox-item" onclick="this.querySelector('input').click()">
+        <div class="checkbox-item" onclick="if(event.target.tagName!=='INPUT'){this.querySelector('input').click()}">
           <input type="checkbox" id="cond-heart" value="Jantung">
           <label for="cond-heart">Penyakit Jantung</label>
         </div>
-        <div class="checkbox-item" onclick="this.querySelector('input').click()">
+        <div class="checkbox-item" onclick="if(event.target.tagName!=='INPUT'){this.querySelector('input').click()}">
           <input type="checkbox" id="cond-gerd" value="Maag">
           <label for="cond-gerd">Maag / GERD</label>
         </div>
-        <div class="checkbox-item" onclick="this.querySelector('input').click()">
+        <div class="checkbox-item" onclick="if(event.target.tagName!=='INPUT'){this.querySelector('input').click()}">
           <input type="checkbox" id="cond-obesity" value="Obesitas">
           <label for="cond-obesity">Obesitas / Berat Badan</label>
         </div>

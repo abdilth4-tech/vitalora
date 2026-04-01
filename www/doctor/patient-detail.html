@@ -295,7 +295,7 @@
 
   <!-- Sticky Bottom -->
   <div class="sticky-bottom">
-    <button class="neu-btn-primary neu-btn-block" onclick="nav('chat-room.html')">
+    <button class="neu-btn-primary neu-btn-block" id="start-consult-btn" onclick="nav('chat-room.html')">
       <ion-icon name="chatbubbles-outline" style="vertical-align:-2px;margin-right:6px;"></ion-icon>
       Mulai Konsultasi
     </button>
@@ -374,6 +374,12 @@
     // Read patient ID from URL
     const patientId = new URLSearchParams(location.search).get('id');
     let latestRisk = null;
+
+    // Update consultation button with patient ID
+    if (patientId) {
+      const consultBtn = document.getElementById('start-consult-btn');
+      consultBtn.setAttribute('onclick', "nav('chat-room.html?patient=" + patientId + "')");
+    }
 
     if (patientId) {
       try {

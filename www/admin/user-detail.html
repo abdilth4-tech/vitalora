@@ -17,16 +17,21 @@
     .sidebar-item.active { color: #6FCF97 !important; background: rgba(111,207,151,0.15); border-left: 3px solid #6FCF97; }
     .admin-topbar h1 { border-left: 4px solid var(--primary-dark); padding-left: 12px; }
 
-    .profile-card { display: flex; gap: 28px; align-items: flex-start; }
+    .profile-card { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
     .profile-avatar { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(135deg, #6FCF97, #27AE60); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 700; color: #fff; flex-shrink: 0; box-shadow: var(--shadow-out); }
     .profile-info { flex: 1; }
     .profile-name { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
     .profile-meta { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
     .profile-meta-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); }
     .profile-meta-row ion-icon { color: var(--primary-dark); font-size: 1rem; }
-    .profile-actions { display: flex; gap: 12px; align-items: flex-start; }
+    .profile-actions { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+    @media (max-width: 640px) {
+      .admin-topbar .header-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+      .admin-topbar .header-actions button { font-size: 0.75rem; padding: 6px 10px; }
+    }
 
-    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+    .stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
+    @media (min-width: 768px) { .stats-row { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
     .stat-mini { background: var(--bg); border-radius: 16px; box-shadow: var(--shadow-out); padding: 20px; text-align: center; }
     .stat-mini-val { font-size: 1.8rem; font-weight: 800; color: var(--primary-dark); }
     .stat-mini-lbl { font-size: 0.78rem; color: var(--text-tertiary); margin-top: 4px; }
@@ -282,8 +287,8 @@ let _currentUser = null;
 
 (async () => {
   try {
-    await VAuth.guard('admin', 1);
-  if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
+    const { profile } = await VAuth.guard('admin', 1);
+    if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
 
     if (!uid) {
       showToast('ID user tidak ditemukan di URL.', 'error');

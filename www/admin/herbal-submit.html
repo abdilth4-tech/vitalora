@@ -36,6 +36,12 @@
     .badge-A { background: #E8F5E9; color: #27AE60; }
     .badge-B { background: #FFF3E0; color: #F2994A; }
     .badge-C { background: #F3E5F5; color: #9B51E0; }
+    @media (max-width: 640px) {
+      .form-section [style*="grid-template-columns: 1fr 1fr"],
+      .form-section [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+      .dynamic-row { flex-wrap: wrap; }
+      .dynamic-row input, .dynamic-row select { min-width: 0; flex: 1 1 100%; }
+    }
   </style>
 </head>
 <body>

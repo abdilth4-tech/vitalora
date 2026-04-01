@@ -26,7 +26,8 @@
     .doc-specialty { font-size: 0.83rem; color: var(--text-tertiary); margin-top: 2px; }
     .doc-date { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
 
-    .doc-documents { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+    .doc-documents { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 18px; }
+    @media (min-width: 480px) { .doc-documents { grid-template-columns: repeat(3, 1fr); } }
     .doc-preview { border-radius: 12px; padding: 20px 12px; text-align: center; position: relative; box-shadow: var(--shadow-out-sm); }
     .doc-preview-label { font-size: 0.75rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
     .doc-preview-icon { font-size: 2rem; color: rgba(255,255,255,0.8); margin-bottom: 8px; }
@@ -255,8 +256,8 @@ async function rejectUser(userId, btn) {
 
 (async () => {
   try {
-    const profile = await VAuth.guard('admin', 1);
-  if (profile && profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
+    const { profile } = await VAuth.guard('admin', 1);
+    if (profile && profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
     await loadPendingUsers();
   } catch (err) {
     console.error(err);

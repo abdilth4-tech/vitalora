@@ -20,6 +20,7 @@
     .sidebar-item:hover { color: #6FCF97; background: rgba(111,207,151,0.08); }
     .sidebar-item.active { color: #6FCF97 !important; background: rgba(111,207,151,0.15); border-left: 3px solid #6FCF97; }
     .admin-topbar h1 { border-left: 4px solid var(--primary-dark); padding-left: 12px; }
+    @media (min-width: 768px) { .ml-dist-grid { grid-template-columns: 1fr 1fr !important; } }
 
     .model-grid {
       display: grid;
@@ -227,7 +228,7 @@
     </div>
 
     <!-- Risk Distribution + High Risk Users -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px;" data-animate="up" data-delay="300">
+    <div style="display:grid;grid-template-columns:1fr;gap:24px;margin-top:28px;" class="ml-dist-grid" data-animate="up" data-delay="300">
 
       <!-- Distribution -->
       <div class="neu-card-flat">

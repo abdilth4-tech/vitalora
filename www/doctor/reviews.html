@@ -294,7 +294,7 @@ async function loadReviews(doctorId) {
           rating: consult.rating,
           comment: consult.comment,
           createdAt: consult.createdAt,
-          patientName: patientDoc.data().name,
+          patientName: patientDoc.exists && patientDoc.data() ? patientDoc.data().name : 'Pasien',
           consultType: consult.consultType || 'chat',
           doctorReply: consult.doctorReply || null,
           doctorReplyDate: consult.doctorReplyDate || null
@@ -324,7 +324,7 @@ function displayReviews(start, count) {
   const container = document.getElementById('reviewsContainer');
 
   for (let i = start; i < Math.min(start + count, allReviews.length); i++) {
-    container.innerHTML += createReviewCard(allReviews[i], i);
+    container.insertAdjacentHTML('beforeend', createReviewCard(allReviews[i], i));
   }
 
   reviewsLoaded += count;

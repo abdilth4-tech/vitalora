@@ -42,7 +42,7 @@
       transition: all 0.3s ease;
     }
 
-    .search-input { flex: 1; min-width: 250px; }
+    .search-input { flex: 1; min-width: 160px; }
     .search-input:focus, .filter-select:focus { outline: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
     .btn-export {
@@ -76,7 +76,7 @@
     .stat-value { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
     .stat-change { font-size: 0.85rem; color: var(--text-tertiary); margin-top: 0.5rem; }
 
-    .table-wrapper { overflow-x: auto; margin-bottom: 2rem; }
+    .table-wrapper { overflow-x: auto; margin-bottom: 2rem; -webkit-overflow-scrolling: touch; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -321,11 +321,8 @@
     <a class="sidebar-item" href="../index.html" style="margin-top:auto;"><ion-icon name="log-out-outline"></ion-icon>Logout</a>
   </aside>
   <main class="admin-main">
-    <div class="admin-topbar"><h1>📋 Manajemen Konsultasi</h1></div>
+    <div class="admin-topbar"><h1>Manajemen Konsultasi</h1></div>
     <div class="container">
-    <div class="header">
-      <h1>Manajemen Konsultasi</h1>
-    </div>
 
     <div class="stat-grid" id="statsGrid">
       <div class="stat-card">

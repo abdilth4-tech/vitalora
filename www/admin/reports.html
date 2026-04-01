@@ -307,11 +307,8 @@
     <a class="sidebar-item" href="../index.html" style="margin-top:auto;"><ion-icon name="log-out-outline"></ion-icon>Logout</a>
   </aside>
   <main class="admin-main">
-    <div class="admin-topbar"><h1>📊 Laporan & Ekspor Data</h1></div>
+    <div class="admin-topbar"><h1>Laporan & Ekspor Data</h1></div>
     <div class="container">
-    <div class="header">
-      <h1>Laporan & Ekspor Data</h1>
-    </div>
 
     <div class="report-grid" id="reportGrid">
       <!-- Report cards will be generated here -->
@@ -414,8 +411,9 @@
     ];
 
     async function initReports() {
-      const profile = await VAuth.guard();
-      if (profile.profile && profile.profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
+      const result = await VAuth.guard();
+      const profile = result.profile || result;
+      if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
       if (profile.role !== 'admin' && profile.role !== 'super_admin') {
         showToast('Akses ditolak', 'error');
         setTimeout(() => nav('home.html'), 2000);

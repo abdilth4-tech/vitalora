@@ -17,10 +17,12 @@
     .sidebar-item.active { color: #6FCF97 !important; background: rgba(111,207,151,0.15); border-left: 3px solid #6FCF97; }
     .admin-topbar h1 { border-left: 4px solid var(--primary-dark); padding-left: 12px; }
 
-    .detail-layout { display: grid; grid-template-columns: 1fr 360px; gap: 24px; margin-top: 24px; align-items: start; }
+    .detail-layout { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 24px; align-items: start; }
+    @media (min-width: 900px) { .detail-layout { grid-template-columns: 1fr 360px; } }
 
     /* Stats */
-    .camp-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+    .camp-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
+    @media (min-width: 768px) { .camp-stats { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
     .camp-stat-card { background: var(--bg); border-radius: 18px; box-shadow: var(--shadow-out); padding: 22px 18px; text-align: center; }
     .camp-stat-val { font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
     .camp-stat-lbl { font-size: 0.78rem; color: var(--text-tertiary); margin-top: 6px; }
@@ -262,8 +264,8 @@ function formatCurrency(val) {
 
 (async () => {
   try {
-    await VAuth.guard('admin', 1);
-  if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
+    const { profile } = await VAuth.guard('admin', 1);
+    if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
 
     if (!id) {
       showToast('ID kampanye tidak ditemukan di URL.', 'error');

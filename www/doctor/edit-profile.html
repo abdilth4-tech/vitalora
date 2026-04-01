@@ -338,11 +338,19 @@
       const feeVideo   = parseInt(document.getElementById('input-fee-video')?.value) || 0;
       const feeInt     = parseInt(document.getElementById('input-fee-integratif')?.value) || 0;
 
-      // Collect education entries
+      // Collect education entries (handle both static divs and dynamic inputs)
       const eduEntries = Array.from(document.querySelectorAll('.edu-entry')).map(entry => {
         const inputs = entry.querySelectorAll('input');
-        const degree = inputs[0]?.value?.trim();
-        const school = inputs[1]?.value?.trim();
+        let degree, school;
+        if (inputs.length >= 2) {
+          degree = inputs[0]?.value?.trim();
+          school = inputs[1]?.value?.trim();
+        } else {
+          const degreeEl = entry.querySelector('.edu-degree');
+          const schoolEl = entry.querySelector('.edu-school');
+          degree = degreeEl ? degreeEl.textContent.trim() : '';
+          school = schoolEl ? schoolEl.textContent.trim() : '';
+        }
         return degree ? { degree, school: school || '' } : null;
       }).filter(Boolean);
 

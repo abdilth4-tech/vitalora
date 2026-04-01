@@ -17,7 +17,8 @@
     .sidebar-item.active { color: #6FCF97 !important; background: rgba(111,207,151,0.15); border-left: 3px solid #6FCF97; }
     .admin-topbar h1 { border-left: 4px solid var(--primary-dark); padding-left: 12px; }
 
-    .campaign-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; margin-top: 24px; align-items: start; }
+    .campaign-layout { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 24px; align-items: start; }
+    @media (min-width: 900px) { .campaign-layout { grid-template-columns: 1fr 340px; } }
     .form-group { margin-bottom: 20px; }
     .form-label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 8px; }
 
@@ -66,7 +67,12 @@
     .preview-banner-sub { font-size: 0.75rem; color: var(--text-tertiary); margin-top: 3px; }
     .preview-banner-cta { display: inline-block; margin-top: 10px; background: linear-gradient(135deg,#6FCF97,#27AE60); color: #fff; font-size: 0.75rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; }
 
-    .bottom-actions { display: flex; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--shadow-dark); }
+    .bottom-actions { display: flex; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--shadow-dark); flex-wrap: wrap; }
+    @media (max-width: 640px) {
+      .neu-card [style*="grid-template-columns:1fr 1fr"],
+      .neu-card [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+      .format-cards { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -255,8 +261,8 @@ let _adminUser = null;
 
 (async () => {
   try {
-    const { user } = await VAuth.guard('admin', 1);
-  if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
+    const { user, profile } = await VAuth.guard('admin', 1);
+    if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
     _adminUser = user;
   } catch (err) {
     console.error(err);

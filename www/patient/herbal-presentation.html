@@ -37,6 +37,19 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .stat-box { background: rgba(39,174,96,0.08); padding: 16px; border-radius: 8px; border-left: 4px solid #27AE60; }
     .stat-box strong { color: #27AE60; }
+
+    @media (max-width: 480px) {
+      .slide { padding: 20px; max-width: 100%; }
+      .slide h1 { font-size: 1.4rem; }
+      .hero-slide h1 { font-size: 1.6rem; }
+      .slide h2 { font-size: 1.1rem; }
+      .slide p, .slide li { font-size: 0.85rem; }
+      .hero-slide p { font-size: 0.9rem; }
+      .slide-controls { padding: 14px 16px; }
+      .progress-bar { width: 120px; }
+      .grid-2 { grid-template-columns: 1fr; gap: 12px; }
+      .slide-nav-btn { padding: 8px 14px; font-size: 0.8rem; }
+    }
   </style>
 </head>
 <body>
@@ -363,6 +376,10 @@
 </div>
 
 <script src="../shared/app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase.js"></script>
 <script>
   (async () => {
     await VAuth.guard('patient', 1);

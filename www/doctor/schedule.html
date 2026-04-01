@@ -222,7 +222,7 @@
           <input type="time" class="time-input" value="17:00">
         </div>
         <div id="rest-sun" style="margin-top:8px;"></div>
-        <button class="add-rest-btn"><ion-icon name="add-circle-outline"></ion-icon> Tambah Blok Istirahat</button>
+        <button class="add-rest-btn" onclick="addRestBlock('sun')"><ion-icon name="add-circle-outline"></ion-icon> Tambah Blok Istirahat</button>
       </div>
     </div>
 
@@ -245,10 +245,31 @@
     // Try to load schedule from Firestore
     try {
       const snap = await VFirebase.db.collection('doctors').doc(user.uid).get();
-      if (snap.exists && snap.data().schedule) {
-        // If doctor has saved schedule data, we could restore it here
-        // For now, keep mock schedule UI as display
-        console.log('[Schedule] Loaded from Firestore:', snap.data().schedule);
+      const data = snap.exists ? snap.data() : null;
+      if (data && data.schedule) {
+        const saved = data.schedule;
+        const days = ['mon','tue','wed','thu','fri','sat','sun'];
+        days.forEach(day => {
+          if (!saved[day]) return;
+          const toggle = document.getElementById('toggle-' + day);
+          const times  = document.querySelectorAll('#times-' + day + ' > .time-row .time-input');
+          if (toggle) { toggle.checked = saved[day].active; toggleDay(day); }
+          if (times[0]) times[0].value = saved[day].start || '08:00';
+          if (times[1]) times[1].value = saved[day].end || '17:00';
+          if (saved[day].restBlocks && saved[day].restBlocks.length) {
+            saved[day].restBlocks.forEach(rb => {
+              addRestBlock(day);
+              const restContainer = document.getElementById('rest-' + day);
+              const blocks = restContainer.querySelectorAll('.rest-block');
+              const lastBlock = blocks[blocks.length - 1];
+              const restTimes = lastBlock.querySelectorAll('.time-input');
+              if (restTimes[0]) restTimes[0].value = rb.start;
+              if (restTimes[1]) restTimes[1].value = rb.end;
+            });
+          }
+        });
+        if (data.slotDuration) document.getElementById('slotDuration').value = data.slotDuration;
+        if (data.maxPatients) document.getElementById('maxPatients').value = data.maxPatients;
       }
     } catch (err) {
       // No schedule data yet, keep mock defaults
@@ -289,11 +310,23 @@
     const schedule = {};
     days.forEach(day => {
       const toggle = document.getElementById('toggle-' + day);
-      const times  = document.querySelectorAll('#times-' + day + ' .time-input');
+      const times  = document.querySelectorAll('#times-' + day + ' > .time-row .time-input');
+      // Collect rest blocks
+      const restBlocks = [];
+      const restContainer = document.getElementById('rest-' + day);
+      if (restContainer) {
+        restContainer.querySelectorAll('.rest-block').forEach(block => {
+          const restTimes = block.querySelectorAll('.time-input');
+          if (restTimes[0] && restTimes[1]) {
+            restBlocks.push({ start: restTimes[0].value, end: restTimes[1].value });
+          }
+        });
+      }
       schedule[day] = {
         active: toggle ? toggle.checked : false,
         start:  times[0] ? times[0].value : '08:00',
-        end:    times[1] ? times[1].value : '17:00'
+        end:    times[1] ? times[1].value : '17:00',
+        restBlocks
       };
     });
 

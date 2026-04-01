@@ -17,7 +17,7 @@
     .sidebar-item.active { color: #6FCF97 !important; background: rgba(111,207,151,0.15); border-left: 3px solid #6FCF97; }
 
     .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-    .search-input { flex: 1; min-width: 200px; padding: 10px 16px; border-radius: 10px; border: 2px solid var(--shadow-dark); background: var(--bg); font-size: 0.9rem; }
+    .search-input { flex: 1; min-width: 160px; padding: 10px 16px; border-radius: 10px; border: 2px solid var(--shadow-dark); background: var(--bg); font-size: 0.9rem; }
     .search-input:focus { outline: none; border-color: #27AE60; }
 
     .filter-select { padding: 10px 16px; border-radius: 10px; border: 2px solid var(--shadow-dark); background: var(--bg); font-size: 0.9rem; cursor: pointer; }
@@ -121,7 +121,7 @@
     </div>
 
     <!-- Data Table -->
-    <div class="neu-card" data-animate="up" data-delay="150" style="padding: 0; overflow: hidden;">
+    <div class="neu-card" data-animate="up" data-delay="150" style="padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
       <table class="data-table" id="herbalsTable">
         <thead>
           <tr>

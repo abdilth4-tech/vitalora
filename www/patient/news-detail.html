@@ -234,7 +234,7 @@
     const id = new URLSearchParams(location.search).get('id');
     if (!id) return; // keep static content as fallback
 
-    const snap = await VFirebase.db.collection('articles').doc(id).get();
+    const snap = await VDB.db.collection('articles').doc(id).get();
     if (!snap.exists) return; // keep static content
 
     const article = snap.data();

@@ -220,20 +220,23 @@
 <script src="../shared/firebase.js"></script>
 <script src="../shared/app.js"></script>
 <script>
-  // Search functionality
-  document.getElementById('search-input').addEventListener('input', function(e) {
+  // Search functionality — filter cards on input, navigate on Enter
+  const searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('input', function(e) {
     const query = e.target.value.toLowerCase();
-    // Could expand to filter cards or redirect to search results
-    if (query.includes('dyslipidemia') || query.includes('kolesterol')) {
-      nav('slr-dyslipidemia.html');
-    } else if (query.includes('diabetes') || query.includes('gula')) {
-      nav('slr-diabetes.html');
-    } else if (query.includes('hypertension') || query.includes('tensi')) {
-      nav('slr-hypertension.html');
-    } else if (query.includes('nafld') || query.includes('liver') || query.includes('hati')) {
-      nav('slr-nafld.html');
-    } else if (query.includes('metabolic')) {
-      nav('slr-metabsyn.html');
+    document.querySelectorAll('.disease-card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(query) ? '' : 'none';
+    });
+  });
+  searchInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const query = e.target.value.toLowerCase();
+      if (query.includes('dyslipidemia') || query.includes('kolesterol')) nav('slr-dyslipidemia.html');
+      else if (query.includes('diabetes') || query.includes('gula')) nav('slr-diabetes.html');
+      else if (query.includes('hypertension') || query.includes('tensi')) nav('slr-hypertension.html');
+      else if (query.includes('nafld') || query.includes('liver') || query.includes('hati')) nav('slr-nafld.html');
+      else if (query.includes('metabolic')) nav('slr-metabsyn.html');
     }
   });
 
