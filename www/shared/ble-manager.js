@@ -11,7 +11,7 @@ const BLEManager = (() => {
   // Configuration
   const SERVICE_UUID = '12345678-1234-1234-1234-123456789abc';
   const CHAR_UUID = 'abcd1234-ab12-cd34-ef56-123456789abc';
-  const DEVICE_NAME_PREFIX = 'vitalora';
+  const DEVICE_NAME_PREFIX = 'VItaLora';
 
   // State
   let _device = null;
@@ -126,13 +126,45 @@ const BLEManager = (() => {
   }
 
   /**
+   * Parse raw BLE string into a data object.
+   * Supports JSON or CSV format: "hr,spo2,temp,steps"
+   */
+  function _parsePayload(raw) {
+    try {
+      return JSON.parse(raw);
+    } catch (_) {
+      // CSV format from ESP32: "heartRate,spo2,temp,steps"
+      const parts = raw.split(',');
+      if (parts.length >= 4) {
+        return {
+          hr: parseInt(parts[0], 10) || 0,
+          spo2: parseInt(parts[1], 10) || 0,
+          temp: parseFloat(parts[2]) || 0,
+          temperature: parseFloat(parts[2]) || 0,
+          steps: parseInt(parts[3], 10) || 0
+        };
+      }
+      return null;
+    }
+  }
+
+  /**
    * Handle incoming BLE data
    */
   function _onNotification(event) {
     try {
       const value = event.target.value;
-      const json = new TextDecoder().decode(value);
-      const data = JSON.parse(json);
+      const raw = new TextDecoder().decode(value);
+      const data = _parsePayload(raw);
+
+      if (!data) {
+        console.warn('Unrecognised BLE payload:', raw);
+        return;
+      }
+
+      // Normalise field names so downstream code can use either key
+      if (data.temp != null && data.temperature == null) data.temperature = data.temp;
+      if (data.temperature != null && data.temp == null) data.temp = data.temperature;
 
       // Add metadata
       data.source = 'ble';
@@ -141,7 +173,6 @@ const BLEManager = (() => {
 
       _lastData = data;
 
-      // Debug log (first 3 packets only)
       console.log('📊 BLE Data:', data);
 
       // Inject into VitalsManager if available

@@ -612,22 +612,10 @@
 <script src="../shared/app.js"></script>
 <script src="../shared/ble-manager.js"></script>
 <script>
-// BLE Configuration
-const BLE_CONFIG = {
-  SERVICE_UUID: '12345678-1234-1234-1234-123456789abc',
-  CHARACTERISTIC_UUID: 'abcd1234-ab12-cd34-ef56-123456789abc',
-  DEVICE_NAME_PREFIX: 'vitalora'
-};
-
 // State
-let bleDevice = null;
-let bleServer = null;
-let bleService = null;
-let bleCharacteristic = null;
 let isConnected = false;
 let isScanning = false;
-let reconnectAttempts = 0;
-const MAX_RECONNECT_ATTEMPTS = 5;
+let _unsubBLE = null;
 
 // DOM Elements
 const scanBtn = document.getElementById('scanBtn');
@@ -698,16 +686,11 @@ function updateConnectionStatus(status) {
     vitalsPreview.style.display = 'grid';
     connectionActions.style.display = 'flex';
     sensorConfigSection.style.display = 'block';
-    showToast('Perangkat terhubung!', 'success');
   } else if (status === 'disconnected') {
     deviceIconMain.className = 'device-icon disconnected';
     vitalsPreview.style.display = 'none';
     connectionActions.style.display = 'none';
     sensorConfigSection.style.display = 'none';
-
-    if (isConnected) {
-      showToast('Perangkat terputus', 'warning');
-    }
 
     deviceNameMain.textContent = 'Tidak Terhubung';
     deviceIdMain.textContent = 'Tekan "Scan" untuk mencari perangkat';
@@ -719,55 +702,70 @@ function updateConnectionStatus(status) {
   isConnected = status === 'connected';
 }
 
-// Get RSSI signal bars HTML
-function getRSSIBars(rssi) {
-  const strength = rssi ? Math.min(4, Math.max(1, Math.ceil((rssi + 100) / 20))) : 2;
-  return `
-    <div class="rssi-indicator">
-      <div class="rssi-bar ${strength >= 1 ? 'active' : ''}"></div>
-      <div class="rssi-bar ${strength >= 2 ? 'active' : ''}"></div>
-      <div class="rssi-bar ${strength >= 3 ? 'active' : ''}"></div>
-      <div class="rssi-bar ${strength >= 4 ? 'active' : ''}"></div>
-    </div>
-  `;
+// Subscribe to BLEManager data for UI updates
+function subscribeBLEData() {
+  if (_unsubBLE) _unsubBLE(); // Remove previous subscription
+  _unsubBLE = BLEManager.onData((data) => {
+    // Update live vitals preview
+    if (data.hr) document.getElementById('liveHR').textContent = data.hr;
+    if (data.spo2) document.getElementById('liveSpO2').textContent = Math.round(data.spo2);
+    if (data.temp != null) {
+      document.getElementById('liveTemp').textContent = typeof data.temp === 'number' ? data.temp.toFixed(1) : data.temp;
+    }
+
+    // Display in data area
+    const time = new Date().toLocaleTimeString('id-ID');
+    const entry = document.createElement('div');
+    entry.className = 'data-entry';
+    entry.innerHTML = `
+      <span class="data-timestamp">[${time}]</span>
+      <span class="data-value">HR: ${data.hr || '--'} | SpO2: ${data.spo2 || '--'} | Suhu: ${data.temp != null ? (typeof data.temp === 'number' ? data.temp.toFixed(1) : data.temp) : '--'}°C | Steps: ${data.steps || 0}</span>
+    `;
+    dataDisplay.appendChild(entry);
+    dataDisplay.scrollTop = dataDisplay.scrollHeight;
+
+    // Keep only last 30 entries
+    while (dataDisplay.children.length > 30) {
+      dataDisplay.removeChild(dataDisplay.firstChild);
+    }
+
+    log(`Data diterima: HR=${data.hr} SpO2=${data.spo2} Suhu=${data.temp} Steps=${data.steps}`, 'success');
+  });
 }
 
 // Display device in list
-function displayDevice(device) {
+function displayDevice(name, id) {
   const existingEmpty = deviceList.querySelector('.empty-state');
   if (existingEmpty) {
     deviceList.innerHTML = '';
   }
 
-  // Check if device already in list
-  const existing = deviceList.querySelector(`[data-device-id="${device.id}"]`);
-  if (existing) return;
-
   const deviceItem = document.createElement('div');
-  deviceItem.className = 'device-item';
-  deviceItem.dataset.deviceId = device.id;
+  deviceItem.className = 'device-item connected';
 
   deviceItem.innerHTML = `
-    <div class="device-icon ${isConnected && bleDevice?.id === device.id ? 'connected' : 'disconnected'}">⌚</div>
+    <div class="device-icon connected">⌚</div>
     <div class="device-info">
-      <div class="device-name">${device.name || 'Unknown Device'}</div>
-      <div class="device-id">${device.id.substring(0, 20)}...</div>
+      <div class="device-name">${name || 'Vitalora Watch'}</div>
+      <div class="device-id">${id ? id.substring(0, 20) + '...' : 'Connected'}</div>
       <div class="device-meta">
-        ${getRSSIBars(-55)}
+        <div class="rssi-indicator">
+          <div class="rssi-bar active"></div>
+          <div class="rssi-bar active"></div>
+          <div class="rssi-bar active"></div>
+          <div class="rssi-bar"></div>
+        </div>
         <span class="neu-chip" style="font-size:0.6rem;">BLE 5.0</span>
       </div>
     </div>
-    <ion-icon name="chevron-forward-outline" style="color:var(--text-muted);font-size:1.2rem;"></ion-icon>
+    <ion-icon name="checkmark-circle" style="color:var(--primary-dark);font-size:1.2rem;"></ion-icon>
   `;
 
-  deviceItem.addEventListener('click', () => connectToDevice(device));
   deviceList.appendChild(deviceItem);
-
-  const count = deviceList.querySelectorAll('.device-item').length;
-  deviceCount.textContent = count;
+  deviceCount.textContent = deviceList.querySelectorAll('.device-item').length;
 }
 
-// Start BLE scan
+// Start BLE scan — uses BLEManager singleton
 async function startScan() {
   if (!checkBrowserSupport()) return;
 
@@ -779,33 +777,34 @@ async function startScan() {
     updateConnectionStatus('scanning');
     log('Memulai scan BLE...', 'info');
 
-    // Request device with filters
-    bleDevice = await navigator.bluetooth.requestDevice({
-      filters: [
-        { namePrefix: BLE_CONFIG.DEVICE_NAME_PREFIX }
-      ],
-      optionalServices: [BLE_CONFIG.SERVICE_UUID]
-    });
+    // Use BLEManager for connection (handles scan, connect, notifications)
+    const success = await BLEManager.connect();
 
-    if (bleDevice) {
-      log(`Perangkat ditemukan: ${bleDevice.name}`, 'success');
-      displayDevice(bleDevice);
+    if (success) {
+      const status = BLEManager.getStatus();
+      log(`Perangkat ditemukan: ${status.deviceName}`, 'success');
+      log('GATT server terhubung', 'success');
+      log('Service & Characteristic ditemukan', 'success');
+      log('Notifications aktif', 'success');
 
-      // Add disconnect listener
-      bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
+      // Update UI
+      deviceNameMain.textContent = status.deviceName || 'Vitalora Watch';
+      deviceIdMain.textContent = `ID: ${status.deviceId?.substring(0, 17) || '...'}`;
+      updateConnectionStatus('connected');
+      showToast('Perangkat terhubung!', 'success');
 
-      // Auto-connect
-      await connectToDevice(bleDevice);
+      // Display device in list
+      displayDevice(status.deviceName, status.deviceId);
+
+      // Subscribe to live data
+      subscribeBLEData();
+    } else {
+      log('Koneksi gagal atau dibatalkan', 'warning');
+      updateConnectionStatus('disconnected');
     }
 
   } catch (error) {
-    if (error.name === 'NotFoundError') {
-      log('Tidak ada perangkat ditemukan atau scan dibatalkan', 'warning');
-      showToast('Tidak ada perangkat ditemukan', 'warning');
-    } else {
-      log(`Scan error: ${error.message}`, 'error');
-      showToast('Gagal scan perangkat', 'error');
-    }
+    log(`Scan error: ${error.message}`, 'error');
     updateConnectionStatus('disconnected');
   } finally {
     isScanning = false;
@@ -815,185 +814,46 @@ async function startScan() {
   }
 }
 
-// Connect to device
-async function connectToDevice(device) {
+// Disconnect from device — uses BLEManager
+async function disconnectDevice() {
   try {
-    updateConnectionStatus('scanning');
-    log(`Menghubungkan ke ${device.name}...`, 'info');
-
-    bleServer = await device.gatt.connect();
-    log('GATT server terhubung', 'success');
-
-    bleService = await bleServer.getPrimaryService(BLE_CONFIG.SERVICE_UUID);
-    log('Service ditemukan', 'success');
-
-    bleCharacteristic = await bleService.getCharacteristic(BLE_CONFIG.CHARACTERISTIC_UUID);
-    log('Characteristic ditemukan', 'success');
-
-    // Start notifications
-    await bleCharacteristic.startNotifications();
-    bleCharacteristic.addEventListener('characteristicvaluechanged', handleNotification);
-    log('Notifications aktif', 'success');
-
-    // Update UI
-    deviceNameMain.textContent = device.name || 'Vitalora Watch';
-    deviceIdMain.textContent = `ID: ${device.id.substring(0, 17)}...`;
-    updateConnectionStatus('connected');
-    reconnectAttempts = 0;
-
-    // Mark device as connected in list
-    document.querySelectorAll('.device-item').forEach(item => {
-      if (item.dataset.deviceId === device.id) {
-        item.classList.add('connected');
-        item.querySelector('.device-icon').classList.add('connected');
-        item.querySelector('.device-icon').classList.remove('disconnected');
-      }
-    });
-
+    await BLEManager.disconnect();
+    if (_unsubBLE) { _unsubBLE(); _unsubBLE = null; }
+    log('Terputus oleh pengguna', 'info');
   } catch (error) {
-    log(`Koneksi gagal: ${error.message}`, 'error');
-    showToast('Gagal menghubungkan perangkat', 'error');
-    updateConnectionStatus('disconnected');
+    log(`Disconnect error: ${error.message}`, 'error');
   }
+  updateConnectionStatus('disconnected');
+
+  // Update device list UI
+  document.querySelectorAll('.device-item').forEach(item => {
+    item.classList.remove('connected');
+    const icon = item.querySelector('.device-icon');
+    if (icon) { icon.classList.remove('connected'); icon.classList.add('disconnected'); }
+  });
 }
 
-// Handle notification data
-function handleNotification(event) {
-  try {
-    const value = event.target.value;
-    const decoder = new TextDecoder('utf-8');
-    const rawData = decoder.decode(value);
-
-    // Try to parse as JSON (vital signs data)
-    let data;
-    try {
-      data = JSON.parse(rawData);
-
-      // Update live vitals preview
-      if (data.hr) document.getElementById('liveHR').textContent = data.hr;
-      if (data.spo2) document.getElementById('liveSpO2').textContent = data.spo2;
-      if (data.temp || data.temperature) {
-        const temp = data.temp || data.temperature;
-        document.getElementById('liveTemp').textContent = typeof temp === 'number' ? temp.toFixed(1) : temp;
-      }
-
-      // Inject into VitalsManager if available
-      if (window.VitalsManager && typeof VitalsManager.injectBLE === 'function') {
-        VitalsManager.injectBLE(data);
-      }
-
-    } catch (e) {
-      data = rawData;
-    }
-
-    // Display in data area
-    const time = new Date().toLocaleTimeString('id-ID');
-    const entry = document.createElement('div');
-    entry.className = 'data-entry';
-    entry.innerHTML = `
-      <span class="data-timestamp">[${time}]</span>
-      <span class="data-value">${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</span>
-    `;
-    dataDisplay.appendChild(entry);
-    dataDisplay.scrollTop = dataDisplay.scrollHeight;
-
-    // Keep only last 30 entries
-    while (dataDisplay.children.length > 30) {
-      dataDisplay.removeChild(dataDisplay.firstChild);
-    }
-
-    log(`Data diterima: ${rawData.substring(0, 50)}${rawData.length > 50 ? '...' : ''}`, 'success');
-
-  } catch (error) {
-    log(`Error parsing data: ${error.message}`, 'error');
-  }
-}
-
-// Read characteristic value
+// Read characteristic value (manual read)
 async function readCharacteristic() {
-  if (!bleCharacteristic) {
+  const status = BLEManager.getStatus();
+  if (!status.connected) {
     showToast('Tidak terhubung', 'warning');
     return;
   }
 
-  try {
-    log('Membaca characteristic...', 'info');
-    const value = await bleCharacteristic.readValue();
-    const decoder = new TextDecoder('utf-8');
-    const data = decoder.decode(value);
-
+  // Trigger a fresh data display from last known data
+  const lastData = status.lastData;
+  if (lastData) {
     const time = new Date().toLocaleTimeString('id-ID');
     const entry = document.createElement('div');
     entry.className = 'data-entry';
-    entry.innerHTML = `<span class="data-timestamp">[${time}] READ:</span> <span class="data-value">${data}</span>`;
+    entry.innerHTML = `<span class="data-timestamp">[${time}] READ:</span> <span class="data-value">HR: ${lastData.hr || '--'} | SpO2: ${lastData.spo2 || '--'} | Suhu: ${lastData.temp != null ? lastData.temp : '--'}°C | Steps: ${lastData.steps || 0}</span>`;
     dataDisplay.appendChild(entry);
     dataDisplay.scrollTop = dataDisplay.scrollHeight;
-
-    log(`Nilai dibaca: ${data}`, 'success');
+    log('Data terakhir dibaca', 'success');
     showToast('Data berhasil dibaca', 'success');
-
-  } catch (error) {
-    log(`Read error: ${error.message}`, 'error');
-    showToast('Gagal membaca data', 'error');
-  }
-}
-
-// Disconnect from device
-async function disconnectDevice() {
-  if (bleDevice && bleDevice.gatt.connected) {
-    try {
-      if (bleCharacteristic) {
-        await bleCharacteristic.stopNotifications();
-        bleCharacteristic.removeEventListener('characteristicvaluechanged', handleNotification);
-      }
-      bleDevice.gatt.disconnect();
-      log('Terputus oleh pengguna', 'info');
-    } catch (error) {
-      log(`Disconnect error: ${error.message}`, 'error');
-    }
-  }
-
-  bleDevice = null;
-  bleServer = null;
-  bleService = null;
-  bleCharacteristic = null;
-  updateConnectionStatus('disconnected');
-
-  // Update device list UI
-  document.querySelectorAll('.device-item').forEach(item => {
-    item.classList.remove('connected');
-    item.querySelector('.device-icon').classList.remove('connected');
-    item.querySelector('.device-icon').classList.add('disconnected');
-  });
-}
-
-// Handle unexpected disconnection
-function onDisconnected(event) {
-  const device = event.target;
-  log(`Perangkat ${device.name} terputus`, 'warning');
-  updateConnectionStatus('disconnected');
-
-  // Update device list UI
-  document.querySelectorAll('.device-item').forEach(item => {
-    item.classList.remove('connected');
-    item.querySelector('.device-icon').classList.remove('connected');
-    item.querySelector('.device-icon').classList.add('disconnected');
-  });
-
-  // Auto-reconnect logic
-  if (autoReconnectToggle.checked && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-    reconnectAttempts++;
-    log(`Mencoba reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`, 'info');
-    showToast(`Menghubungkan ulang... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, 'info');
-
-    setTimeout(() => {
-      if (bleDevice) {
-        connectToDevice(bleDevice);
-      }
-    }, 2000);
-  } else if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-    log('Maksimum percobaan reconnect tercapai', 'error');
-    showToast('Tidak dapat menghubungkan ulang', 'error');
+  } else {
+    showToast('Belum ada data dari perangkat', 'info');
   }
 }
 
@@ -1009,39 +869,62 @@ function clearLog() {
 
 // Refresh status
 function refreshStatus() {
-  const status = BLEManager ? BLEManager.getStatus() : { connected: false };
+  const status = BLEManager.getStatus();
   log('Status diperbarui', 'info');
 
   if (status.connected) {
     updateConnectionStatus('connected');
-    if (status.deviceName) {
-      deviceNameMain.textContent = status.deviceName;
-    }
+    deviceNameMain.textContent = status.deviceName || 'Vitalora Watch';
+    deviceIdMain.textContent = `ID: ${status.deviceId?.substring(0, 17) || '...'}`;
+    showToast('Perangkat terhubung', 'success');
   } else {
     updateConnectionStatus('disconnected');
   }
 }
 
+// Poll BLEManager status to detect disconnection
+setInterval(() => {
+  const status = BLEManager.getStatus();
+  const wasConnected = isConnected;
+
+  if (wasConnected && !status.connected) {
+    log('Perangkat terputus', 'warning');
+    updateConnectionStatus('disconnected');
+    showToast('Perangkat terputus', 'warning');
+
+    // Auto-reconnect
+    if (autoReconnectToggle.checked) {
+      log('Mencoba reconnect otomatis...', 'info');
+      setTimeout(async () => {
+        const ok = await BLEManager.connect();
+        if (ok) {
+          const s = BLEManager.getStatus();
+          deviceNameMain.textContent = s.deviceName || 'Vitalora Watch';
+          deviceIdMain.textContent = `ID: ${s.deviceId?.substring(0, 17) || '...'}`;
+          updateConnectionStatus('connected');
+          subscribeBLEData();
+          log('Reconnect berhasil!', 'success');
+        }
+      }, 2000);
+    }
+  }
+}, 3000);
+
 // Initialize
 checkBrowserSupport();
 log('BLE Scanner diinisialisasi', 'info');
-log(`Mencari perangkat dengan prefix: "${BLE_CONFIG.DEVICE_NAME_PREFIX}"`, 'info');
+log('Mencari perangkat dengan prefix: "VItaLora"', 'info');
 
-// Check existing BLEManager status
+// Check if BLEManager is already connected (e.g. from another page)
 if (window.BLEManager) {
   const status = BLEManager.getStatus();
   if (status.connected) {
     updateConnectionStatus('connected');
     deviceNameMain.textContent = status.deviceName || 'Vitalora Watch';
     deviceIdMain.textContent = `ID: ${status.deviceId?.substring(0, 17) || '...'}`;
+    displayDevice(status.deviceName, status.deviceId);
     log('Terhubung dari sesi sebelumnya', 'success');
-
-    // Subscribe to live data
-    BLEManager.onData((data) => {
-      if (data.hr) document.getElementById('liveHR').textContent = data.hr;
-      if (data.spo2) document.getElementById('liveSpO2').textContent = Math.round(data.spo2);
-      if (data.temp) document.getElementById('liveTemp').textContent = data.temp.toFixed(1);
-    });
+    subscribeBLEData();
   }
 }
 </script>
