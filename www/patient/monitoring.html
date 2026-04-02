@@ -254,14 +254,18 @@
 
   // Display initial values
   const displayVitals = (v) => {
-    const set = (id, val) => {
+    const setInt = (id, val) => {
       const el = document.getElementById(id);
-      if (el) el.textContent = typeof val === 'number' ? val.toFixed?.(1) || val : val;
+      if (el) el.textContent = (typeof val === 'number') ? Math.round(val) : val;
     };
-    set('hr-live', v.hr);
-    set('spo2-live', v.spo2);
-    set('temp-live', v.temperature);
-    set('rr-live', v.respirationRate || v.rr);
+    const setDec = (id, val, decimals = 1) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = (typeof val === 'number') ? val.toFixed(decimals) : val;
+    };
+    setInt('hr-live', v.hr);
+    setInt('spo2-live', v.spo2);
+    setDec('temp-live', v.temperature || v.temp);
+    setInt('rr-live', v.respirationRate || v.rr);
 
     const stressEl = document.querySelector('[class*="stress"]');
     if (stressEl) stressEl.textContent = v.stress || 42;
@@ -285,12 +289,9 @@
   // Display initial/last values
   displayVitals(lastVitals);
 
-  // Subscribe to live vitals (only update when BLE connected)
+  // Subscribe to live vitals — always display (VitalsManager handles BLE vs simulated)
   VitalsManager.subscribe(v => {
-    const bleStatus = BLEManager.getStatus();
-    if (bleStatus.connected) {
-      displayVitals(v);
-    }
+    displayVitals(v);
   });
 
   // Initial charts
@@ -446,12 +447,15 @@
 
   // ========== BLE STATUS - ALERT CARD & DISABLED STATE ==========
   setInterval(() => {
-    const status = BLEManager.getStatus();
+    const bleStatus = BLEManager.getStatus();
+    const vitals = VitalsManager.getCurrent();
+    // Consider "connected" if BLEManager is connected OR VitalsManager has BLE data
+    const isBLEActive = bleStatus.connected || (vitals.source === 'ble');
     const vitalGrid = document.getElementById('vital-grid-monitoring');
     const alertCard = document.getElementById('ble-alert-card');
 
     if (vitalGrid) {
-      if (status.connected) {
+      if (isBLEActive) {
         vitalGrid.style.opacity = '1';
         vitalGrid.style.filter = 'none';
         vitalGrid.style.pointerEvents = 'auto';
@@ -463,7 +467,7 @@
     }
 
     if (alertCard) {
-      alertCard.style.display = status.connected ? 'none' : 'block';
+      alertCard.style.display = isBLEActive ? 'none' : 'block';
     }
   }, 2000);
 

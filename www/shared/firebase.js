@@ -636,6 +636,8 @@ window.VitalsManager = (() => {
   let _displayInterval = null;
   let _uploadInterval = null;
   let _isStarted = false;
+  let _bleActive = false;
+  let _lastBLETime = 0;
 
   function _simulate() {
     _buffer = {
@@ -667,7 +669,11 @@ window.VitalsManager = (() => {
       _isStarted = true;
       _simulate(); // initial reading
       _displayInterval = setInterval(() => {
-        _simulate();
+        // Only simulate if BLE hasn't sent data in last 5 seconds
+        if (!_bleActive || Date.now() - _lastBLETime > 5000) {
+          _bleActive = false;
+          _simulate();
+        }
         _subscribers.forEach(cb => cb({ ..._buffer }));
       }, 1000);
       _uploadInterval = setInterval(_uploadToFirestore, 60000);
@@ -690,6 +696,8 @@ window.VitalsManager = (() => {
      */
     injectBLE(bleData) {
       if (!bleData) return;
+      _bleActive = true;
+      _lastBLETime = Date.now();
 
       // Map BLE field names to buffer field names
       const mapping = {
