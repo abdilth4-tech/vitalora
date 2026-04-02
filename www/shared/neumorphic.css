@@ -131,6 +131,7 @@ ul, ol { list-style: none; }
   background: var(--bg);
   position: relative;
   overflow-x: hidden;
+  padding-top: var(--header-h);
   padding-bottom: calc(var(--nav-h) + 20px);
 }
 
@@ -143,8 +144,12 @@ ul, ol { list-style: none; }
    ═══════════════════════════ */
 
 .app-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--mobile-w);
   z-index: 100;
   background: var(--bg);
   padding: var(--sp-16) var(--sp-24);

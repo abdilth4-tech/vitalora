@@ -155,7 +155,7 @@ window.VAuth = {
   redirectByRole(role, depth = 1) {
     const prefix = '../'.repeat(depth);
     const map = {
-      patient: 'patient/home.html',
+      patient: 'patient/index.html#home',
       doctor: 'doctor/home.html',
       admin: 'admin/home.html',
       super_admin: 'admin/home.html'

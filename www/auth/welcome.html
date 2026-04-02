@@ -883,10 +883,10 @@ function typeWriter(el, text, speed) {
 
 // ── Portal redirect ──
 function proceedToPortal() {
-  const map = { patient:'../patient/home.html', doctor:'../doctor/home.html', admin:'../admin/home.html', super_admin:'../admin/home.html' };
+  const map = { patient:'../patient/index.html#home', doctor:'../doctor/home.html', admin:'../admin/home.html', super_admin:'../admin/home.html' };
   const card = document.querySelector('#slide-3 .card');
   if (card) { card.style.transition='all .5s ease'; card.style.opacity='0'; card.style.transform='translateY(-16px) scale(.97)'; }
-  setTimeout(() => { window.location.href = map[userRole] || '../patient/home.html'; }, 480);
+  setTimeout(() => { window.location.href = map[userRole] || '../patient/index.html#home'; }, 480);
 }
 function skipToPortal() { proceedToPortal(); }
 
