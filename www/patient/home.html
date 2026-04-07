@@ -170,10 +170,10 @@
 
     <div class="section-header" data-animate="up" data-delay="300"><span class="section-title">Tanda Vital Terkini</span><a class="section-link" href="monitoring.html">Detail →</a></div>
     <div class="vital-grid" id="vital-grid-home" data-animate="up" data-delay="350" style="transition:all 0.3s ease;">
-      <div class="vital-card"><div class="v-icon">❤️</div><div class="v-label">Detak Jantung</div><div class="v-value"><span id="hr-v">78</span> <span class="v-unit">bpm</span></div><div class="v-status normal">● Normal</div><div class="v-sparkline" id="hr-sp"></div></div>
-      <div class="vital-card"><div class="v-icon">🩸</div><div class="v-label">SpO2</div><div class="v-value"><span id="spo2-v">98</span> <span class="v-unit">%</span></div><div class="v-status normal">● Normal</div><div class="v-sparkline" id="spo2-sp"></div></div>
-      <div class="vital-card"><div class="v-icon">🌡️</div><div class="v-label">Suhu Tubuh</div><div class="v-value"><span id="temp-v">36.5</span> <span class="v-unit">°C</span></div><div class="v-status normal">● Normal</div></div>
-      <div class="vital-card"><div class="v-icon">🚶</div><div class="v-label">Langkah</div><div class="v-value"><span id="steps-v">6,842</span></div><div class="v-status warning">⬤ 68%</div></div>
+      <div class="vital-card"><div class="v-icon">❤️</div><div class="v-label">Detak Jantung</div><div class="v-value"><span id="hr-v">--</span> <span class="v-unit">bpm</span></div><div class="v-status normal">● --</div><div class="v-sparkline" id="hr-sp"></div></div>
+      <div class="vital-card"><div class="v-icon">🩸</div><div class="v-label">SpO2</div><div class="v-value"><span id="spo2-v">--</span> <span class="v-unit">%</span></div><div class="v-status normal">● --</div><div class="v-sparkline" id="spo2-sp"></div></div>
+      <div class="vital-card"><div class="v-icon">🌡️</div><div class="v-label">Suhu Tubuh</div><div class="v-value"><span id="temp-v">--</span> <span class="v-unit">°C</span></div><div class="v-status normal">● --</div></div>
+      <div class="vital-card"><div class="v-icon">🚶</div><div class="v-label">Langkah</div><div class="v-value"><span id="steps-v">0</span></div><div class="v-status">● --</div></div>
     </div>
   </div>
 
@@ -313,18 +313,18 @@
     const spo2El = document.getElementById('spo2-v');
     const tempEl = document.getElementById('temp-v');
     const stepsEl = document.getElementById('steps-v');
-    if (hrEl)   hrEl.textContent   = v.hr;
-    if (spo2El) spo2El.textContent = v.spo2;
-    if (tempEl) tempEl.textContent = v.temperature;
-    if (stepsEl) stepsEl.textContent = v.steps === '--' || !v.steps ? '0' : v.steps?.toLocaleString();
+    if (hrEl)   hrEl.textContent   = (typeof v.hr === 'number') ? Math.round(v.hr) : v.hr;
+    if (spo2El) spo2El.textContent = (typeof v.spo2 === 'number') ? Math.round(v.spo2) : v.spo2;
+    const temp = v.temperature || v.temp;
+    if (tempEl) tempEl.textContent = (typeof temp === 'number') ? temp.toFixed(1) : temp;
+    if (stepsEl) stepsEl.textContent = (!v.steps || v.steps === '--') ? '0' : v.steps.toLocaleString();
   };
 
   displayHomeVitals(lastVitalsHome);
 
-  // Subscribe to live vitals (only update when BLE connected)
+  // Subscribe to live vitals — only display real BLE data
   VitalsManager.subscribe(v => {
-    const bleStatus = BLEManager.getStatus();
-    if (bleStatus.connected) {
+    if (v.source === 'ble') {
       displayHomeVitals(v);
     }
 
@@ -332,7 +332,7 @@
     const sourceEl = document.querySelector('#vital-grid-home');
     if (sourceEl && v.source === 'ble') {
       sourceEl.style.filter = 'drop-shadow(0 0 8px rgba(39,174,96,0.4))';
-    } else {
+    } else if (sourceEl) {
       sourceEl.style.filter = 'none';
     }
   });
@@ -378,12 +378,11 @@
       if (status.connected) {
         vitalGrid.style.opacity = '1';
         vitalGrid.style.filter = 'none';
-        vitalGrid.style.pointerEvents = 'auto';
       } else {
-        vitalGrid.style.opacity = '0.5';
-        vitalGrid.style.filter = 'grayscale(100%)';
-        vitalGrid.style.pointerEvents = 'none';
+        vitalGrid.style.opacity = '0.85';
+        vitalGrid.style.filter = 'none';
       }
+      vitalGrid.style.pointerEvents = 'auto';
     }
 
     if (alertCard) {

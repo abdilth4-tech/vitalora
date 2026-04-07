@@ -631,30 +631,16 @@ window.VDB = {
 // ═══════════════════════════════════════════════════════════════════════════
 window.VitalsManager = (() => {
   let _patientId = null;
-  let _buffer = {};      // Stores latest reading in memory
-  let _subscribers = []; // UI callbacks (called every 1s)
-  let _displayInterval = null;
+  let _buffer = {
+    hr: '--', spo2: '--', temperature: '--', steps: 0,
+    respirationRate: '--', stress: '--', source: 'none'
+  };
+  let _subscribers = [];
   let _uploadInterval = null;
   let _isStarted = false;
-  let _bleActive = false;
-  let _lastBLETime = 0;
-
-  function _simulate() {
-    _buffer = {
-      hr:              72 + Math.round((Math.random() - 0.5) * 16),
-      spo2:            96 + Math.round(Math.random() * 3 * 10) / 10,
-      temperature:     36.2 + Math.round(Math.random() * 1.2 * 10) / 10,
-      gsr:             Math.round((0.3 + Math.random() * 0.4) * 100) / 100,
-      steps:           Math.round(Math.random() * 8),
-      hrv:             40 + Math.round(Math.random() * 20),
-      respirationRate: 14 + Math.round(Math.random() * 4),
-      batteryLevel:    87,
-      source:          'simulated'
-    };
-  }
 
   async function _uploadToFirestore() {
-    if (!_patientId || !_buffer.hr) return;
+    if (!_patientId || _buffer.source !== 'ble' || _buffer.hr === '--') return;
     try {
       await VDB.saveVitals(_patientId, { ..._buffer });
     } catch (e) {
@@ -667,19 +653,10 @@ window.VitalsManager = (() => {
       if (_isStarted) return;
       _patientId = patientId;
       _isStarted = true;
-      _simulate(); // initial reading
-      _displayInterval = setInterval(() => {
-        // Only simulate if BLE hasn't sent data in last 5 seconds
-        if (!_bleActive || Date.now() - _lastBLETime > 5000) {
-          _bleActive = false;
-          _simulate();
-        }
-        _subscribers.forEach(cb => cb({ ..._buffer }));
-      }, 1000);
+      // Upload to Firestore every 60s (only when BLE data exists)
       _uploadInterval = setInterval(_uploadToFirestore, 60000);
     },
     stop() {
-      clearInterval(_displayInterval);
       clearInterval(_uploadInterval);
       _isStarted = false;
       _subscribers = [];
@@ -687,17 +664,14 @@ window.VitalsManager = (() => {
     getCurrent() { return { ..._buffer }; },
     subscribe(callback) {
       _subscribers.push(callback);
-      if (_buffer.hr) callback({ ..._buffer });
+      callback({ ..._buffer });
       return () => { _subscribers = _subscribers.filter(c => c !== callback); };
     },
     /**
-     * Inject BLE data into vitals buffer
-     * BLE data takes priority over simulated data
+     * Inject BLE data into vitals buffer — satu-satunya sumber data
      */
     injectBLE(bleData) {
       if (!bleData) return;
-      _bleActive = true;
-      _lastBLETime = Date.now();
 
       // Map BLE field names to buffer field names
       const mapping = {
@@ -719,18 +693,16 @@ window.VitalsManager = (() => {
         gsr: 'gsr'
       };
 
-      // Merge BLE data into buffer (overrides simulation)
       Object.entries(mapping).forEach(([bleKey, bufferKey]) => {
         if (bleKey in bleData && bleData[bleKey] !== undefined) {
           _buffer[bufferKey] = bleData[bleKey];
         }
       });
 
-      // Always mark source as BLE
-      _buffer.source = bleData.source || 'ble';
+      _buffer.source = 'ble';
       _buffer.bleTimestamp = bleData.timestamp || new Date().toISOString();
 
-      // Notify subscribers immediately of BLE data
+      // Notify subscribers immediately
       _subscribers.forEach(cb => cb({ ..._buffer }));
     },
     async getHistory(patientId, days = 7) {

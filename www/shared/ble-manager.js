@@ -235,19 +235,11 @@ const BLEManager = (() => {
    */
   function getDefaultData() {
     return {
-      hr: 72,
-      spo2: 98.5,
-      temp: 36.7,
-      rr: 16,
-      hrv: 42,
-      sdnn: 42,
-      rmssd: 38,
-      pnn50: 18,
+      hr: '--',
+      spo2: '--',
+      temp: '--',
       steps: 0,
-      battery: 87,
-      stress: 35,
-      movement: 0.12,
-      source: 'simulated',
+      source: 'none',
       timestamp: new Date().toISOString()
     };
   }
