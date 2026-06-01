@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="../favicon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vitalora — Profil</title>
   <link rel="stylesheet" href="../shared/neumorphic.css">
@@ -24,7 +25,7 @@
 
 <div class="mobile-frame page-enter">
   <header class="app-header">
-    <button class="neu-icon-btn" onclick="nav('home.html')"><ion-icon name="arrow-back-outline"></ion-icon></button>
+    <div style="width:42px"></div>
     <div style="font-size:1.05rem;font-weight:700;">Profil Saya</div>
     <button class="neu-icon-btn" onclick="nav('edit-profile.html')"><ion-icon name="settings-outline"></ion-icon></button>
   </header>
@@ -32,7 +33,7 @@
   <div class="section">
     <!-- Profile Card -->
     <div class="neu-card" data-animate="up" style="text-align:center;">
-      <div class="neu-avatar-xl" style="margin:0 auto 12px;">AF</div>
+      <div class="neu-avatar-xl" id="profile-avatar" style="margin:0 auto 12px;overflow:hidden;">AF</div>
       <div style="font-size:1.1rem;font-weight:700;">Ahmad Fauzi</div>
       <div style="font-size:0.78rem;color:var(--text-tertiary);">ahmad.fauzi@email.com</div>
       <div style="display:flex;justify-content:center;gap:12px;margin-top:16px;">
@@ -59,17 +60,17 @@
         <div class="li-info"><div class="li-title">FAQ / Q&A</div><div class="li-subtitle">Pertanyaan umum tentang Vitalora</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>
       </div>
-      <div class="neu-list-item" data-animate="up" data-delay="225" onclick="nav('ai-consultation-herbal.html')">
+      <div class="neu-list-item" data-animate="up" data-delay="215" onclick="nav('ai-consultation-herbal.html')">
         <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(13,107,60,0.2),rgba(39,174,96,0.1));"><ion-icon name="leaf-outline" style="color:#0D6B3C;"></ion-icon></div>
         <div class="li-info"><div class="li-title">Konsultasi Herbal</div><div class="li-subtitle">Tanya AI tentang manfaat, dosis, dan interaksi herbal</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>
       </div>
-      <div class="neu-list-item" data-animate="up" data-delay="250" onclick="nav('../material-research/index.html')">
-        <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(39,174,96,0.2),rgba(61,215,127,0.1));"><ion-icon name="book-outline" style="color:#27AE60;"></ion-icon></div>
+      <div class="neu-list-item" data-animate="up" data-delay="225" onclick="nav('../material-research/index.html')">
+        <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(39,174,96,0.2),rgba(61,215,127,0.1));"><ion-icon name="leaf-outline" style="color:#27AE60;"></ion-icon></div>
         <div class="li-info"><div class="li-title">Material Research</div><div class="li-subtitle">SLR Evidence Portal — Disease & Herbal</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>
       </div>
-      <div class="neu-list-item" data-animate="up" data-delay="275" onclick="nav('privacy-policy.html')">
+      <div class="neu-list-item" data-animate="up" data-delay="250" onclick="nav('privacy-policy.html')">
         <div style="width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow-out-sm);display:flex;align-items:center;justify-content:center;background:var(--warning-bg);"><ion-icon name="shield-checkmark-outline" style="color:var(--warning);"></ion-icon></div>
         <div class="li-info"><div class="li-title">Kebijakan Privasi</div><div class="li-subtitle">Bagaimana data Anda dilindungi</div></div>
         <ion-icon name="chevron-forward-outline" class="li-arrow"></ion-icon>
@@ -124,9 +125,16 @@
     const email = profile.email || user.email || '';
     const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
-    // Avatar initials
-    const avatarEl = document.querySelector('.neu-avatar-xl');
-    if (avatarEl) avatarEl.textContent = initials;
+    // Avatar: use photoURL if available, otherwise show initials
+    const avatarEl = document.getElementById('profile-avatar');
+    if (avatarEl) {
+      const photoURL = profile.photoURL || user.photoURL;
+      if (photoURL) {
+        avatarEl.innerHTML = '<img src="' + photoURL + '" alt="' + name + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+      } else {
+        avatarEl.textContent = initials;
+      }
+    }
 
     // Name
     const nameEl = document.querySelector('.neu-card [style*="font-size:1.1rem"]');

@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="../favicon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vitalora — Jurnal Kesehatan</title>
   <link rel="stylesheet" href="../shared/neumorphic.css">
@@ -259,10 +260,10 @@
 <script src="../shared/app.js"></script>
 <script>
   // Calendar state
-  const TODAY = new Date(2026, 2, 21); // March 21, 2026
-  let currentYear = 2026;
-  let currentMonth = 2; // 0-indexed (March)
-  let selectedDay = 21;
+  const TODAY = new Date();
+  let currentYear = TODAY.getFullYear();
+  let currentMonth = TODAY.getMonth();
+  let selectedDay = TODAY.getDate();
 
   // Dates with entries (1-indexed day numbers for March)
   const entryDates = [3, 5, 8, 10, 12, 14, 17, 18, 19, 20, 21];

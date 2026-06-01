@@ -78,3 +78,6 @@ __pycache__/
 serviceAccountKey.json
 firebase-key.json
 vitalora-firebase-adminsdk-fbsvc-f5d5e39256.json
+
+# Gemini API keys
+www/shared/gemini-keys.js

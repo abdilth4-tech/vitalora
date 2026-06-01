@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="../favicon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vitalora — Pengaturan Administrasi</title>
   <link rel="stylesheet" href="../shared/neumorphic.css">
@@ -310,11 +311,8 @@
     <a class="sidebar-item" href="../index.html" style="margin-top:auto;"><ion-icon name="log-out-outline"></ion-icon>Logout</a>
   </aside>
   <main class="admin-main">
-    <div class="admin-topbar"><h1>⚙️ Pengaturan Administrasi</h1></div>
+    <div class="admin-topbar"><h1>Pengaturan Administrasi</h1></div>
     <div class="container">
-    <div class="header">
-      <h1>⚙️ Pengaturan Administrasi</h1>
-    </div>
 
     <div id="notification"></div>
 
@@ -543,8 +541,9 @@
     let pendingAction = null;
 
     async function initSettings() {
-      const profile = await VAuth.guard();
-      if (profile.profile && profile.profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
+      const result = await VAuth.guard();
+      const profile = result.profile || result;
+      if (profile.role === 'super_admin') { const el = document.getElementById('nav-verify-herbal'); if (el) el.style.display = ''; }
       if (profile.role !== 'admin' && profile.role !== 'super_admin') {
         showNotification('Akses ditolak', 'error');
         setTimeout(() => nav('home.html'), 2000);
@@ -767,7 +766,7 @@
       statusEl.textContent = 'Testing...';
       try {
         const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
