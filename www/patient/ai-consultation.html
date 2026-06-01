@@ -151,7 +151,17 @@
     </button>
   </header>
 
-  <div class="section section-scroll">
+  <!-- Tab Navigation -->
+  <div style="display:flex;gap:0;background:var(--bg);border-bottom:1px solid rgba(200,208,231,0.3);padding:0;position:sticky;top:0;z-index:10;">
+    <button id="tabSymptom" class="neu-tab-btn active" onclick="switchTab('symptom')" style="flex:1;padding:12px;border:none;background:transparent;border-bottom:3px solid var(--accent);color:var(--accent);font-weight:600;font-size:0.9rem;cursor:pointer;font-family:'Poppins',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <ion-icon name="pulse-outline"></ion-icon> Symptom Checker
+    </button>
+    <button id="tabHerbal" class="neu-tab-btn" onclick="switchTab('herbal')" style="flex:1;padding:12px;border:none;background:transparent;border-bottom:3px solid transparent;color:var(--text-secondary);font-weight:600;font-size:0.9rem;cursor:pointer;font-family:'Poppins',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.3s;">
+      <ion-icon name="leaf-outline"></ion-icon> Herbal Consultation
+    </button>
+  </div>
+
+  <div class="section section-scroll" id="tabSymptomContent">
 
     <!-- Intro Card -->
     <div class="intro-card" data-animate="up" id="introCard">
@@ -212,8 +222,34 @@
 
   </div>
 
-  <!-- Chat Input -->
-  <div class="chat-input-bar">
+  <!-- Herbal Consultation Tab Content -->
+  <div class="section section-scroll" id="tabHerbalContent" style="display:none;padding-bottom:70px;">
+    <div class="intro-card" data-animate="up">
+      <div class="ai-avatar-sm" style="background:linear-gradient(135deg,#0D6B3C,#27AE60);">
+        <ion-icon name="leaf-outline" style="color:#fff;font-size:1rem;"></ion-icon>
+      </div>
+      <div class="intro-text">
+        Tanyakan tentang manfaat herbal, dosis, interaksi obat, keamanan, dan rekomendasi formula tradisional. Semua jawaban berbasis penelitian peer-reviewed.
+      </div>
+    </div>
+
+    <div style="text-align:center;margin:60px 0;">
+      <div style="font-size:2.5rem;margin-bottom:16px;">🌿</div>
+      <div style="font-size:0.95rem;color:var(--text-secondary);margin-bottom:24px;">Buka konsultasi herbal lengkap dengan database penelitian</div>
+      <button class="neu-btn neu-btn-primary neu-btn-block" onclick="nav('ai-consultation-herbal.html')" style="margin-bottom:8px;">
+        <ion-icon name="open-outline"></ion-icon> Buka Konsultasi Herbal
+      </button>
+      <div style="font-size:0.7rem;color:var(--text-muted);margin-top:16px;">
+        ✓ 50+ herbal terdata<br/>
+        ✓ 100+ landmark papers<br/>
+        ✓ Interaksi obat terverifikasi<br/>
+        ✓ XAI (Explainable AI) - Lihat alasan dosis
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Input (Symptom Checker only) -->
+  <div class="chat-input-bar" id="chatInputBar">
     <button class="neu-icon-btn" style="box-shadow:var(--shadow-out-sm);" onclick="showToast('Pilih gejala dari daftar', 'info')">
       <ion-icon name="list-outline" style="color:var(--accent);"></ion-icon>
     </button>
@@ -249,6 +285,34 @@ let currentMode = null;
 let vitalsData = { hr: 0, spo2: 0, temp: 0 };
 let healthProfile = null;
 let riskScores = null;
+let currentTab = 'symptom';
+
+function switchTab(tab) {
+  currentTab = tab;
+  const symptomContent = document.getElementById('tabSymptomContent');
+  const herbalContent = document.getElementById('tabHerbalContent');
+  const symptomBtn = document.getElementById('tabSymptom');
+  const herbalBtn = document.getElementById('tabHerbal');
+  const chatInputBar = document.getElementById('chatInputBar');
+
+  if (tab === 'symptom') {
+    symptomContent.style.display = 'block';
+    herbalContent.style.display = 'none';
+    chatInputBar.style.display = 'flex';
+    symptomBtn.style.borderBottomColor = 'var(--accent)';
+    symptomBtn.style.color = 'var(--accent)';
+    herbalBtn.style.borderBottomColor = 'transparent';
+    herbalBtn.style.color = 'var(--text-secondary)';
+  } else {
+    symptomContent.style.display = 'none';
+    herbalContent.style.display = 'block';
+    chatInputBar.style.display = 'none';
+    symptomBtn.style.borderBottomColor = 'transparent';
+    symptomBtn.style.color = 'var(--text-secondary)';
+    herbalBtn.style.borderBottomColor = 'var(--accent)';
+    herbalBtn.style.color = 'var(--accent)';
+  }
+}
 
 (async () => {
   const auth = await VAuth.guard('patient', 1);
